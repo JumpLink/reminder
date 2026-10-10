@@ -1,0 +1,15 @@
+{
+  "backend": "eds",
+  "grants": [
+    { "capability": "calendar.create", "target": "<calendar-uid-from-reminder-calendars>" },
+    { "capability": "reminder.create", "target": "<task-list-uid-from-reminder-calendars>" }
+  ],
+  "routes": [
+    { "concerns": ["invoice", "tax"], "kind": "reminder", "target": "<task-list-uid-for-paperwork>" },
+    { "concerns": ["school", "kindergarten"], "kind": "event", "target": "<calendar-uid-for-family>" }
+  ],
+  "defaults": {
+    "event": "<calendar-uid-from-reminder-calendars>",
+    "reminder": "<task-list-uid-from-reminder-calendars>"
+  }
+}
