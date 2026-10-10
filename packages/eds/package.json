@@ -1,0 +1,25 @@
+{
+  "name": "@reminder/eds",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "Evolution Data Server driver for the @reminder/core CalendarBackend port: calendars, task lists, events and reminders over gi://ECal. The EDS typelibs load on first use, so a host without them answers with BackendUnavailableError instead of failing at start. Runs on GJS natively and on Node via @gjsify/node-gi.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@girs/ecal-2.0": "^4.1.0",
+    "@girs/edataserver-1.2": "^4.1.0",
+    "@girs/icalglib-3.0": "^4.1.0",
+    "@gjsify/node-gi": "0.59.0",
+    "@reminder/core": "*"
+  }
+}
