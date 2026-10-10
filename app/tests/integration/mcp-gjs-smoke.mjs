@@ -10,7 +10,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert';
@@ -35,7 +35,7 @@ const env = {
 
 const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'reminders_list'];
 
-// ── 1. catalogue: read-only, asserted on the wire ───────────────────────────
+// ── 1. catalogue: read-only without grants, asserted on the wire ───────────────────────────
 
 const transport = new StdioClientTransport({
   command: gjsify,
@@ -74,6 +74,44 @@ if (res.isError) {
   console.log(`OK: calendars_list → ${payload.count} calendars`);
 }
 await client.close();
+
+// ── 2b. with a grant the create tools appear, and an ungranted target is refused ─
+//
+// The refused call stops in the gate, before any backend: no calendar is touched, whatever EDS
+// session the machine has.
+
+const grantedConfig = join(repoRoot, 'node_modules', '.cache', 'reminder-smoke-granted.json');
+mkdirSync(dirname(grantedConfig), { recursive: true });
+writeFileSync(
+  grantedConfig,
+  JSON.stringify({ grants: [{ capability: 'calendar.create', target: 'smoke-granted-calendar' }] }),
+);
+const writer = new Client({ name: 'gjs-smoke-writer', version: '1.0.0' }, { capabilities: {} });
+await writer.connect(
+  new StdioClientTransport({
+    command: gjsify,
+    args: ['run', bundle, 'mcp'],
+    env: { ...env, REMINDER_CONFIG: grantedConfig },
+    cwd: appRoot,
+    stderr: 'inherit',
+  }),
+);
+const granted = (await writer.listTools()).tools.map((t) => t.name).sort();
+assert.deepEqual(granted, [...READ_ONLY_TOOLS, 'events_create'].sort(), 'granted catalogue drifted');
+const denied = await writer.callTool({
+  name: 'events_create',
+  arguments: {
+    summary: 'smoke',
+    start: '2026-10-20T18:00:00Z',
+    calendar: 'smoke-other-calendar',
+    source: 'smoke',
+    sourceId: 'denied',
+  },
+});
+assert.equal(denied.isError, true, 'create for an ungranted calendar was not refused');
+assert(String(denied.content[0].text).includes('calendar.create'), 'refusal does not name the capability');
+console.log('OK: events_create appears only with a grant and refuses an ungranted calendar');
+await writer.close();
 
 // ── 3. the server exits when its client goes away ───────────────────────────
 //
