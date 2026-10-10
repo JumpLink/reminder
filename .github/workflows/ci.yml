@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Node-free gjsify toolchain. Everything runs on the gjsify stack pinned in app/package.json:
+# `gjsify install --immutable` (from gjsify-lock.json), the bundled `gjsify tsc` type-check,
+# `gjsify build` for the CLI bundle, and the test bundle under both gjs and node. Node is present
+# only to bootstrap the gjsify CLI.
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:44
+    steps:
+      # evolution-data-server brings the ECal / EDataServer / ICalGLib typelibs, so the tests run
+      # the REAL lazy-load path. There is no session bus in the container: the backend must answer
+      # with a classified error, and that is what the tests assert.
+      - name: Install system prerequisites (gjs + EDS typelibs)
+        run: >
+          dnf install -y --setopt=install_weak_deps=False
+          git tar xz findutils gjs evolution-data-server
+
+      - uses: actions/checkout@v4
+
+      # gjsify's native install-backend prebuilds target node 24 — Fedora's default node loads a
+      # mismatched ABI and segfaults `gjsify install`.
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Cache gjsify tarball store
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/gjsify/tarballs
+          key: gjsify-tarballs-${{ hashFiles('gjsify-lock.json') }}
+          restore-keys: gjsify-tarballs-
+
+      # The global CLI must be the SAME version the deps pin — a mismatch produces broken bundles.
+      # Read it from app/package.json rather than repeating it here.
+      - name: Bootstrap the gjsify CLI
+        run: |
+          VERSION=$(node -p "require('./app/package.json').devDependencies['@gjsify/cli']")
+          echo "Bootstrapping @gjsify/cli@$VERSION (from app/package.json)"
+          npm install -g "@gjsify/cli@$VERSION"
+
+      - name: Install dependencies (gjsify install --immutable)
+        run: gjsify install --immutable
+
+      # -A includes `private: true` workspaces; without it every packages/* is skipped.
+      - name: Type check (app + every package)
+        run: gjsify foreach -A check
+
+      - name: Lint
+        run: gjsify foreach -A lint
+
+      - name: Format check
+        run: gjsify workspace reminder-cli format:check
+
+      - name: Build the CLI bundle
+        run: gjsify workspace reminder-cli build
+
+      # Twice, in two zones on opposite sides of UTC: calendar code that reads a wall-clock time
+      # where the READER stands passes in its author's zone and is wrong everywhere else.
+      - name: Tests (gjs + node, Europe/Berlin)
+        env:
+          TZ: Europe/Berlin
+        run: gjsify workspace reminder-cli test
+
+      - name: Tests (gjs + node, Pacific/Auckland)
+        env:
+          TZ: Pacific/Auckland
+        run: gjsify workspace reminder-cli test
+
+      # The catalogue must be read-only tools only, asserted on the wire, and the server must exit
+      # when its client goes away.
+      - name: MCP smoke test (stdio)
+        env:
+          DBUS_SESSION_BUS_ADDRESS: unix:path=/nonexistent
+        run: node app/tests/integration/mcp-gjs-smoke.mjs
