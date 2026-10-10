@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# gjsify
+.gjsify/
+
+# npm is not the package manager here — `gjsify install` is (see AGENTS.md).
+package-lock.json
+
+# ─── Personal configuration — NEVER commit ────────────────────────────────
+# Defence in depth only: the real config lives at $XDG_CONFIG_HOME/reminder/config.json, never in
+# this repo. It names real calendar uids, and this repository is PUBLIC. config.example.json holds
+# placeholders and is the only config file that belongs here.
+config.json
+*.local.json
+
+# Editor / OS
+.DS_Store
+*.log
