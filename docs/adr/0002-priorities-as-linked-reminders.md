@@ -1,6 +1,6 @@
 # 0002 — Priorities as linked reminders, read by any agent through the MCP server
 
-- **Status:** proposed
+- **Status:** Accepted
 - **Date:** 2026-10-11
 
 ## Context
@@ -20,11 +20,11 @@ That works while one agent knows where the note is and how its table is laid out
 
 reminder already stores VTODOs in EDS (and CalDAV later), already reads `PRIORITY`, `DUE` and
 `STATUS`, and already serves agents over MCP ([ADR 0001](0001-calendar-items-as-their-own-product.md)).
-A priority is a VTODO with a deadline and a next step. This ADR proposes making that explicit.
+A priority is a VTODO with a deadline and next steps. This ADR makes that explicit.
 
 The examples below are fictional.
 
-## Decision (proposed)
+## Decision
 
 ### 1. Data model: standard iCalendar, nothing a phone app cannot show
 
@@ -36,7 +36,7 @@ A **priority** is a VTODO in a configured task list.
 | importance | `PRIORITY` 1–9 | RFC 5545; 0/unset = not a priority |
 | hard deadline | `DUE` | date or instant; absent = no hard deadline |
 | status | `STATUS`, `COMPLETED` | already read today |
-| next step | child VTODO | see below |
+| next steps | child VTODOs, one or several | see below |
 | case file | `URL` | see below |
 | rank | `PRIORITY` plus tie-break | see below |
 
@@ -52,9 +52,8 @@ A **priority** is a VTODO in a configured task list.
   so the person cannot see or edit it where they look.
 
 **Recommendation: (a).** `RELATED-TO` with `RELTYPE=PARENT` is the standard link, survives CalDAV, and
-makes "progress" observable (§2). Exactly one open child per priority is the *convention* the tools
-enforce; the format does not forbid more, and a reader that finds several shows the earliest-created
-open one and reports the count.
+makes "progress" observable (§2). A priority may have **several open steps** (parallel tracks). A
+reader returns all of them, oldest first, and flags the oldest as the one to nag about.
 
 **Case file link.** Options: `URL` (RFC 5545, one value, shown as a link by most clients), `ATTACH`
 (URI, can repeat, patchier client support), or a line in `DESCRIPTION`. **Recommendation: `URL`** on the
@@ -81,9 +80,9 @@ error saying so, not an arbitrary list. The same uid is the grant target (§4).
 
 ### 2. "Open since" and progress
 
-Options for "how long has the next step been open":
+Options for "how long has the priority had an open step":
 
-- *(a) Derive from the step's `CREATED`*, falling back to `DTSTAMP`. Standard, needs no extra data.
+- *(a) Derive from the `CREATED` of its oldest open step*, falling back to `DTSTAMP`. Standard, needs no extra data.
   `LAST-MODIFIED` is rejected as the base: any edit (typo fix, a sync touching the item) would reset
   the clock without progress.
 - *(b) Explicit `X-REMINDER-OPEN-SINCE`.* Survives clients that rewrite `CREATED`, but a second
@@ -93,17 +92,21 @@ Options for "how long has the next step been open":
 absent the age is reported as `null` rather than guessed. Fixing a wrong date is editing the step's
 `CREATED`, which tools do not do.
 
-**What counts as progress:** only (1) the open step is completed, or (2) it is replaced by a new step
-through `priorities_set_next_step`, which completes or cancels the old child and creates a new one, so
-the clock restarts. Editing text, moving `DUE` or re-ranking is *not* progress. Days open is then
-`today − step.created` in the person's local date; days to deadline is `priority.due − today`
-(negative = overdue).
+**Open since of a priority** is the `CREATED` of its **oldest open step**. Each step also has its own
+`daysOpen`.
+
+**What counts as progress:** any step is completed or replaced. Adding a step through
+`priorities_set_next_step` is *not* progress by itself (it adds a parallel track); replacing means
+completing or cancelling a step and, if wanted, adding its successor. When the oldest step is
+completed, the clock moves to the next-oldest open step. Editing text, moving `DUE` or re-ranking is
+*not* progress. Days open is `today − created` of the oldest open step in the person's local date;
+days to deadline is `priority.due − today` (negative = overdue).
 
 ### 3. Relationship to long-form case files
 
 The case file stays the **log and the detail**: dated entries, reasoning, correspondence summaries,
 whatever the person keeps. reminder holds only the **status block**: title, rank, hard deadline, the
-one next step, and a link to the case file. This is the status-vs-log split, with the status moved
+open next steps, and a link to the case file. This is the status-vs-log split, with the status moved
 from a table in the file header to a place that phones, calendars and agents read natively.
 
 Consequences: the case file's header table stops duplicating status (it may link to the priority);
@@ -118,9 +121,9 @@ Names follow the existing `<noun>_<verb>` pattern (`calendars_list`, `events_lis
 
 | Tool | Kind | Returns / does |
 |---|---|---|
-| `priorities_list` | read | ranked items: `uid`, `summary`, `priority`, `due`, `daysToDeadline`, `link`, `tie`, `nextStep` (`uid`, `summary`, `due`, `created`, `daysOpen`), `openSteps` count |
-| `priorities_set_next_step` | write | completes/cancels the open step, creates the new one under the priority |
-| `priorities_complete_step` | write | marks the open step completed, leaves the priority without a next step |
+| `priorities_list` | read | ranked items: `uid`, `summary`, `priority`, `due`, `daysToDeadline`, `daysOpen` (oldest open step), `link`, `tie`, `steps`: all open steps oldest first (`uid`, `summary`, `due`, `created`, `daysOpen`, `nag`: true on the oldest only) |
+| `priorities_set_next_step` | write | adds a step under the priority; it never replaces or completes another |
+| `priorities_complete_step` | write | takes a step `uid`, marks that step completed; other steps stay open |
 | `priorities_rank` | write | sets `PRIORITY` on one item (callers re-rank by setting values; no bulk reorder) |
 
 Reads follow the same limits and shapes as `reminders_list` (caps in `limits.ts`; no summaries in
@@ -130,7 +133,7 @@ a caller can show it.
 **Writes sit behind a grant, fail-closed.** They need a new capability, `reminder.update` (ADR 0001
 only has `*.create`), with the same rules: one capability, one exact calendar uid, no wildcard, a
 missing grant is a refusal, and the check lives in the core function (`updateReminder`), not in the
-tool. `priorities_set_next_step` also creates a VTODO, so it needs `reminder.create` on the same
+tool. `priorities_set_next_step` only creates a VTODO, so it needs `reminder.create` on the same
 target. The MCP server stays on `applyReadOnlyGate(server, false)` until `@gjsify/mcp`'s
 `applyGrantGate` ships (gjsify PR #2145); `priorities_list` can ship before that, since it is
 read-only. Writes come with the gate, not before.
@@ -161,20 +164,23 @@ commands do.
 
 No import tool is proposed: there are few priorities, and transcribing them is the review.
 
-## Open questions
+## Decisions (owner, 2026-10-11)
 
-- Should the "no hard deadline" case sort after all dated items at the same `PRIORITY`? (Proposed:
-  yes, `DUE` ascending with absent last.)
-- Is `URL` enough for the case file, or does the person need several links (`ATTACH`)?
-- Is one open step per priority too strict for cases with parallel tracks?
+1. An item without `DUE` sorts last among equal `PRIORITY`, as proposed.
+2. A single `URL` to the case file is enough; no `ATTACH`.
+3. A priority may have **several open steps** (parallel tracks). Open-since is the `CREATED` of the
+   oldest open step; `priorities_list` returns all open steps oldest first and flags the oldest as
+   the one to nag about. Progress is any step completed or replaced.
+   `priorities_set_next_step` adds a step; `priorities_complete_step` takes a step uid.
+4. An EDS round trip of `RELATED-TO;RELTYPE=PARENT` must be tested. This is a requirement for the
+   implementation: the first code PR includes that test. It does not block accepting this ADR.
 
 ## Consequences
 
 - Phones and calendar apps show and tick priorities with no custom client.
-- A client can break the convention (two open steps, edited `CREATED`); readers report it rather than
-  hide it.
+- A client can edit `CREATED` and shift the clock; readers report what they find rather than hide it.
 - `ReminderItem` and the iCalendar reader grow; the `CalendarBackend` port does not, because it
   already moves raw text and `getItem`/`createItem` cover the join. An in-place update needs a port
   method (`updateItem`) when the write tools are built, which is a separate decision at that point.
-- `RELATED-TO` support differs across CalDAV servers and apps; the EDS round trip is tested before
-  this ADR is accepted.
+- `RELATED-TO` support differs across CalDAV servers and apps; the first code PR must include
+  a test of the EDS round trip of `RELATED-TO;RELTYPE=PARENT`.
