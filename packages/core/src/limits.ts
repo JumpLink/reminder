@@ -10,6 +10,7 @@ export interface LimitSpec {
 
 export const EVENT_LIMIT: LimitSpec = { default: 100, max: 500 };
 export const REMINDER_LIMIT: LimitSpec = { default: 100, max: 500 };
+export const PRIORITY_LIMIT: LimitSpec = { default: 50, max: 200 };
 
 /** Default event window when the caller gives no `to`. */
 export const EVENT_WINDOW_DAYS = 31;

@@ -7,6 +7,7 @@ import {
   configCommand,
   eventsCommand,
   mcpCommand,
+  prioritiesCommand,
   todosCommand,
 } from './frontends/cli/index.ts';
 
@@ -21,6 +22,7 @@ const parseArgs = () =>
     .command(calendarsCommand)
     .command(eventsCommand)
     .command(todosCommand)
+    .command(prioritiesCommand)
     .command(configCommand)
     .command(mcpCommand)
     .demandCommand(1, 'Give a command — `reminder --help` lists them.')

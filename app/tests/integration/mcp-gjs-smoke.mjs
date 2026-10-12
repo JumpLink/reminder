@@ -33,7 +33,7 @@ const env = {
   REMINDER_CONFIG: join(repoRoot, 'node_modules', '.cache', 'reminder-smoke-config.json'),
 };
 
-const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'reminders_list'];
+const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'priorities_list', 'reminders_list'];
 
 // ── 1. catalogue: read-only, asserted on the wire ───────────────────────────
 

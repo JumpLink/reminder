@@ -34,6 +34,7 @@ reminder calendars                        # calendars and task lists, with their
 reminder events --from 2026-10-12 --to 2026-10-18
 reminder todos                            # open reminders, by due date
 reminder todos --all --calendar <uid>
+reminder priorities                       # ranked priorities with open steps (needs priorities.list)
 reminder config                           # where the config file is, and whether it parses
 reminder mcp                              # MCP server over stdio (read-only)
 ```
@@ -51,7 +52,7 @@ Every command takes `--json`. Times print in their own shape: `2026-10-12` is al
 }
 ```
 
-Tools: `calendars_list`, `events_list`, `reminders_list` — all read-only. The server drops any tool
+Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list` — all read-only. The server drops any tool
 that does not declare itself read-only.
 
 ## Configuration
