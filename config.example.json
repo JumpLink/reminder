@@ -8,6 +8,7 @@
     { "concerns": ["invoice", "tax"], "kind": "reminder", "target": "<task-list-uid-for-paperwork>" },
     { "concerns": ["school", "kindergarten"], "kind": "event", "target": "<calendar-uid-for-family>" }
   ],
+  "priorities": { "list": "<task-list-uid-for-priorities>" },
   "defaults": {
     "event": "<calendar-uid-from-reminder-calendars>",
     "reminder": "<task-list-uid-from-reminder-calendars>"

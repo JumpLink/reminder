@@ -11,6 +11,7 @@ import dates from './unit/core/dates.test.ts';
 import config from './unit/core/config.test.ts';
 import read from './unit/core/read.test.ts';
 import create from './unit/core/create.test.ts';
+import priorities from './unit/core/priorities.test.ts';
 
 import eds from './unit/eds/optional.test.ts';
 
@@ -25,6 +26,7 @@ run({
   config,
   read,
   create,
+  priorities,
   eds,
   mcpTools,
 });

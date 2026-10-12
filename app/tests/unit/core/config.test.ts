@@ -29,6 +29,16 @@ export default async () => {
       expect(thrown(() => parseConfig([])) instanceof ConfigError).toBe(true);
     });
 
+    await it('reads priorities.list, defaults to none, and refuses a malformed section', async () => {
+      expect(parseConfig({}).priorities.list).toBe(undefined);
+      expect(parseConfig({ priorities: { list: 'list-1' } }).priorities.list).toBe('list-1');
+      const again = JSON.parse(serializeConfig(parseConfig({ priorities: { list: 'list-1' } })));
+      expect(again.priorities.list).toBe('list-1');
+      for (const bad of [[], 'x', { list: '' }, { list: 3 }]) {
+        expect(thrown(() => parseConfig({ priorities: bad })) instanceof ConfigError).toBe(true);
+      }
+    });
+
     await it('keeps unknown keys on a round trip', async () => {
       const c = parseConfig({ future: { a: 1 }, grants: [{ capability: 'calendar.create', target: 'c' }] });
       const again = JSON.parse(serializeConfig(c)) as Record<string, unknown>;

@@ -54,6 +54,7 @@ gjsify foreach -A check && gjsify foreach -A lint
 gjsify workspace reminder-cli format:check
 gjsify workspace reminder-cli build
 gjsify workspace reminder-cli test             # GJS + Node
+gjsify workspace reminder-cli test:eds         # opt-in: live EDS on a private bus (not in CI)
 node app/tests/integration/mcp-gjs-smoke.mjs   # after build
 ```
 

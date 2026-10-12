@@ -61,6 +61,12 @@ export interface ReminderItem {
   percentComplete: number | null;
   recurring: boolean;
   source: string | null;
+  /** `CREATED`, falling back to `DTSTAMP` — some clients write only the latter; null when neither parses. */
+  created: string | null;
+  /** `URL`, verbatim (never fetched), or null. */
+  url: string | null;
+  /** UID of the parent VTODO (`RELATED-TO` with `RELTYPE=PARENT`, the RFC 5545 default), or null. */
+  parent: string | null;
 }
 
 /** One raw component as a backend returns it: iCalendar text plus where it came from. */
