@@ -22,7 +22,8 @@
     "start": "gjsify run dist/reminder.gjs.mjs",
     "dev": "gjsify run build && gjsify run start",
     "test": "DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent XDG_RUNTIME_DIR=/nonexistent gjsify test",
-    "test:mcp": "node tests/integration/mcp-gjs-smoke.mjs"
+    "test:mcp": "node tests/integration/mcp-gjs-smoke.mjs",
+    "test:eds": "bash tests/integration/eds-roundtrip.sh"
   },
   "gjsify": {
     "excludeGlobals": [

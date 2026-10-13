@@ -4,22 +4,12 @@
  */
 
 import type { CalendarBackend } from './backend.ts';
+import { compare, compareDue } from './compare.ts';
 import { shiftDate, todayUtc, toInstant } from './dates.ts';
 import { readEvent, readReminder } from './ical.ts';
 import { capLimit, EVENT_LIMIT, EVENT_WINDOW_DAYS, REMINDER_LIMIT } from './limits.ts';
 import type { EventItem, ReminderItem } from './types.ts';
 
-/** Code-unit order, not `localeCompare`: ICU may weigh `-` and `:` differently per locale. */
-function compare(a: string, b: string): number {
-  return a < b ? -1 : a > b ? 1 : 0;
-}
-
-function compareDue(a: string | null, b: string | null): number {
-  if (a === b) return 0;
-  if (a === null) return 1;
-  if (b === null) return -1;
-  return compare(a, b);
-}
 
 export interface ListEventsParams {
   /** YYYY-MM-DD or ISO instant; default today (UTC). */

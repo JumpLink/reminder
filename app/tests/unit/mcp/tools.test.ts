@@ -14,7 +14,7 @@ import { createRecorder } from './recorder.ts';
 
 // The catalogue is the client contract. A write tool appearing here is a decision for an ADR,
 // not a side effect of a refactor.
-const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'reminders_list'];
+const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'priorities_list', 'reminders_list'];
 const WRITE_TOOLS = ['events_create', 'reminders_create'];
 
 const grantedConfig = (grants: Grant[]): ReminderConfig => ({
@@ -98,6 +98,30 @@ export default async () => {
       expect(events.events.length).toBe(1);
       const reminders = JSON.parse((await rec.call('reminders_list')).content[0].text);
       expect(reminders.reminders[0].summary).toBe('Reply');
+    });
+
+    await it('priorities_list ranks the configured list, and says so when none is configured', async () => {
+      const withList = createFakeBackend([calendar('prio', 'reminder')], {
+        prio: [
+          vtodo('p1', ['SUMMARY:Renew the lease', 'PRIORITY:1', 'URL:https://wiki.example.org/lease']),
+          vtodo('s1', ['SUMMARY:Call', 'RELATED-TO;RELTYPE=PARENT:p1', 'CREATED:20261001T100000Z']),
+        ],
+      });
+      const configured = createRecorder();
+      registerTools(
+        configured.server,
+        staticContext(withList, { ...emptyConfig(), priorities: { list: 'prio' } }),
+      );
+      const ok = JSON.parse((await configured.call('priorities_list')).content[0].text);
+      expect(ok.priorities[0].uid).toBe('p1');
+      expect(ok.priorities[0].link).toBe('https://wiki.example.org/lease');
+      expect(ok.priorities[0].steps[0].nag).toBe(true);
+
+      const unconfigured = createRecorder();
+      registerTools(unconfigured.server, staticContext(withList, emptyConfig()));
+      const res = await unconfigured.call('priorities_list');
+      expect(res.isError).toBe(true);
+      expect(res.content[0].text).toContain('priorities');
     });
 
     await it('turns a backend failure into an error result with a message', async () => {

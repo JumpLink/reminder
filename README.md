@@ -34,6 +34,7 @@ reminder calendars                        # calendars and task lists, with their
 reminder events --from 2026-10-12 --to 2026-10-18
 reminder todos                            # open reminders, by due date
 reminder todos --all --calendar <uid>
+reminder priorities                       # ranked priorities with open steps (needs priorities.list)
 reminder config                           # where the config file is, and whether it parses
 reminder mcp                              # MCP server over stdio (read-only without grants)
 ```
@@ -51,11 +52,11 @@ Every command takes `--json`. Times print in their own shape: `2026-10-12` is al
 }
 ```
 
-Tools: `calendars_list`, `events_list`, `reminders_list` — read-only. `events_create` and
-`reminders_create` exist only when the config grants `calendar.create` / `reminder.create`; a call
-needs a target (`calendar`, a routed `concern`, or a default) that a grant names exactly, plus
-`source` + `sourceId` so a repeated call answers `already-exists` instead of duplicating. The server
-drops any tool that is neither read-only nor granted.
+Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list` — read-only.
+`events_create` and `reminders_create` exist only when the config grants `calendar.create` /
+`reminder.create`; a call needs a target (`calendar`, a routed `concern`, or a default) that a grant
+names exactly, plus `source` + `sourceId` so a repeated call answers `already-exists` instead of
+duplicating. The server drops any tool that is neither read-only nor granted.
 
 ## Configuration
 

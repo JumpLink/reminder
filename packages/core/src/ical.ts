@@ -247,6 +247,24 @@ function integer(comp: Component, name: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/** A time property that may be malformed in the wild: unreadable is "unknown", not a failed read. */
+function lenientTime(line: ContentLine | undefined): string | null {
+  if (!line) return null;
+  try {
+    return parseTime(line).iso;
+  } catch {
+    return null;
+  }
+}
+
+/** RFC 5545: an absent RELTYPE means PARENT. */
+function parentUid(comp: Component): string | null {
+  const link = comp.props.find(
+    (p) => p.name === 'RELATED-TO' && (p.params.RELTYPE ?? 'PARENT').toUpperCase() === 'PARENT',
+  );
+  return link?.value.trim() || null;
+}
+
 /** A VEVENT as an EventItem; null when it has no usable DTSTART. */
 export function readEvent(ical: string, calendarUid: string): EventItem | null {
   const comp = findComponent(parseComponents(ical), 'VEVENT');
@@ -306,6 +324,9 @@ export function readReminder(ical: string, calendarUid: string): ReminderItem | 
     percentComplete: integer(comp, 'PERCENT-COMPLETE'),
     recurring: prop(comp, 'RRULE') !== undefined,
     source: prop(comp, SOURCE_PROPERTY)?.value ?? null,
+    created: lenientTime(prop(comp, 'CREATED')) ?? lenientTime(prop(comp, 'DTSTAMP')),
+    url: prop(comp, 'URL')?.value.trim() || null,
+    parent: parentUid(comp),
   };
 }
 
