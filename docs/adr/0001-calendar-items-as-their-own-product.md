@@ -67,10 +67,15 @@ calendar into a target the moment one is wanted.
 The check sits inside the only functions that write (`createEvent`, `createReminder`), after the
 target is resolved — so a route can never widen what may be written.
 
-**The MCP server exposes no write tool yet.** `@gjsify/mcp` is gaining `applyGrantGate` /
-`requiresCapability` (gjsify PR #2145), which gates a tool on a grant at registration and call time.
-Until it is released the server stays read-only behind `applyReadOnlyGate`, and the create path is
-reachable only from code and tests.
+**The MCP server exposes a write tool only for a capability that has a grant.** It runs behind
+`@gjsify/mcp`'s `applyGrantGate` (gjsify ADR 0106): `events_create` (`calendar.create`) and
+`reminders_create` (`reminder.create`) declare their capability with `requiresCapability`, and are
+registered only when the config holds a grant for it. With no grants the catalogue is the three read
+tools. On a call the gate resolves the target exactly as the core does (explicit `calendar`, else the
+route for `concern`, else `defaults[kind]`) and refuses unless a grant names that uid; no resolvable
+target is a refusal too, never a guess. The core repeats the check inside `createEvent` /
+`createReminder`, so the gate is a second lock, not the only one. A config that fails to load means
+no grants: the server starts read-only.
 
 ### 5. Dedupe by source key
 

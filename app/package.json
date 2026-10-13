@@ -65,7 +65,7 @@
     "@girs/gobject-2.0": "^4.1.0",
     "@girs/icalglib-3.0": "^4.1.0",
     "@gjsify/cli": "0.59.0",
-    "@gjsify/mcp": "0.59.0",
+    "@gjsify/mcp": "0.63.0",
     "@gjsify/node-globals": "0.59.0",
     "@gjsify/rolldown-native": "0.59.0",
     "@gjsify/runtime": "0.59.0",

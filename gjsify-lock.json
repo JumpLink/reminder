@@ -12,7 +12,7 @@
     "@girs/gobject-2.0@^4.1.0",
     "@girs/icalglib-3.0@^4.1.0",
     "@gjsify/cli@0.59.0",
-    "@gjsify/mcp@0.59.0",
+    "@gjsify/mcp@0.63.0",
     "@gjsify/node-globals@0.59.0",
     "@gjsify/rolldown-native@0.59.0",
     "@gjsify/runtime@0.59.0",
@@ -4750,11 +4750,11 @@
       "integrity": "sha512-HLCqbVwglVHJSxWfOraAXu+zG9Wn/iXHv4fkKk8glnnLvGGyZe5ledo9aCsZ2CIeMt/XmNUfA6P5IBbLulePpw=="
     },
     "node_modules/@gjsify/mcp": {
-      "version": "0.59.0",
-      "resolved": "https://registry.npmjs.org/@gjsify/mcp/-/mcp-0.59.0.tgz",
-      "integrity": "sha512-Ks59EEVh4t2jPnPua52keTY3HTQ5JCM4UWBHbGiTN9LHWrAomQNls4WRAGw/92yIouzMAoRcOxpp28ajE5jv7w==",
+      "version": "0.63.0",
+      "resolved": "https://registry.npmjs.org/@gjsify/mcp/-/mcp-0.63.0.tgz",
+      "integrity": "sha512-VlQ22F89xpzyy6P2osddQ0n798QQuyMw9D3hLWiyZcozP/pRJ/aH6m5X52A2AbIKrXBWQ4akTvCDisRiXFPLKA==",
       "peerDependencies": {
-        "@modelcontextprotocol/sdk": "^1.29.0"
+        "@modelcontextprotocol/sdk": "^1.32.1"
       }
     },
     "node_modules/@gjsify/message-channel": {

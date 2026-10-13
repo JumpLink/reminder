@@ -7,10 +7,10 @@ things into it. Runs on [GJS](https://gjs.guide) via [gjsify](https://github.com
 - **Reads** every enabled calendar and task list from Evolution Data Server — Google,
   Nextcloud/CalDAV and local ones, whatever GNOME Online Accounts has set up.
 - **Creates** events and reminders in the core library, only where a grant names the exact calendar,
-  and never twice for the same source (a mail, a letter). Not exposed over MCP yet.
+  and never twice for the same source (a mail, a letter). Over MCP only for granted capabilities.
 - **Backends:** EDS today; CalDAV via `@gjsify/system-accounts` next, behind the same interface.
 
-Status: early. Read-only in the CLI and over MCP. Design: [ADR 0001](docs/adr/0001-calendar-items-as-their-own-product.md).
+Status: early. Read-only in the CLI; over MCP read-only until the config holds grants. Design: [ADR 0001](docs/adr/0001-calendar-items-as-their-own-product.md).
 
 ## Requirements
 
@@ -36,7 +36,7 @@ reminder todos                            # open reminders, by due date
 reminder todos --all --calendar <uid>
 reminder priorities                       # ranked priorities with open steps (needs priorities.list)
 reminder config                           # where the config file is, and whether it parses
-reminder mcp                              # MCP server over stdio (read-only)
+reminder mcp                              # MCP server over stdio (read-only without grants)
 ```
 
 Every command takes `--json`. Times print in their own shape: `2026-10-12` is all-day, a trailing
@@ -52,8 +52,11 @@ Every command takes `--json`. Times print in their own shape: `2026-10-12` is al
 }
 ```
 
-Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list` — all read-only. The server drops any tool
-that does not declare itself read-only.
+Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list` — read-only.
+`events_create` and `reminders_create` exist only when the config grants `calendar.create` /
+`reminder.create`; a call needs a target (`calendar`, a routed `concern`, or a default) that a grant
+names exactly, plus `source` + `sourceId` so a repeated call answers `already-exists` instead of
+duplicating. The server drops any tool that is neither read-only nor granted.
 
 ## Configuration
 
