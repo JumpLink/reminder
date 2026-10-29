@@ -18,6 +18,8 @@ import eds from './unit/eds/optional.test.ts';
 
 import mcpTools from './unit/mcp/tools.test.ts';
 
+import i18n from './unit/i18n/i18n.test.ts';
+
 run({
   ical,
   grants,
@@ -31,4 +33,5 @@ run({
   caldav,
   eds,
   mcpTools,
+  i18n,
 });
