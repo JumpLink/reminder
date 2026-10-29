@@ -4,3 +4,4 @@
   ([0001](adr/0001-calendar-items-as-their-own-product.md)), priorities as linked reminders
   ([0002](adr/0002-priorities-as-linked-reminders.md), accepted)
 - [config.example.json](../config.example.json) — the configuration file, placeholders only
+- [CalDAV backend](caldav.md) — config, password handling, what is supported

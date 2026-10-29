@@ -1,0 +1,22 @@
+{
+  "name": "@reminder/caldav",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "CalDAV driver for the @reminder/core CalendarBackend port over @gjsify/dav: discovery, VEVENT and VTODO collections, range queries and creates with Basic auth. Pure fetch — runs on GJS and Node alike.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@gjsify/dav": "0.64.12",
+    "@reminder/core": "*"
+  }
+}

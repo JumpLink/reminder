@@ -13,6 +13,7 @@ import read from './unit/core/read.test.ts';
 import create from './unit/core/create.test.ts';
 import priorities from './unit/core/priorities.test.ts';
 
+import caldav from './unit/caldav/caldav.test.ts';
 import eds from './unit/eds/optional.test.ts';
 
 import mcpTools from './unit/mcp/tools.test.ts';
@@ -27,6 +28,7 @@ run({
   read,
   create,
   priorities,
+  caldav,
   eds,
   mcpTools,
 });

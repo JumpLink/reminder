@@ -25,7 +25,7 @@ export default async () => {
     });
 
     await it('refuses an unknown backend and a non-object', async () => {
-      expect(thrown(() => parseConfig({ backend: 'caldav' })) instanceof ConfigError).toBe(true);
+      expect(thrown(() => parseConfig({ backend: 'webcal' })) instanceof ConfigError).toBe(true);
       expect(thrown(() => parseConfig([])) instanceof ConfigError).toBe(true);
     });
 
