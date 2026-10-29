@@ -22,6 +22,7 @@
     "oxfmt@^0.64.0",
     "oxlint@^1.79.0",
     "typescript@^6.0.3",
+    "@gjsify/dav@0.64.12",
     "@gjsify/node-gi@0.59.0"
   ],
   "packages": {
@@ -2266,6 +2267,14 @@
         "@girs/gobject-2.0": "^5.5.0"
       }
     },
+    "node_modules/@gjsify/dav": {
+      "version": "0.64.12",
+      "resolved": "https://registry.npmjs.org/@gjsify/dav/-/dav-0.64.12.tgz",
+      "integrity": "sha512-2TX/s/0fFbeufXHjBzonG1d4Fo89b4W/xxYCAuC/JvkZyCXO+YPthxmpydeNhTSP79q6JMT848ag7RYwAkc9zw==",
+      "dependencies": {
+        "@gjsify/domparser": "^0.64.12"
+      }
+    },
     "node_modules/@gjsify/dgram": {
       "version": "0.59.0",
       "resolved": "https://registry.npmjs.org/@gjsify/dgram/-/dgram-0.59.0.tgz",
@@ -2825,6 +2834,11 @@
         "@girs/gobject-2.0": "^5.5.0"
       }
     },
+    "node_modules/@gjsify/dom-elements/node_modules/@gjsify/domparser": {
+      "version": "0.59.0",
+      "resolved": "https://registry.npmjs.org/@gjsify/domparser/-/domparser-0.59.0.tgz",
+      "integrity": "sha512-Q01QYRWQ2Z4mq9B7rvF6U/lFar/b7fgaIeuDCJbjf25DMNTVDiodlR21U39O4jlRVaqFSaKWPwm7mkfyOODwng=="
+    },
     "node_modules/@gjsify/dom-events": {
       "version": "0.59.0",
       "resolved": "https://registry.npmjs.org/@gjsify/dom-events/-/dom-events-0.59.0.tgz",
@@ -2847,9 +2861,9 @@
       }
     },
     "node_modules/@gjsify/domparser": {
-      "version": "0.59.0",
-      "resolved": "https://registry.npmjs.org/@gjsify/domparser/-/domparser-0.59.0.tgz",
-      "integrity": "sha512-Q01QYRWQ2Z4mq9B7rvF6U/lFar/b7fgaIeuDCJbjf25DMNTVDiodlR21U39O4jlRVaqFSaKWPwm7mkfyOODwng=="
+      "version": "0.64.12",
+      "resolved": "https://registry.npmjs.org/@gjsify/domparser/-/domparser-0.64.12.tgz",
+      "integrity": "sha512-XAlPa+DJMdqumTMilZd92DXgF1C3edBf2e1oyWwv6pTyheZxfRKYh1tc0YLfksOSfawxZUQ68FQcFAzDFEYsEw=="
     },
     "node_modules/@gjsify/events": {
       "version": "0.59.0",
@@ -7800,6 +7814,11 @@
         "@gjsify/compression-streams": "^0.59.0"
       }
     },
+    "node_modules/@gjsify/web-polyfills/node_modules/@gjsify/domparser": {
+      "version": "0.59.0",
+      "resolved": "https://registry.npmjs.org/@gjsify/domparser/-/domparser-0.59.0.tgz",
+      "integrity": "sha512-Q01QYRWQ2Z4mq9B7rvF6U/lFar/b7fgaIeuDCJbjf25DMNTVDiodlR21U39O4jlRVaqFSaKWPwm7mkfyOODwng=="
+    },
     "node_modules/@gjsify/web-streams": {
       "version": "0.59.0",
       "resolved": "https://registry.npmjs.org/@gjsify/web-streams/-/web-streams-0.59.0.tgz",
@@ -9919,9 +9938,9 @@
       "resolved": "https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-5.4.0.tgz",
       "integrity": "sha512-MfPp06CjRLfXQ3wY0R8vJDYBy/MvVcc9OulEfR0B8Iv9ko+GCNaRZ+EpJYFl27LhKsZK0o420sYCRHCjfCgeUg==",
       "dependencies": {
+        "picomatch": "^4.0.2",
         "@types/estree": "^1.0.0",
-        "estree-walker": "^2.0.2",
-        "picomatch": "^4.0.2"
+        "estree-walker": "^2.0.2"
       },
       "peerDependencies": {
         "rollup": "^1.20.0||^2.0.0||^3.0.0||^4.0.0"

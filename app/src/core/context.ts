@@ -3,7 +3,8 @@
  * first use, so `--help` touches neither the file nor EDS.
  */
 
-import type { CalendarBackend, ReminderConfig } from '@reminder/core';
+import { createCaldavBackend } from '@reminder/caldav';
+import { ConfigError, UnsupportedAuthError, type CalendarBackend, type ReminderConfig } from '@reminder/core';
 import { createEdsBackend } from '@reminder/eds';
 
 import { loadConfig } from './config.ts';
@@ -13,10 +14,21 @@ export interface Context {
   backend(): CalendarBackend;
 }
 
-export function createBackend(config: ReminderConfig): CalendarBackend {
+export function createBackend(
+  config: ReminderConfig,
+  env: Record<string, string | undefined> = process.env,
+): CalendarBackend {
   switch (config.backend) {
     case 'eds':
       return createEdsBackend();
+    case 'caldav': {
+      const caldav = config.caldav;
+      if (!caldav) throw new ConfigError('backend "caldav" needs a caldav section');
+      if (caldav.auth !== 'basic') throw new UnsupportedAuthError(caldav.auth);
+      const password = env[caldav.passwordEnv];
+      if (!password) throw new ConfigError(`export the CalDAV password as ${caldav.passwordEnv}`);
+      return createCaldavBackend({ url: caldav.url, username: caldav.username, password });
+    }
   }
 }
 

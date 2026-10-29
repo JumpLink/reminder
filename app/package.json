@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@reminder/caldav": "*",
     "@reminder/core": "*",
     "@reminder/eds": "*",
     "yargs": "^18.1.0",

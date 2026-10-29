@@ -25,6 +25,19 @@ export class BackendError extends ReminderError {
   }
 }
 
+/** The server rejected the credentials (HTTP 401). Retrying with the same credentials cannot help. */
+export class BackendAuthError extends BackendError {}
+
+/** The configured authentication scheme exists in the model but this build cannot speak it yet. */
+export class UnsupportedAuthError extends ReminderError {
+  readonly scheme: string;
+
+  constructor(scheme: string) {
+    super(`authentication "${scheme}" is not supported yet — use "basic"`);
+    this.scheme = scheme;
+  }
+}
+
 /** The configuration file is invalid. Raised at load, never halfway through a write. */
 export class ConfigError extends ReminderError {}
 

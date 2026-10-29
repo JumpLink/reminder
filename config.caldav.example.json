@@ -1,0 +1,15 @@
+{
+  "backend": "caldav",
+  "caldav": {
+    "url": "https://dav.example.org/",
+    "auth": "basic",
+    "username": "user@example.org",
+    "passwordEnv": "REMINDER_CALDAV_PASSWORD"
+  },
+  "grants": [
+    { "capability": "calendar.create", "target": "<calendar-url-from-reminder-calendars>" }
+  ],
+  "defaults": {
+    "event": "<calendar-url-from-reminder-calendars>"
+  }
+}
