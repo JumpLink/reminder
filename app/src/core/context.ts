@@ -4,7 +4,14 @@
  */
 
 import { createCaldavBackend } from '@reminder/caldav';
-import { ConfigError, UnsupportedAuthError, type CalendarBackend, type ReminderConfig } from '@reminder/core';
+import {
+  _,
+  ConfigError,
+  fmt,
+  UnsupportedAuthError,
+  type CalendarBackend,
+  type ReminderConfig,
+} from '@reminder/core';
 import { createEdsBackend } from '@reminder/eds';
 
 import { loadConfig } from './config.ts';
@@ -23,10 +30,11 @@ export function createBackend(
       return createEdsBackend();
     case 'caldav': {
       const caldav = config.caldav;
-      if (!caldav) throw new ConfigError('backend "caldav" needs a caldav section');
+      if (!caldav) throw new ConfigError(_('backend "caldav" needs a caldav section'));
       if (caldav.auth !== 'basic') throw new UnsupportedAuthError(caldav.auth);
       const password = env[caldav.passwordEnv];
-      if (!password) throw new ConfigError(`export the CalDAV password as ${caldav.passwordEnv}`);
+      if (!password)
+        throw new ConfigError(fmt(_('export the CalDAV password as {name}'), { name: caldav.passwordEnv }));
       return createCaldavBackend({ url: caldav.url, username: caldav.username, password });
     }
   }

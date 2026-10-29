@@ -11,7 +11,15 @@ import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-import { ConfigError, emptyConfig, errorMessage, parseConfig, type ReminderConfig } from '@reminder/core';
+import {
+  _,
+  ConfigError,
+  emptyConfig,
+  errorMessage,
+  fmt,
+  parseConfig,
+  type ReminderConfig,
+} from '@reminder/core';
 
 export function configPath(env: Record<string, string | undefined> = process.env): string {
   if (env.REMINDER_CONFIG) return env.REMINDER_CONFIG;
@@ -25,17 +33,19 @@ export function loadConfig(path: string = configPath()): ReminderConfig {
     text = readFileSync(path, 'utf8');
   } catch (err) {
     if ((err as { code?: unknown }).code === 'ENOENT') return emptyConfig();
-    throw new ConfigError(`cannot read ${path}: ${errorMessage(err)}`);
+    throw new ConfigError(fmt(_('cannot read {path}: {message}'), { path, message: errorMessage(err) }));
   }
   let raw: unknown;
   try {
     raw = JSON.parse(text);
   } catch (err) {
-    throw new ConfigError(`${path} is not valid JSON: ${errorMessage(err)}`);
+    throw new ConfigError(
+      fmt(_('{path} is not valid JSON: {message}'), { path, message: errorMessage(err) }),
+    );
   }
   try {
     return parseConfig(raw);
   } catch (err) {
-    throw new ConfigError(`${path}: ${errorMessage(err)}`);
+    throw new ConfigError(fmt(_('{path}: {message}'), { path, message: errorMessage(err) }));
   }
 }

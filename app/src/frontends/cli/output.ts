@@ -2,6 +2,8 @@
  * Shared CLI output: `--json` for pipes, a plain human rendering otherwise.
  */
 
+import { _, fmt } from '@reminder/core';
+
 export function printJson(obj: unknown): void {
   console.log(JSON.stringify(obj, null, 2));
 }
@@ -40,5 +42,5 @@ export function shortTime(iso: string): string {
 }
 
 export function omittedLine(omitted: number, flag: string): string | null {
-  return omitted > 0 ? dim(`… ${omitted} more — raise ${flag}`) : null;
+  return omitted > 0 ? dim(fmt(_('… {omitted} more — raise {flag}'), { omitted, flag })) : null;
 }

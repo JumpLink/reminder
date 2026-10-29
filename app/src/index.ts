@@ -1,6 +1,11 @@
+import './core/i18n-init.ts';
+
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
+import { _ } from '@reminder/core';
+
+import { uiLanguage } from './core/i18n.ts';
 import { VERSION } from './core/runtime.ts';
 import {
   calendarsCommand,
@@ -25,13 +30,13 @@ const parseArgs = () =>
     .command(prioritiesCommand)
     .command(configCommand)
     .command(mcpCommand)
-    .demandCommand(1, 'Give a command — `reminder --help` lists them.')
+    .demandCommand(1, _('Give a command — `reminder --help` lists them.'))
     // An unmatched command would leave the GJS main loop running forever.
     .strictCommands()
     .scriptName('reminder')
-    // Pin the locale: yargs otherwise translates its own chrome from $LANG while every describe
-    // string here is English.
-    .locale('en')
+    // Pin the locale to the catalogue's language: yargs otherwise translates its own chrome from
+    // $LANG, which can disagree with the describe strings (catalogue missing, or LANGUAGE set).
+    .locale(uiLanguage())
     .version(VERSION)
     .help()
     .fail(false)

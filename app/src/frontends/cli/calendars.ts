@@ -5,20 +5,20 @@
 
 import type { CommandModule } from 'yargs';
 
-import type { ItemKind } from '@reminder/core';
+import { _, type ItemKind } from '@reminder/core';
 
 import { createContext } from '../../core/context.ts';
 import { dim, pickArgv, printJson, runAndExit } from './output.ts';
 
 export const calendarsCommand: CommandModule = {
   command: 'calendars',
-  describe: 'List calendars and task lists',
+  describe: _('List calendars and task lists'),
   builder: (yargs) =>
     yargs
       .option('kind', {
         type: 'string',
         choices: ['event', 'reminder'],
-        describe: 'Only calendars or only task lists',
+        describe: _('Only calendars or only task lists'),
       })
       .option('json', { type: 'boolean', default: false }),
   handler: (argv) => {
@@ -29,10 +29,10 @@ export const calendarsCommand: CommandModule = {
       () => createContext().backend().listCalendars(kind),
       (calendars) => {
         if (asJson) return printJson(calendars);
-        if (calendars.length === 0) return console.log('No enabled calendars or task lists.');
+        if (calendars.length === 0) return console.log(_('No enabled calendars or task lists.'));
         for (const c of calendars) {
           const account = c.account ? dim(` · ${c.account}`) : '';
-          console.log(`${c.kind.padEnd(9)} ${c.name}${account}`);
+          console.log(`${(c.kind === 'event' ? _('event') : _('reminder')).padEnd(10)} ${c.name}${account}`);
           console.log(dim(`          ${c.uid}`));
         }
       },
