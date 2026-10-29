@@ -22,7 +22,7 @@ jobs:
       - name: Install system prerequisites (gjs + EDS typelibs)
         run: >
           dnf install -y --setopt=install_weak_deps=False
-          git tar xz findutils gettext gjs evolution-data-server
+          git tar xz findutils gettext glibc-langpack-de gjs evolution-data-server
 
       - uses: actions/checkout@v4
 
