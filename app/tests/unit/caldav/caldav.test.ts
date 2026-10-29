@@ -139,6 +139,22 @@ export default async () => {
       expect(bad({ backend: 'caldav', caldav: { url: 'ftp://x', username: 'u' } })).toBe(true);
     });
 
+    await it('takes plain http only for a loopback server', () => {
+      const parses = (url: string) => {
+        try {
+          parseConfig({ backend: 'caldav', caldav: { url, username: 'u' } });
+          return true;
+        } catch (err) {
+          if (err instanceof ConfigError) return false;
+          throw err;
+        }
+      };
+      expect(parses('http://dav.example.org/')).toBe(false);
+      expect(parses('http://localhost:5232/')).toBe(true);
+      expect(parses('http://127.0.0.1:5232/')).toBe(true);
+      expect(parses('http://[::1]:5232/')).toBe(true);
+    });
+
     await it('answers oauth2 with UnsupportedAuthError, and a missing variable with ConfigError', () => {
       const oauth = parseConfig({
         backend: 'caldav',

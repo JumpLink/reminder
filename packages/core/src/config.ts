@@ -66,6 +66,8 @@ function parsePriorities(value: unknown): PrioritiesConfig {
   return { list };
 }
 
+const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
+
 function parseCaldav(value: unknown): CaldavConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new ConfigError('backend "caldav" needs a caldav object with url and username');
@@ -78,12 +80,17 @@ function parseCaldav(value: unknown): CaldavConfig {
   };
   const url = text('url');
   if (!url) throw new ConfigError('caldav.url is required');
+  let parsed: URL;
   try {
-    const { protocol } = new URL(url);
-    if (protocol !== 'https:' && protocol !== 'http:') throw new Error();
+    parsed = new URL(url);
   } catch {
     throw new ConfigError('caldav.url must be an http(s) URL');
   }
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:')
+    throw new ConfigError('caldav.url must be an http(s) URL');
+  // Basic auth sends the password with every request, so plain http would put it on the wire.
+  if (parsed.protocol === 'http:' && !LOOPBACK.has(parsed.hostname))
+    throw new ConfigError('caldav.url must use https unless the server is on this machine');
   const auth = r.auth ?? 'basic';
   if (!(CALDAV_AUTH as readonly unknown[]).includes(auth))
     throw new ConfigError(`caldav.auth ${JSON.stringify(auth)} is not supported (known: ${CALDAV_AUTH.join(', ')})`);
