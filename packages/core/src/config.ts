@@ -9,6 +9,7 @@
 import { ConfigError } from './errors.ts';
 import { parseGrants, type Grant } from './grants.ts';
 import { parseDefaults, parseRoutes, type RoutingConfig } from './routing.ts';
+import { _, fmt } from './i18n.ts';
 
 export const BACKENDS = ['eds', 'caldav'] as const;
 export type BackendId = (typeof BACKENDS)[number];
@@ -58,11 +59,11 @@ export function emptyConfig(): ReminderConfig {
 function parsePriorities(value: unknown): PrioritiesConfig {
   if (value === undefined) return {};
   if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new ConfigError('priorities must be an object');
+    throw new ConfigError(_('priorities must be an object'));
   const { list } = value as Record<string, unknown>;
   if (list === undefined) return {};
   if (typeof list !== 'string' || list === '')
-    throw new ConfigError('priorities.list must be a non-empty task list uid');
+    throw new ConfigError(_('priorities.list must be a non-empty task list uid'));
   return { list };
 }
 
@@ -70,34 +71,39 @@ const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 function parseCaldav(value: unknown): CaldavConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new ConfigError('backend "caldav" needs a caldav object with url and username');
+    throw new ConfigError(_('backend "caldav" needs a caldav object with url and username'));
   const r = value as Record<string, unknown>;
   const text = (key: string): string | undefined => {
     const v = r[key];
     if (v === undefined) return undefined;
-    if (typeof v !== 'string' || v === '') throw new ConfigError(`caldav.${key} must be a non-empty string`);
+    if (typeof v !== 'string' || v === '') throw new ConfigError(fmt(_('caldav.{key} must be a non-empty string'), { key }));
     return v;
   };
   const url = text('url');
-  if (!url) throw new ConfigError('caldav.url is required');
+  if (!url) throw new ConfigError(_('caldav.url is required'));
   let parsed: URL;
   try {
     parsed = new URL(url);
   } catch {
-    throw new ConfigError('caldav.url must be an http(s) URL');
+    throw new ConfigError(_('caldav.url must be an http(s) URL'));
   }
   if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:')
-    throw new ConfigError('caldav.url must be an http(s) URL');
+    throw new ConfigError(_('caldav.url must be an http(s) URL'));
   // Basic auth sends the password with every request, so plain http would put it on the wire.
   if (parsed.protocol === 'http:' && !LOOPBACK.has(parsed.hostname))
-    throw new ConfigError('caldav.url must use https unless the server is on this machine');
+    throw new ConfigError(_('caldav.url must use https unless the server is on this machine'));
   const auth = r.auth ?? 'basic';
   if (!(CALDAV_AUTH as readonly unknown[]).includes(auth))
-    throw new ConfigError(`caldav.auth ${JSON.stringify(auth)} is not supported (known: ${CALDAV_AUTH.join(', ')})`);
+    throw new ConfigError(
+      fmt(_('caldav.auth {auth} is not supported (known: {known})'), {
+        auth: JSON.stringify(auth),
+        known: CALDAV_AUTH.join(', '),
+      }),
+    );
   const username = text('username');
-  if (auth === 'basic' && !username) throw new ConfigError('caldav.username is required for basic auth');
+  if (auth === 'basic' && !username) throw new ConfigError(_('caldav.username is required for basic auth'));
   if ('password' in r)
-    throw new ConfigError('caldav.password must not be in the file — set passwordEnv and export the variable');
+    throw new ConfigError(_('caldav.password must not be in the file — set passwordEnv and export the variable'));
   return {
     url,
     auth: auth as CaldavAuth,
@@ -108,12 +114,15 @@ function parseCaldav(value: unknown): CaldavConfig {
 
 export function parseConfig(raw: unknown): ReminderConfig {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw))
-    throw new ConfigError('config must be a JSON object');
+    throw new ConfigError(_('config must be a JSON object'));
   const record = raw as Record<string, unknown>;
   const backend = record.backend ?? 'eds';
   if (!(BACKENDS as readonly unknown[]).includes(backend)) {
     throw new ConfigError(
-      `backend ${JSON.stringify(backend)} is not supported (known: ${BACKENDS.join(', ')})`,
+      fmt(_('backend {backend} is not supported (known: {known})'), {
+        backend: JSON.stringify(backend),
+        known: BACKENDS.join(', '),
+      }),
     );
   }
   const extra: Record<string, unknown> = {};

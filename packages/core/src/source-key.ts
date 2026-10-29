@@ -8,13 +8,14 @@
  */
 
 import { InputError } from './errors.ts';
+import { _, fmt } from './i18n.ts';
 
 const SOURCE = /^[a-z0-9][a-z0-9._-]*$/i;
 
 export function sourceKey(source: string, id: string): string {
-  if (!SOURCE.test(source)) throw new InputError(`invalid source "${source}": letters, digits, . _ - only`);
-  if (id.length === 0) throw new InputError('source id must not be empty');
-  if (/[\r\n]/.test(id)) throw new InputError('source id must not contain a line break');
+  if (!SOURCE.test(source)) throw new InputError(fmt(_('invalid source "{source}": letters, digits, . _ - only'), { source }));
+  if (id.length === 0) throw new InputError(_('source id must not be empty'));
+  if (/[\r\n]/.test(id)) throw new InputError(_('source id must not contain a line break'));
   return `${source}:${id}`;
 }
 

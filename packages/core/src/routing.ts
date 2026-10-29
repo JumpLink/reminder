@@ -7,6 +7,7 @@
 
 import { ConfigError, RoutingError } from './errors.ts';
 import type { ItemKind } from './types.ts';
+import { _, fmt } from './i18n.ts';
 
 export interface Route {
   /** Concern labels this route answers, compared case-insensitively. */
@@ -32,22 +33,22 @@ const KINDS: readonly ItemKind[] = ['event', 'reminder'];
 
 export function parseRoutes(value: unknown): Route[] {
   if (value === undefined) return [];
-  if (!Array.isArray(value)) throw new ConfigError('routes must be a list');
+  if (!Array.isArray(value)) throw new ConfigError(_('routes must be a list'));
   return value.map((entry: unknown, index) => {
-    if (!entry || typeof entry !== 'object') throw new ConfigError(`routes[${index}] must be an object`);
+    if (!entry || typeof entry !== 'object') throw new ConfigError(fmt(_('routes[{index}] must be an object'), { index }));
     const { concerns, kind, target } = entry as Record<string, unknown>;
     if (
       !Array.isArray(concerns) ||
       concerns.length === 0 ||
       !concerns.every((c) => typeof c === 'string' && c)
     ) {
-      throw new ConfigError(`routes[${index}]: concerns must be a non-empty list of strings`);
+      throw new ConfigError(fmt(_('routes[{index}]: concerns must be a non-empty list of strings'), { index }));
     }
     if (kind !== undefined && !KINDS.includes(kind as ItemKind)) {
-      throw new ConfigError(`routes[${index}]: kind must be "event" or "reminder"`);
+      throw new ConfigError(fmt(_('routes[{index}]: kind must be "event" or "reminder"'), { index }));
     }
     if (typeof target !== 'string' || target === '')
-      throw new ConfigError(`routes[${index}]: target missing`);
+      throw new ConfigError(fmt(_('routes[{index}]: target missing'), { index }));
     return { concerns: concerns as string[], target, ...(kind ? { kind: kind as ItemKind } : {}) };
   });
 }
@@ -55,12 +56,12 @@ export function parseRoutes(value: unknown): Route[] {
 export function parseDefaults(value: unknown): Partial<Record<ItemKind, string>> {
   if (value === undefined) return {};
   if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new ConfigError('defaults must be an object');
+    throw new ConfigError(_('defaults must be an object'));
   const out: Partial<Record<ItemKind, string>> = {};
   for (const [key, target] of Object.entries(value)) {
-    if (!KINDS.includes(key as ItemKind)) throw new ConfigError(`defaults: unknown kind "${key}"`);
+    if (!KINDS.includes(key as ItemKind)) throw new ConfigError(fmt(_('defaults: unknown kind "{key}"'), { key }));
     if (typeof target !== 'string' || target === '')
-      throw new ConfigError(`defaults.${key} must be a calendar uid`);
+      throw new ConfigError(fmt(_('defaults.{key} must be a calendar uid'), { key }));
     out[key as ItemKind] = target;
   }
   return out;
@@ -80,7 +81,10 @@ export function resolveTarget(config: RoutingConfig, request: RouteRequest): str
   if (fallback) return fallback;
   throw new RoutingError(
     concern
-      ? `no route for concern "${concern}" and no default ${request.kind} calendar`
-      : `no calendar given and no default ${request.kind} calendar configured`,
+      ? fmt(_('no route for concern "{concern}" and no default {kind} calendar'), {
+          concern,
+          kind: request.kind,
+        })
+      : fmt(_('no calendar given and no default {kind} calendar configured'), { kind: request.kind }),
   );
 }

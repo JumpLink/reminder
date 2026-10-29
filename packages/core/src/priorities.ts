@@ -10,6 +10,7 @@ import { ConfigError } from './errors.ts';
 import { readReminder } from './ical.ts';
 import { capLimit, PRIORITY_LIMIT } from './limits.ts';
 import type { ReminderItem } from './types.ts';
+import { _, fmt } from './i18n.ts';
 
 export interface PriorityStep {
   uid: string;
@@ -156,13 +157,15 @@ export async function listPriorities(
   const list = params.list;
   if (!list) {
     throw new ConfigError(
-      'no priorities list configured — set "priorities": { "list": "<task-list-uid>" } (uids: `reminder calendars`)',
+      fmt(_('no priorities list configured — set {snippet} (uids: `reminder calendars`)'), {
+        snippet: '"priorities": { "list": "<task-list-uid>" }',
+      }),
     );
   }
   // An unknown uid would otherwise read as an empty list: "no priorities" is not "wrong config".
   const lists = await backend.listCalendars('reminder');
   if (!lists.some((c) => c.uid === list)) {
-    throw new ConfigError(`priorities.list "${list}" is not an enabled task list (see \`reminder calendars\`)`);
+    throw new ConfigError(fmt(_('priorities.list "{list}" is not an enabled task list (see `reminder calendars`)'), { list }));
   }
   const raw = await backend.listItems({ kind: 'reminder', calendarUid: list });
   const items = raw

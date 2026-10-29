@@ -18,6 +18,7 @@ import { buildEvent, buildReminder, readEvent, readReminder } from './ical.ts';
 import { resolveTarget } from './routing.ts';
 import { sourceKey, uidForSourceKey } from './source-key.ts';
 import type { ItemKind } from './types.ts';
+import { _, fmt } from './i18n.ts';
 
 export interface CreateDeps {
   backend: CalendarBackend;
@@ -58,14 +59,16 @@ export interface CreateResult {
 }
 
 async function prepare(deps: CreateDeps, kind: ItemKind, input: CreateCommon) {
-  if (input.summary.trim() === '') throw new InputError('summary must not be empty');
+  if (input.summary.trim() === '') throw new InputError(_('summary must not be empty'));
   const key = sourceKey(input.source, input.sourceId);
   const target = resolveTarget(deps.config, { kind, calendar: input.calendar, concern: input.concern });
   requireGrant(deps.config.grants, createCapability(kind), target);
 
   const calendars = await deps.backend.listCalendars(kind);
   if (!calendars.some((c) => c.uid === target)) {
-    throw new ReminderError(`no enabled ${kind === 'event' ? 'calendar' : 'task list'} "${target}"`);
+    throw new ReminderError(
+      fmt(kind === 'event' ? _('no enabled calendar "{uid}"') : _('no enabled task list "{uid}"'), { uid: target }),
+    );
   }
 
   const uid = uidForSourceKey(key);
@@ -75,7 +78,10 @@ async function prepare(deps: CreateDeps, kind: ItemKind, input: CreateCommon) {
       kind === 'event' ? readEvent(existing, target)?.source : readReminder(existing, target)?.source;
     if (stored !== key) {
       throw new ReminderError(
-        `UID ${uid} already exists in "${target}" with a different source — refusing to merge`,
+        fmt(_('UID {uid} already exists in "{target}" with a different source — refusing to merge'), {
+          uid,
+          target,
+        }),
       );
     }
     return {

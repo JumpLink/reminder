@@ -2,6 +2,7 @@
  * One failure, one type. Frontends branch on these, so a backend never lets a raw native error
  * through: a GLib.Error under GJS is a boxed GObject that JSON-serialises to `{}`.
  */
+import { _, fmt } from './i18n.ts';
 
 export class ReminderError extends Error {
   constructor(message: string) {
@@ -33,7 +34,7 @@ export class UnsupportedAuthError extends ReminderError {
   readonly scheme: string;
 
   constructor(scheme: string) {
-    super(`authentication "${scheme}" is not supported yet — use "basic"`);
+    super(fmt(_('authentication "{scheme}" is not supported yet — use "basic"'), { scheme }));
     this.scheme = scheme;
   }
 }
@@ -48,7 +49,11 @@ export class GrantDeniedError extends ReminderError {
 
   constructor(capability: string, target: string) {
     super(
-      `no grant for ${capability} on "${target}" — add { "capability": "${capability}", "target": "${target}" } to grants`,
+      fmt(_('no grant for {capability} on "{target}" — add {snippet} to grants'), {
+        capability,
+        target,
+        snippet: `{ "capability": "${capability}", "target": "${target}" }`,
+      }),
     );
     this.capability = capability;
     this.target = target;
