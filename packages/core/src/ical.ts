@@ -7,6 +7,7 @@
 
 import { InputError } from './errors.ts';
 import type { EventItem, ReminderItem, ReminderStatus } from './types.ts';
+import { _, fmt } from './i18n.ts';
 
 /** The property a created item carries its dedupe key in. */
 export const SOURCE_PROPERTY = 'X-REMINDER-SOURCE';
@@ -47,7 +48,7 @@ export function parseContentLine(line: string): ContentLine {
       break;
     }
   }
-  if (valueStart < 0) throw new InputError(`not an iCalendar content line: ${line.slice(0, 40)}`);
+  if (valueStart < 0) throw new InputError(fmt(_('not an iCalendar content line: {line}'), { line: line.slice(0, 40) }));
   const name = line.slice(0, nameEnd).toUpperCase();
   const params: Record<string, string> = {};
   const paramText = line.slice(nameEnd, valueStart - 1);
@@ -188,7 +189,7 @@ export function parseTime(line: ContentLine): ParsedTime {
   if (date) return { iso: `${date[1]}-${date[2]}-${date[3]}`, allDay: true, tzid };
 
   const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/.exec(value);
-  if (!m) throw new InputError(`invalid iCalendar time: ${value}`);
+  if (!m) throw new InputError(fmt(_('invalid iCalendar time: {value}'), { value }));
   const [y, mo, d, h, mi, s] = m.slice(1, 7).map(Number);
   const wall = Date.UTC(y, mo - 1, d, h, mi, s);
   const floating = `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}`;
@@ -204,16 +205,16 @@ export function parseTime(line: ContentLine): ParsedTime {
 export function formatInputTime(input: string): { value: string; allDay: boolean } {
   if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
     const ms = Date.parse(`${input}T00:00:00Z`);
-    if (Number.isNaN(ms)) throw new InputError(`invalid date: ${input}`);
+    if (Number.isNaN(ms)) throw new InputError(fmt(_('invalid date: {value}'), { value: input }));
     return { value: input.replace(/-/g, ''), allDay: true };
   }
   // A time without an offset is refused rather than read in the zone this process happens to run
   // in — the same input would mean different instants on two machines.
   if (!/(Z|[+-]\d{2}:?\d{2})$/.test(input)) {
-    throw new InputError(`time needs an offset or Z, or use a bare YYYY-MM-DD: ${input}`);
+    throw new InputError(fmt(_('time needs an offset or Z, or use a bare YYYY-MM-DD: {value}'), { value: input }));
   }
   const ms = Date.parse(input);
-  if (Number.isNaN(ms)) throw new InputError(`invalid time: ${input}`);
+  if (Number.isNaN(ms)) throw new InputError(fmt(_('invalid time: {value}'), { value: input }));
   return { value: formatUtc(new Date(ms)), allDay: false };
 }
 
@@ -367,7 +368,7 @@ function textLine(name: string, value: string | undefined): string[] {
 export function buildEvent(fields: EventFields, now: Date): string {
   const start = formatInputTime(fields.start);
   if (fields.end && formatInputTime(fields.end).allDay !== start.allDay) {
-    throw new InputError('start and end must both be dates or both be times');
+    throw new InputError(_('start and end must both be dates or both be times'));
   }
   return serialize('VEVENT', [
     `UID:${fields.uid}`,

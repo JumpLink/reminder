@@ -5,11 +5,13 @@
 
 import type { CommandModule } from 'yargs';
 
+import { _ } from '@reminder/core';
+
 import { startMcpServer } from '../mcp/server.ts';
 
 export const mcpCommand: CommandModule = {
   command: 'mcp',
-  describe: 'Run as an MCP server over stdio (read-only)',
+  describe: _('Run as an MCP server over stdio (read-only)'),
   builder: (yargs) => yargs,
   handler: () => {
     startMcpServer().catch((err: unknown) => {

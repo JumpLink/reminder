@@ -7,6 +7,7 @@
  */
 
 import { ConfigError, GrantDeniedError } from './errors.ts';
+import { _, fmt } from './i18n.ts';
 
 export const CAPABILITIES = ['calendar.create', 'reminder.create'] as const;
 export type Capability = (typeof CAPABILITIES)[number];
@@ -23,18 +24,20 @@ export function isCapability(value: unknown): value is Capability {
 
 export function parseGrants(value: unknown): Grant[] {
   if (value === undefined) return [];
-  if (!Array.isArray(value)) throw new ConfigError('grants must be a list');
+  if (!Array.isArray(value)) throw new ConfigError(_('grants must be a list'));
   return value.map((entry: unknown, index) => {
-    if (!entry || typeof entry !== 'object') throw new ConfigError(`grants[${index}] must be an object`);
+    if (!entry || typeof entry !== 'object') throw new ConfigError(fmt(_('grants[{index}] must be an object'), { index }));
     const { capability, target } = entry as Record<string, unknown>;
     if (!isCapability(capability)) {
-      throw new ConfigError(`grants[${index}]: unknown capability ${JSON.stringify(capability)}`);
+      throw new ConfigError(
+        fmt(_('grants[{index}]: unknown capability {capability}'), { index, capability: JSON.stringify(capability) }),
+      );
     }
     if (typeof target !== 'string' || target.trim() === '') {
-      throw new ConfigError(`grants[${index}]: target must be a non-empty string`);
+      throw new ConfigError(fmt(_('grants[{index}]: target must be a non-empty string'), { index }));
     }
     if (target.includes('*'))
-      throw new ConfigError(`grants[${index}]: wildcards are not allowed in a target`);
+      throw new ConfigError(fmt(_('grants[{index}]: wildcards are not allowed in a target'), { index }));
     return { capability, target };
   });
 }

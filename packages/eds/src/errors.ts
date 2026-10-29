@@ -1,4 +1,4 @@
-import { BackendError, BackendUnavailableError, errorMessage } from '@reminder/core';
+import { BackendError, BackendUnavailableError, _, errorMessage, fmt } from '@reminder/core';
 
 /**
  * Wrap a native failure as a BackendError naming the call. GJS reports a GError's domain as a
@@ -8,7 +8,7 @@ export function edsError(message: string, cause?: unknown): BackendError {
   const source = cause as { domain?: unknown; code?: unknown } | undefined;
   const domain = typeof source?.domain === 'string' ? source.domain : undefined;
   const code = typeof source?.code === 'number' ? source.code : undefined;
-  return new BackendError(cause === undefined ? message : `${message}: ${errorMessage(cause)}`, domain, code);
+  return new BackendError(cause === undefined ? message : fmt(_('{message}: {cause}'), { message, cause: errorMessage(cause) }), domain, code);
 }
 
 /** An error that already names its cause and passes a boundary unchanged. */

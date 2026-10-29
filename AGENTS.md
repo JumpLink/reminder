@@ -39,7 +39,7 @@ A new backend (CalDAV) is a new package implementing `CalendarBackend` plus a `b
 - Files with a `gi://` import are named `*.gjs.ts`; EDS namespaces are imported **type-only** at top
   level and loaded through `optionalNamespace` (see `packages/eds/src/optional.ts`).
 - No TS parameter properties (Node runs the sources with strip-types). No `any`.
-- User-facing strings in English. Sort with code-unit compare, not `localeCompare`.
+- User-facing strings: English msgids through `_()`/`_n()` (gettext, German in `app/po/de.po`); see docs/i18n-status.md. MCP tool text and JSON output stay English. Sort with code-unit compare, not `localeCompare`.
 - Result caps live in `packages/core/src/limits.ts` only; the CLI help and MCP schemas read them.
 - Tests: every suite is a default-exported async fn listed in `app/tests/test.mts` — an unlisted
   suite never runs. EDS is tested behind `app/tests/unit/fake-backend.ts`; the live backend only for

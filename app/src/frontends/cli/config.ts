@@ -5,12 +5,13 @@
 
 import type { CommandModule } from 'yargs';
 
+import { _, fmt } from '@reminder/core';
 import { configPath, loadConfig } from '../../core/config.ts';
 import { pickArgv, printJson, runAndExit } from './output.ts';
 
 export const configCommand: CommandModule = {
   command: 'config',
-  describe: 'Show the config file path and validate it',
+  describe: _('Show the config file path and validate it'),
   builder: (yargs) => yargs.option('json', { type: 'boolean', default: false }),
   handler: (argv) => {
     const asJson = pickArgv<boolean>(argv as Record<string, unknown>, 'json') ?? false;
@@ -30,7 +31,12 @@ export const configCommand: CommandModule = {
         if (asJson) return printJson(summary);
         console.log(summary.path);
         console.log(
-          `backend ${summary.backend} · ${summary.grants} grants · ${summary.routes} routes · defaults: ${summary.defaults.join(', ') || 'none'}`,
+          fmt(_('backend {backend} · {grants} grants · {routes} routes · defaults: {defaults}'), {
+            backend: summary.backend,
+            grants: summary.grants,
+            routes: summary.routes,
+            defaults: summary.defaults.join(', ') || _('none'),
+          }),
         );
       },
     );

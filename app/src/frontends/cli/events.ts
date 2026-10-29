@@ -4,25 +4,30 @@
 
 import type { CommandModule } from 'yargs';
 
-import { EVENT_LIMIT, EVENT_WINDOW_DAYS, listEvents } from '@reminder/core';
+import { _, EVENT_LIMIT, EVENT_WINDOW_DAYS, fmt, listEvents } from '@reminder/core';
 
 import { createContext } from '../../core/context.ts';
 import { dim, omittedLine, pickArgv, printJson, runAndExit, shortTime } from './output.ts';
 
 export const eventsCommand: CommandModule = {
   command: 'events',
-  describe: 'List events in a time window',
+  describe: _('List events in a time window'),
   builder: (yargs) =>
     yargs
-      .option('from', { type: 'string', describe: 'YYYY-MM-DD or ISO time (default: today, UTC)' })
+      .option('from', { type: 'string', describe: _('YYYY-MM-DD or ISO time (default: today, UTC)') })
       .option('to', {
         type: 'string',
-        describe: `YYYY-MM-DD (inclusive) or ISO time (default: from + ${EVENT_WINDOW_DAYS} days)`,
+        describe: fmt(_('YYYY-MM-DD (inclusive) or ISO time (default: from + {days} days)'), {
+          days: EVENT_WINDOW_DAYS,
+        }),
       })
-      .option('calendar', { type: 'string', describe: 'One calendar uid (see `reminder calendars`)' })
+      .option('calendar', { type: 'string', describe: _('One calendar uid (see `reminder calendars`)') })
       .option('limit', {
         type: 'number',
-        describe: `Max events (default ${EVENT_LIMIT.default}, max ${EVENT_LIMIT.max})`,
+        describe: fmt(_('Max events (default {default}, max {max})'), {
+          default: EVENT_LIMIT.default,
+          max: EVENT_LIMIT.max,
+        }),
       })
       .option('json', { type: 'boolean', default: false }),
   handler: (argv) => {
@@ -38,14 +43,15 @@ export const eventsCommand: CommandModule = {
         }),
       (result) => {
         if (asJson) return printJson(result);
-        if (result.events.length === 0) console.log(`No events between ${result.from} and ${result.to}.`);
+        if (result.events.length === 0)
+          console.log(fmt(_('No events between {from} and {to}.'), { from: result.from, to: result.to }));
         for (const e of result.events) {
           const end = e.end && !e.allDay ? ` – ${shortTime(e.end)}` : '';
-          const marks = [e.allDay ? 'all day' : null, e.recurring ? 'recurring' : null]
+          const marks = [e.allDay ? _('all day') : null, e.recurring ? _('recurring') : null]
             .filter(Boolean)
             .join(', ');
           console.log(
-            `${shortTime(e.start)}${end}  ${e.summary ?? '(no title)'}${marks ? dim(` (${marks})`) : ''}`,
+            `${shortTime(e.start)}${end}  ${e.summary ?? _('(no title)')}${marks ? dim(` (${marks})`) : ''}`,
           );
           if (e.location) console.log(dim(`    ${e.location}`));
         }
