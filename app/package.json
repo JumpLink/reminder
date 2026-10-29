@@ -13,15 +13,18 @@
     "node": ">=24"
   },
   "scripts": {
-    "check": "gjsify tsc --noEmit",
+    "check": "gjsify tsc --noEmit && gjsify run check:i18n",
     "format": "gjsify format --write .",
     "format:check": "gjsify format --check .",
     "lint": "gjsify lint .",
     "lint:fix": "gjsify lint --fix .",
-    "build": "gjsify build src/index.ts --app gjs --outfile dist/reminder.gjs.mjs",
+    "build": "gjsify run i18n:compile && gjsify build src/index.ts --app gjs --outfile dist/reminder.gjs.mjs",
     "start": "gjsify run dist/reminder.gjs.mjs",
     "dev": "gjsify run build && gjsify run start",
-    "test": "DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent XDG_RUNTIME_DIR=/nonexistent gjsify test",
+    "test": "gjsify run i18n:compile && DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent XDG_RUNTIME_DIR=/nonexistent gjsify test",
+    "i18n:extract": "./dev/i18n.sh extract",
+    "i18n:compile": "./dev/i18n.sh compile",
+    "check:i18n": "node dev/check-i18n.mjs",
     "test:mcp": "node tests/integration/mcp-gjs-smoke.mjs",
     "test:eds": "bash tests/integration/eds-roundtrip.sh"
   },

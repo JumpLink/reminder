@@ -1,0 +1,420 @@
+# German translations for reminder package.
+# Copyright (C) 2026 THE reminder'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the reminder package.
+# reminder contributors, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: reminder\n"
+"Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
+"POT-Creation-Date: 2026-10-29 21:01+0100\n"
+"PO-Revision-Date: 2026-10-29 21:01+0100\n"
+"Last-Translator: reminder contributors\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../packages/caldav/src/backend.ts:67
+msgid "{label}: the server rejected the credentials (401)"
+msgstr "{label}: Der Server hat die Zugangsdaten abgelehnt (401)"
+
+#: ../packages/caldav/src/backend.ts:72
+msgid "{label}: {method} failed with {status}"
+msgstr "{label}: {method} ist mit {status} fehlgeschlagen"
+
+#: ../packages/caldav/src/backend.ts:77
+msgid "{label}: {message}"
+msgstr "{label}: {message}"
+
+#: ../packages/caldav/src/backend.ts:107
+msgid "no calendar \"{uid}\""
+msgstr "Kein Kalender „{uid}“"
+
+#: ../packages/caldav/src/backend.ts:107
+msgid "no task list \"{uid}\""
+msgstr "Keine Aufgabenliste „{uid}“"
+
+#: ../packages/caldav/src/backend.ts:170
+msgid "createItem: the component has no UID"
+msgstr "createItem: Die Komponente hat keine UID"
+
+#: ../packages/caldav/src/backend.ts:176
+msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
+msgstr "createItem: „{uid}“ existiert in „{calendar}“ bereits"
+
+#: ../packages/caldav/src/backend.ts:182
+msgid "createItem: \"{calendar}\" refused the write (read-only?)"
+msgstr "createItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
+
+#: ../packages/core/src/config.ts:62
+msgid "priorities must be an object"
+msgstr "priorities muss ein Objekt sein"
+
+#: ../packages/core/src/config.ts:66
+msgid "priorities.list must be a non-empty task list uid"
+msgstr "priorities.list muss eine nicht leere Aufgabenlisten-UID sein"
+
+#: ../packages/core/src/config.ts:74
+msgid "backend \"caldav\" needs a caldav object with url and username"
+msgstr "Das Backend „caldav“ braucht ein caldav-Objekt mit url und username"
+
+#: ../packages/core/src/config.ts:79
+msgid "caldav.{key} must be a non-empty string"
+msgstr "caldav.{key} muss ein nicht leerer String sein"
+
+#: ../packages/core/src/config.ts:83
+msgid "caldav.url is required"
+msgstr "caldav.url ist erforderlich"
+
+#: ../packages/core/src/config.ts:88 ../packages/core/src/config.ts:91
+msgid "caldav.url must be an http(s) URL"
+msgstr "caldav.url muss eine http(s)-URL sein"
+
+#: ../packages/core/src/config.ts:94
+msgid "caldav.url must use https unless the server is on this machine"
+msgstr "caldav.url muss https verwenden, außer der Server läuft auf diesem Rechner"
+
+#: ../packages/core/src/config.ts:98
+msgid "caldav.auth {auth} is not supported (known: {known})"
+msgstr "caldav.auth {auth} wird nicht unterstützt (bekannt: {known})"
+
+#: ../packages/core/src/config.ts:104
+msgid "caldav.username is required for basic auth"
+msgstr "caldav.username ist für Basic-Authentifizierung erforderlich"
+
+#: ../packages/core/src/config.ts:106
+msgid "caldav.password must not be in the file — set passwordEnv and export the variable"
+msgstr ""
+"caldav.password darf nicht in der Datei stehen — setze passwordEnv und exportiere die Variable"
+
+#: ../packages/core/src/config.ts:117
+msgid "config must be a JSON object"
+msgstr "Die Konfiguration muss ein JSON-Objekt sein"
+
+#: ../packages/core/src/config.ts:122
+msgid "backend {backend} is not supported (known: {known})"
+msgstr "Das Backend {backend} wird nicht unterstützt (bekannt: {known})"
+
+#: ../packages/core/src/create.ts:62
+msgid "summary must not be empty"
+msgstr "Der Titel darf nicht leer sein"
+
+#: ../packages/core/src/create.ts:70 ../packages/eds/src/driver.gjs.ts:71
+msgid "no enabled calendar \"{uid}\""
+msgstr "Kein aktivierter Kalender „{uid}“"
+
+#: ../packages/core/src/create.ts:70 ../packages/eds/src/driver.gjs.ts:71
+msgid "no enabled task list \"{uid}\""
+msgstr "Keine aktivierte Aufgabenliste „{uid}“"
+
+#: ../packages/core/src/create.ts:81
+msgid "UID {uid} already exists in \"{target}\" with a different source — refusing to merge"
+msgstr ""
+"Die UID {uid} existiert in „{target}“ bereits mit einer anderen Quelle — Zusammenführen abgelehnt"
+
+#: ../packages/core/src/dates.ts:13 ../packages/core/src/dates.ts:21
+#: ../packages/core/src/ical.ts:208
+msgid "invalid date: {value}"
+msgstr "Ungültiges Datum: {value}"
+
+#: ../packages/core/src/errors.ts:37
+msgid "authentication \"{scheme}\" is not supported yet — use \"basic\""
+msgstr "Die Authentifizierung „{scheme}“ wird noch nicht unterstützt — verwende „basic“"
+
+#: ../packages/core/src/errors.ts:52
+msgid "no grant for {capability} on \"{target}\" — add {snippet} to grants"
+msgstr "Keine Freigabe für {capability} auf „{target}“ — füge {snippet} zu grants hinzu"
+
+#: ../packages/core/src/grants.ts:27
+msgid "grants must be a list"
+msgstr "grants muss eine Liste sein"
+
+#: ../packages/core/src/grants.ts:29
+msgid "grants[{index}] must be an object"
+msgstr "grants[{index}] muss ein Objekt sein"
+
+#: ../packages/core/src/grants.ts:33
+msgid "grants[{index}]: unknown capability {capability}"
+msgstr "grants[{index}]: Unbekannte Fähigkeit {capability}"
+
+#: ../packages/core/src/grants.ts:37
+msgid "grants[{index}]: target must be a non-empty string"
+msgstr "grants[{index}]: target muss ein nicht leerer String sein"
+
+#: ../packages/core/src/grants.ts:40
+msgid "grants[{index}]: wildcards are not allowed in a target"
+msgstr "grants[{index}]: Platzhalter sind in einem target nicht erlaubt"
+
+#: ../packages/core/src/ical.ts:51
+msgid "not an iCalendar content line: {line}"
+msgstr "Keine iCalendar-Inhaltszeile: {line}"
+
+#: ../packages/core/src/ical.ts:192
+msgid "invalid iCalendar time: {value}"
+msgstr "Ungültige iCalendar-Zeit: {value}"
+
+#: ../packages/core/src/ical.ts:214
+msgid "time needs an offset or Z, or use a bare YYYY-MM-DD: {value}"
+msgstr "Die Zeit braucht einen Offset oder Z, oder nutze ein reines YYYY-MM-DD: {value}"
+
+#: ../packages/core/src/ical.ts:217
+msgid "invalid time: {value}"
+msgstr "Ungültige Zeit: {value}"
+
+#: ../packages/core/src/ical.ts:371
+msgid "start and end must both be dates or both be times"
+msgstr "Beginn und Ende müssen beide Daten oder beide Zeiten sein"
+
+#: ../packages/core/src/priorities.ts:160
+msgid "no priorities list configured — set {snippet} (uids: `reminder calendars`)"
+msgstr "Keine Prioritätenliste konfiguriert — setze {snippet} (UIDs: `reminder calendars`)"
+
+#: ../packages/core/src/priorities.ts:168
+msgid "priorities.list \"{list}\" is not an enabled task list (see `reminder calendars`)"
+msgstr "priorities.list „{list}“ ist keine aktivierte Aufgabenliste (siehe `reminder calendars`)"
+
+#: ../packages/core/src/routing.ts:36
+msgid "routes must be a list"
+msgstr "routes muss eine Liste sein"
+
+#: ../packages/core/src/routing.ts:38
+msgid "routes[{index}] must be an object"
+msgstr "routes[{index}] muss ein Objekt sein"
+
+#: ../packages/core/src/routing.ts:45
+msgid "routes[{index}]: concerns must be a non-empty list of strings"
+msgstr "routes[{index}]: concerns muss eine nicht leere Liste von Strings sein"
+
+#: ../packages/core/src/routing.ts:48
+msgid "routes[{index}]: kind must be \"event\" or \"reminder\""
+msgstr "routes[{index}]: kind muss „event“ oder „reminder“ sein"
+
+#: ../packages/core/src/routing.ts:51
+msgid "routes[{index}]: target missing"
+msgstr "routes[{index}]: target fehlt"
+
+#: ../packages/core/src/routing.ts:59
+msgid "defaults must be an object"
+msgstr "defaults muss ein Objekt sein"
+
+#: ../packages/core/src/routing.ts:62
+msgid "defaults: unknown kind \"{key}\""
+msgstr "defaults: Unbekannte Art „{key}“"
+
+#: ../packages/core/src/routing.ts:64
+msgid "defaults.{key} must be a calendar uid"
+msgstr "defaults.{key} muss eine Kalender-UID sein"
+
+#: ../packages/core/src/routing.ts:84
+msgid "no route for concern \"{concern}\" and no default {kind} calendar"
+msgstr "Keine Route für das Anliegen „{concern}“ und kein Standardkalender für {kind}"
+
+#: ../packages/core/src/routing.ts:88
+msgid "no calendar given and no default {kind} calendar configured"
+msgstr "Kein Kalender angegeben und kein Standardkalender für {kind} konfiguriert"
+
+#: ../packages/core/src/source-key.ts:16
+msgid "invalid source \"{source}\": letters, digits, . _ - only"
+msgstr "Ungültige Quelle „{source}“: nur Buchstaben, Ziffern, . _ - erlaubt"
+
+#: ../packages/core/src/source-key.ts:17
+msgid "source id must not be empty"
+msgstr "Die Quell-ID darf nicht leer sein"
+
+#: ../packages/core/src/source-key.ts:18
+msgid "source id must not contain a line break"
+msgstr "Die Quell-ID darf keinen Zeilenumbruch enthalten"
+
+#: ../packages/eds/src/driver.gjs.ts:182
+msgid "\"{calendar}\" is read-only"
+msgstr "„{calendar}“ ist schreibgeschützt"
+
+#: ../packages/eds/src/errors.ts:11
+msgid "{message}: {cause}"
+msgstr "{message}: {cause}"
+
+#: ../packages/eds/src/optional.ts:22
+msgid "{label} typelib not available: {message}"
+msgstr "Typelib {label} nicht verfügbar: {message}"
+
+#: src/core/config.ts:36
+msgid "cannot read {path}: {message}"
+msgstr "{path} kann nicht gelesen werden: {message}"
+
+#: src/core/config.ts:43
+msgid "{path} is not valid JSON: {message}"
+msgstr "{path} ist kein gültiges JSON: {message}"
+
+#: src/core/config.ts:49
+msgid "{path}: {message}"
+msgstr "{path}: {message}"
+
+#: src/core/context.ts:33
+msgid "backend \"caldav\" needs a caldav section"
+msgstr "Das Backend „caldav“ braucht einen caldav-Abschnitt"
+
+#: src/core/context.ts:37
+msgid "export the CalDAV password as {name}"
+msgstr "Exportiere das CalDAV-Passwort als {name}"
+
+#. TRANSLATORS: Not shown. The language code of THIS catalogue ("de" in de.po); it selects the
+#. language of the --help chrome ("Options:", "Commands:").
+#: src/core/i18n.ts:66
+msgid "en"
+msgstr "de"
+
+#: src/frontends/cli/calendars.ts:15
+msgid "List calendars and task lists"
+msgstr "Kalender und Aufgabenlisten auflisten"
+
+#: src/frontends/cli/calendars.ts:21
+msgid "Only calendars or only task lists"
+msgstr "Nur Kalender oder nur Aufgabenlisten"
+
+#: src/frontends/cli/calendars.ts:32
+msgid "No enabled calendars or task lists."
+msgstr "Keine aktivierten Kalender oder Aufgabenlisten."
+
+#: src/frontends/cli/calendars.ts:35
+msgid "event"
+msgstr "Termin"
+
+#: src/frontends/cli/calendars.ts:35
+msgid "reminder"
+msgstr "Erinnerung"
+
+#: src/frontends/cli/config.ts:14
+msgid "Show the config file path and validate it"
+msgstr "Pfad der Konfigurationsdatei anzeigen und prüfen"
+
+#: src/frontends/cli/config.ts:34
+msgid "backend {backend} · {grants} grants · {routes} routes · defaults: {defaults}"
+msgstr "Backend {backend} · {grants} Freigaben · {routes} Routen · Standards: {defaults}"
+
+#: src/frontends/cli/config.ts:38
+msgid "none"
+msgstr "keine"
+
+#: src/frontends/cli/events.ts:14
+msgid "List events in a time window"
+msgstr "Termine in einem Zeitfenster auflisten"
+
+#: src/frontends/cli/events.ts:17
+msgid "YYYY-MM-DD or ISO time (default: today, UTC)"
+msgstr "JJJJ-MM-TT oder ISO-Zeit (Standard: heute, UTC)"
+
+#: src/frontends/cli/events.ts:20
+msgid "YYYY-MM-DD (inclusive) or ISO time (default: from + {days} days)"
+msgstr "JJJJ-MM-TT (einschließlich) oder ISO-Zeit (Standard: Beginn + {days} Tage)"
+
+#: src/frontends/cli/events.ts:24
+msgid "One calendar uid (see `reminder calendars`)"
+msgstr "Eine Kalender-UID (siehe `reminder calendars`)"
+
+#: src/frontends/cli/events.ts:27
+msgid "Max events (default {default}, max {max})"
+msgstr "Höchstzahl Termine (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/events.ts:47
+msgid "No events between {from} and {to}."
+msgstr "Keine Termine zwischen {from} und {to}."
+
+#: src/frontends/cli/events.ts:50
+msgid "all day"
+msgstr "ganztägig"
+
+#: src/frontends/cli/events.ts:50
+msgid "recurring"
+msgstr "wiederkehrend"
+
+#: src/frontends/cli/events.ts:54 src/frontends/cli/priorities.ts:53
+#: src/frontends/cli/priorities.ts:60 src/frontends/cli/todos.ts:47
+msgid "(no title)"
+msgstr "(ohne Titel)"
+
+#: src/frontends/cli/mcp.ts:14
+msgid "Run as an MCP server over stdio (read-only)"
+msgstr "Als MCP-Server über stdio ausführen (nur lesend)"
+
+#: src/frontends/cli/output.ts:45
+msgid "… {omitted} more — raise {flag}"
+msgstr "… {omitted} weitere — erhöhe {flag}"
+
+#: src/frontends/cli/priorities.ts:17
+msgid "{n} day overdue"
+msgid_plural "{n} days overdue"
+msgstr[0] "{n} Tag überfällig"
+msgstr[1] "{n} Tage überfällig"
+
+#: src/frontends/cli/priorities.ts:19
+msgid "today"
+msgstr "heute"
+
+#: src/frontends/cli/priorities.ts:20
+msgid "in {n} day"
+msgid_plural "in {n} days"
+msgstr[0] "in {n} Tag"
+msgstr[1] "in {n} Tagen"
+
+#: src/frontends/cli/priorities.ts:21
+msgid "  due {time} ({when})"
+msgstr "  fällig {time} ({when})"
+
+#: src/frontends/cli/priorities.ts:26
+msgid "List priorities with their open steps (the list is `priorities.list` in the config)"
+msgstr ""
+"Prioritäten mit ihren offenen Schritten auflisten (die Liste ist `priorities.list` in der "
+"Konfiguration)"
+
+#: src/frontends/cli/priorities.ts:31
+msgid "Max priorities (default {default}, max {max})"
+msgstr "Höchstzahl Prioritäten (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/priorities.ts:50
+msgid "No open priorities."
+msgstr "Keine offenen Prioritäten."
+
+#: src/frontends/cli/priorities.ts:52
+msgid "  (tied for top)"
+msgstr "  (gleichauf an der Spitze)"
+
+#: src/frontends/cli/priorities.ts:58
+msgid "age unknown"
+msgstr "Alter unbekannt"
+
+#: src/frontends/cli/priorities.ts:59
+msgid "open {n} day"
+msgid_plural "open {n} days"
+msgstr[0] "seit {n} Tag offen"
+msgstr[1] "seit {n} Tagen offen"
+
+#: src/frontends/cli/todos.ts:14
+msgid "List reminders (tasks)"
+msgstr "Erinnerungen (Aufgaben) auflisten"
+
+#: src/frontends/cli/todos.ts:20
+msgid "Include completed and cancelled reminders"
+msgstr "Erledigte und abgebrochene Erinnerungen einbeziehen"
+
+#: src/frontends/cli/todos.ts:22
+msgid "One task list uid (see `reminder calendars`)"
+msgstr "Eine Aufgabenlisten-UID (siehe `reminder calendars`)"
+
+#: src/frontends/cli/todos.ts:25
+msgid "Max reminders (default {default}, max {max})"
+msgstr "Höchstzahl Erinnerungen (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/todos.ts:43
+msgid "No open reminders."
+msgstr "Keine offenen Erinnerungen."
+
+#: src/frontends/cli/todos.ts:46
+msgid "  due {time}"
+msgstr "  fällig {time}"
+
+#: src/index.ts:33
+msgid "Give a command — `reminder --help` lists them."
+msgstr "Gib einen Befehl an — `reminder --help` listet sie auf."
