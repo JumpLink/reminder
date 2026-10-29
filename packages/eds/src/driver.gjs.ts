@@ -14,7 +14,7 @@ import type ECal from 'gi://ECal?version=2.0';
 import type EDataServer from 'gi://EDataServer?version=1.2';
 
 import type { CalendarBackend, CalendarInfo, ItemKind, ItemQuery, RawItem } from '@reminder/core';
-import { BackendError } from '@reminder/core';
+import { _, BackendError, fmt } from '@reminder/core';
 
 import { edsError, isBackendFailure, unwrapList, unwrapResult } from './errors.ts';
 import { cal, eds } from './libs.gjs.ts';
@@ -67,7 +67,9 @@ export function createEdsBackend(): CalendarBackend {
 
   async function source(kind: ItemKind, uid: string): Promise<EDataServer.Source> {
     const found = (await sources(kind)).find((s) => s.get_uid() === uid);
-    if (!found) throw new BackendError(`no enabled ${kind === 'event' ? 'calendar' : 'task list'} "${uid}"`);
+    if (!found) throw new BackendError(
+        fmt(kind === 'event' ? _('no enabled calendar "{uid}"') : _('no enabled task list "{uid}"'), { uid }),
+      );
     return found;
   }
 
@@ -177,7 +179,7 @@ export function createEdsBackend(): CalendarBackend {
       boundary('createItem', async () => {
         const { ECal: lib, ICalGLib } = await cal.get();
         const client = await connect(await source(kind, calendarUid), kind);
-        if (client.is_readonly()) throw new BackendError(`"${calendarUid}" is read-only`);
+        if (client.is_readonly()) throw new BackendError(fmt(_('"{calendar}" is read-only'), { calendar: calendarUid }));
         const comp = ICalGLib.Component.new_from_string(ical);
         const uid = unwrapResult<string>(await client.create_object(comp, lib.OperationFlags.NONE, null));
         return typeof uid === 'string' ? uid : '';

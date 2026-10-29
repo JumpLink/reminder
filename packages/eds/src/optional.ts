@@ -7,7 +7,7 @@
  * turns that into a `BackendUnavailableError` the frontends already know how to report.
  */
 
-import { BackendUnavailableError, errorMessage } from '@reminder/core';
+import { BackendUnavailableError, _, errorMessage, fmt } from '@reminder/core';
 
 export interface OptionalNamespace<T> {
   get(): Promise<T>;
@@ -19,7 +19,7 @@ export function optionalNamespace<T>(label: string, load: () => Promise<T>): Opt
   return {
     get() {
       pending ??= load().catch((err: unknown) => {
-        throw new BackendUnavailableError(`${label} typelib not available: ${errorMessage(err)}`);
+        throw new BackendUnavailableError(fmt(_('{label} typelib not available: {message}'), { label, message: errorMessage(err) }));
       });
       return pending;
     },

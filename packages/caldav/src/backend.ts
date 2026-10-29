@@ -12,9 +12,11 @@
 import { DavClient, DavError, basicAuth, type Collection, type FetchLike } from '@gjsify/dav';
 
 import {
+  _,
   BackendAuthError,
   BackendError,
   errorMessage,
+  fmt,
   type CalendarBackend,
   type CalendarInfo,
   type ItemKind,
@@ -61,10 +63,18 @@ function supports(c: Collection, kind: ItemKind): boolean {
 function davError(label: string, err: unknown): Error {
   if (err instanceof BackendError) return err;
   if (err instanceof DavError) {
-    if (err.status === 401) return new BackendAuthError(`${label}: the server rejected the credentials (401)`, 'http', 401);
-    return new BackendError(`${label}: ${err.method} failed with ${err.status}`, 'http', err.status);
+    if (err.status === 401) return new BackendAuthError(
+      fmt(_('{label}: the server rejected the credentials (401)'), { label }),
+      'http',
+      401,
+    );
+    return new BackendError(
+      fmt(_('{label}: {method} failed with {status}'), { label, method: err.method, status: err.status }),
+      'http',
+      err.status,
+    );
   }
-  return new BackendError(`${label}: ${errorMessage(err)}`);
+  return new BackendError(fmt(_('{label}: {message}'), { label, message: errorMessage(err) }));
 }
 
 export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
@@ -93,7 +103,9 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
 
   async function collection(kind: ItemKind, uid: string): Promise<Collection> {
     const found = (await load()).find((c) => c.url === uid && supports(c, kind));
-    if (!found) throw new BackendError(`no ${kind === 'event' ? 'calendar' : 'task list'} "${uid}"`);
+    if (!found) throw new BackendError(
+        fmt(kind === 'event' ? _('no calendar "{uid}"') : _('no task list "{uid}"'), { uid }),
+      );
     return found;
   }
 
@@ -155,14 +167,22 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
       boundary('createItem', async () => {
         const c = await collection(kind, calendarUid);
         const uid = uidOf(ical);
-        if (!uid) throw new BackendError('createItem: the component has no UID');
+        if (!uid) throw new BackendError(_('createItem: the component has no UID'));
         try {
           await dav.put(resourceUrl(c, uid), wrap(ical), { ifNoneMatch: true });
         } catch (err) {
           if (err instanceof DavError && err.isPreconditionFailed)
-            throw new BackendError(`createItem: "${uid}" already exists in "${calendarUid}"`, 'http', 412);
+            throw new BackendError(
+              fmt(_('createItem: "{uid}" already exists in "{calendar}"'), { uid, calendar: calendarUid }),
+              'http',
+              412,
+            );
           if (err instanceof DavError && err.status === 403)
-            throw new BackendError(`createItem: "${calendarUid}" refused the write (read-only?)`, 'http', 403);
+            throw new BackendError(
+              fmt(_('createItem: "{calendar}" refused the write (read-only?)'), { calendar: calendarUid }),
+              'http',
+              403,
+            );
           throw err;
         }
         return uid;
