@@ -13,9 +13,11 @@
 ../packages/core/src/limits.ts
 ../packages/core/src/priorities.ts
 ../packages/core/src/read.ts
+../packages/core/src/rewrite.ts
 ../packages/core/src/routing.ts
 ../packages/core/src/source-key.ts
 ../packages/core/src/types.ts
+../packages/core/src/update.ts
 ../packages/eds/src/driver.gjs.ts
 ../packages/eds/src/errors.ts
 ../packages/eds/src/index.ts
@@ -34,6 +36,8 @@ src/frontends/cli/mcp.ts
 src/frontends/cli/output.ts
 src/frontends/cli/priorities.ts
 src/frontends/cli/todos.ts
+src/frontends/cli/update.ts
 src/frontends/mcp/server.ts
 src/frontends/mcp/tools/read.ts
+src/frontends/mcp/tools/write.ts
 src/index.ts

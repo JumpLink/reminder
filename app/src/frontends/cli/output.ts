@@ -2,7 +2,7 @@
  * Shared CLI output: `--json` for pipes, a plain human rendering otherwise.
  */
 
-import { _, fmt } from '@reminder/core';
+import { _, fmt, type ReminderItem } from '@reminder/core';
 
 export function printJson(obj: unknown): void {
   console.log(JSON.stringify(obj, null, 2));
@@ -39,6 +39,13 @@ export function dim(text: string): string {
 /** `2026-10-12T08:00:00Z` → `2026-10-12 08:00Z`; a date stays a date. */
 export function shortTime(iso: string): string {
   return iso.replace('T', ' ').replace(/:00(Z?)$/, '$1');
+}
+
+/** One reminder as a line: `[ ] Pay the invoice  due 2026-10-12 08:00Z`. */
+export function reminderLine(r: Pick<ReminderItem, 'status' | 'summary' | 'due'>): string {
+  const box = r.status === 'completed' ? '[x]' : r.status === 'cancelled' ? '[-]' : '[ ]';
+  const due = r.due ? dim(fmt(_('  due {time}'), { time: shortTime(r.due) })) : '';
+  return `${box} ${r.summary ?? _('(no title)')}${due}`;
 }
 
 export function omittedLine(omitted: number, flag: string): string | null {

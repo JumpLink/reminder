@@ -5,6 +5,7 @@
 
 import {
   BackendError,
+  ConflictError,
   readEvent,
   type CalendarBackend,
   type CalendarInfo,
@@ -15,6 +16,8 @@ export interface FakeBackend extends CalendarBackend {
   /** Every stored component, by calendar uid. */
   store: Map<string, string[]>;
   calls: string[];
+  /** Change a stored item behind the core's back, as a second client would. */
+  tamper(calendarUid: string, uid: string, ical: string): void;
 }
 
 function uidOf(ical: string): string {
@@ -31,10 +34,29 @@ export function createFakeBackend(
 ): FakeBackend {
   const store = new Map<string, string[]>(calendars.map((c) => [c.uid, [...(items[c.uid] ?? [])]]));
   const calls: string[] = [];
+  // Like a CalDAV server: one opaque revision per resource, changed by every write.
+  const etags = new Map<string, string>();
+  const etagKey = (calendarUid: string, uid: string) => `${calendarUid}/${uid}`;
+  let revision = 0;
+  const bump = (calendarUid: string, uid: string) => etags.set(etagKey(calendarUid, uid), `"r${++revision}"`);
+  const find = (calendarUid: string, uid: string) => {
+    const list = store.get(calendarUid);
+    const index = list?.findIndex((ical) => uidOf(ical) === uid) ?? -1;
+    return list && index >= 0 ? { list, index } : null;
+  };
+
+  for (const [calendarUid, list] of store) for (const ical of list) bump(calendarUid, uidOf(ical));
+
   return {
     id: 'fake',
     store,
     calls,
+    tamper(calendarUid, uid, ical) {
+      const found = find(calendarUid, uid);
+      if (!found) throw new BackendError(`no ${uid} in ${calendarUid}`);
+      found.list[found.index] = ical;
+      bump(calendarUid, uid);
+    },
     async listCalendars(kind) {
       calls.push(`listCalendars:${kind ?? '*'}`);
       return calendars.filter((c) => !kind || c.kind === kind);
@@ -57,7 +79,9 @@ export function createFakeBackend(
     },
     async getItem(calendarUid, _kind, uid) {
       calls.push(`getItem:${uid}`);
-      return (store.get(calendarUid) ?? []).find((ical) => uidOf(ical) === uid) ?? null;
+      const found = find(calendarUid, uid);
+      if (!found) return null;
+      return { ical: found.list[found.index], etag: etags.get(etagKey(calendarUid, uid)) ?? null };
     },
     async createItem(calendarUid, _kind, ical) {
       calls.push(`createItem:${calendarUid}`);
@@ -65,7 +89,17 @@ export function createFakeBackend(
       if (!list) throw new BackendError(`no calendar ${calendarUid}`);
       if (list.some((existing) => uidOf(existing) === uidOf(ical))) throw new BackendError('UID exists');
       list.push(ical);
+      bump(calendarUid, uidOf(ical));
       return uidOf(ical);
+    },
+    async updateItem(calendarUid, _kind, uid, ical, etag) {
+      calls.push(`updateItem:${calendarUid}/${uid}`);
+      const found = find(calendarUid, uid);
+      if (!found) throw new BackendError(`no ${uid} in ${calendarUid}`);
+      const current = etags.get(etagKey(calendarUid, uid)) ?? null;
+      if (etag && current !== etag) throw new ConflictError(`${uid} changed on the server`, 'http', 412);
+      found.list[found.index] = ical;
+      bump(calendarUid, uid);
     },
   };
 }

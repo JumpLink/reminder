@@ -11,6 +11,7 @@ import dates from './unit/core/dates.test.ts';
 import config from './unit/core/config.test.ts';
 import read from './unit/core/read.test.ts';
 import create from './unit/core/create.test.ts';
+import update from './unit/core/update.test.ts';
 import priorities from './unit/core/priorities.test.ts';
 
 import caldav from './unit/caldav/caldav.test.ts';
@@ -29,6 +30,7 @@ run({
   config,
   read,
   create,
+  update,
   priorities,
   caldav,
   eds,

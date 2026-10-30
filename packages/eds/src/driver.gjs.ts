@@ -172,7 +172,9 @@ export function createEdsBackend(): CalendarBackend {
         // A uid query, not get_object: "not found" is then an empty list rather than a GError
         // whose domain and code differ between GJS and node-gi.
         const found = await query(client, `(uid? ${sexpString(uid)})`);
-        return found[0] ?? null;
+        // EDS has no ETag; it serialises writes itself, so there is no value to make one
+        // conditional on.
+        return found[0] === undefined ? null : { ical: found[0], etag: null };
       }),
 
     createItem: (calendarUid, kind, ical) =>
@@ -183,6 +185,17 @@ export function createEdsBackend(): CalendarBackend {
         const comp = ICalGLib.Component.new_from_string(ical);
         const uid = unwrapResult<string>(await client.create_object(comp, lib.OperationFlags.NONE, null));
         return typeof uid === 'string' ? uid : '';
+      }),
+
+    updateItem: (calendarUid, kind, _uid, ical) =>
+      boundary('updateItem', async () => {
+        const { ECal: lib, ICalGLib } = await cal.get();
+        const client = await connect(await source(kind, calendarUid), kind);
+        if (client.is_readonly()) throw new BackendError(fmt(_('"{calendar}" is read-only'), { calendar: calendarUid }));
+        const comp = ICalGLib.Component.new_from_string(ical);
+        // THIS, not THIS_AND_FUTURE: a recurring task is edited as its series definition, which
+        // is the only form this backend ever hands out.
+        await client.modify_object(comp, lib.ObjModType.THIS, lib.OperationFlags.NONE, null);
       }),
   };
 }

@@ -73,7 +73,7 @@ async function main(): Promise<void> {
   // The link survives the store as text …
   const stored = await backend.getItem(LIST_UID, 'reminder', 'step-old');
   assert(stored, 'step-old not found after create');
-  const item = readReminder(stored, LIST_UID);
+  const item = readReminder(stored.ical, LIST_UID);
   assert.equal(item?.parent, parent, 'RELATED-TO;RELTYPE=PARENT did not round-trip through EDS');
   assert(item?.created, 'CREATED did not round-trip through EDS');
 
