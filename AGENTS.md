@@ -9,15 +9,18 @@ needs before opening anything stays here; the reasoning lives in [docs/](docs/RE
 Calendar events (VEVENT) and reminders (VTODO) as a CLI and an MCP server, on GJS via gjsify. A
 TypeScript monorepo: pure `packages/*` plus one `app` workspace that carries the gjsify toolchain
 and picks a frontend at the yargs entrypoint. Scope, backends and grants:
-[ADR 0001](docs/adr/0001-calendar-items-as-their-own-product.md).
+[ADR 0001](docs/adr/0001-calendar-items-as-their-own-product.md); changing a reminder that already
+exists: [ADR 0003](docs/adr/0003-managing-reminders-in-place.md).
 
 ## Hard rules
 
 | Rule | Why |
 |---|---|
 | **Public repo: no personal data** | No real calendar uids, addresses, names or events — in code, tests, fixtures, docs, commits. Placeholders (`<calendar-uid>`, `example.org`) only. The real config lives in `$XDG_CONFIG_HOME`, never here |
-| **Writes need a grant, per capability and exact target** | Missing grant = refusal; wildcard/empty/unknown capability = `ConfigError` at load. The check lives inside `createEvent` / `createReminder`, never in a frontend |
-| **MCP writes are gated twice, and a new one is an ADR** | `applyGrantGate` serves `events_create` / `reminders_create` only when the config grants their capability, and re-checks the exact target per call; the core checks again. A tool with no annotation is dropped, never served unguarded. Adding a write tool is a decision (ADR 0001 §4), not a registrar edit |
+| **Writes need a grant, per capability and exact target** | Missing grant = refusal; wildcard/empty/unknown capability = `ConfigError` at load. The check lives inside `createEvent` / `createReminder` / `updateReminder`, never in a frontend |
+| **MCP writes are gated twice, and a new one is an ADR** | `applyGrantGate` serves `events_create` / `reminders_create` / `reminders_update` only when the config grants their capability, and re-checks the exact target per call; the core checks again. A tool with no annotation is dropped, never served unguarded. Adding a write tool is a decision (ADR 0001 §4), not a registrar edit |
+| **An update rewrites the lines it touches, nothing else** | `packages/core/src/rewrite.ts` edits the stored text line by line: every property the change set does not name survives byte-for-byte, including folding, `VALARM`, `RRULE`, `CATEGORIES` and `X-REMINDER-SOURCE`. Re-serialising a parsed task silently drops what the parser does not model. Every write bumps `SEQUENCE` and stamps `DTSTAMP` + `LAST-MODIFIED`. [ADR 0003](docs/adr/0003-managing-reminders-in-place.md) |
+| **An update never overwrites a concurrent change** | CalDAV `updateItem` sends `If-Match` with the etag from its own read, so a 412 becomes `ConflictError` instead of a lost edit. A backend without etags (EDS) relies on the server's own conflict handling |
 | **Dedupe by source key** | Every create takes `source` + `sourceId`; the key goes into `X-REMINDER-SOURCE` and decides the UID. A UID holding a different key is an error, never a merge |
 | **The backend port moves iCalendar text only** | Parsing, dedupe, grants, routing stay in `@reminder/core`. A backend that parses is a second copy of the rules |
 | **No raw native error crosses a backend** | Wrap as `BackendError` / `BackendUnavailableError` — a `GLib.Error` JSON-serialises to `{}` |
@@ -27,7 +30,7 @@ and picks a frontend at the yargs entrypoint. Scope, backends and grants:
 
 | Package | What | May import |
 |---|---|---|
-| `@reminder/core` | types, errors, `CalendarBackend` port, iCalendar, grants, routing, config model, read + create | nothing (`types: []`) |
+| `@reminder/core` | types, errors, `CalendarBackend` port, iCalendar, grants, routing, config model, read + create + update | nothing (`types: []`) |
 | `@reminder/eds` | EDS driver for the port; typelibs load lazily | `@reminder/core`, `gi://` |
 | `reminder-cli` (`app/`) | yargs CLI, MCP server, config file I/O, backend factory | everything |
 
