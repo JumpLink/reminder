@@ -7,3 +7,4 @@ record that links back; the old one stays.
 |---|---|---|
 | [0001](0001-calendar-items-as-their-own-product.md) | Calendar events and reminders as their own product, EDS first, writes granted per calendar | accepted |
 | [0002](0002-priorities-as-linked-reminders.md) | Priorities as linked reminders (VTODO + child next step), read by agents over MCP | accepted |
+| [0003](0003-managing-reminders-in-place.md) | Managing reminders in place: `reminder.update` rewrites only the touched lines, no delete | accepted |
