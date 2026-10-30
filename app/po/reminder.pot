@@ -343,7 +343,7 @@ msgid "(no title)"
 msgstr ""
 
 #: src/frontends/cli/mcp.ts:14
-msgid "Run as an MCP server over stdio (read-only)"
+msgid "Run as an MCP server over stdio"
 msgstr ""
 
 #: src/frontends/cli/output.ts:45

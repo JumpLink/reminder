@@ -11,7 +11,7 @@ import { startMcpServer } from '../mcp/server.ts';
 
 export const mcpCommand: CommandModule = {
   command: 'mcp',
-  describe: _('Run as an MCP server over stdio (read-only)'),
+  describe: _('Run as an MCP server over stdio'),
   builder: (yargs) => yargs,
   handler: () => {
     startMcpServer().catch((err: unknown) => {

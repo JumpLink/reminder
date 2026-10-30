@@ -33,6 +33,7 @@ const env = {
   REMINDER_CONFIG: join(repoRoot, 'node_modules', '.cache', 'reminder-smoke-config.json'),
 };
 
+// No config file here, so no grants: the write tools stay absent and the catalogue is read-only.
 const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'priorities_list', 'reminders_list'];
 
 // ── 1. catalogue: read-only, asserted on the wire ───────────────────────────
