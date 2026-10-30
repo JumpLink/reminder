@@ -17,7 +17,7 @@ and picks a frontend at the yargs entrypoint. Scope, backends and grants:
 |---|---|
 | **Public repo: no personal data** | No real calendar uids, addresses, names or events — in code, tests, fixtures, docs, commits. Placeholders (`<calendar-uid>`, `example.org`) only. The real config lives in `$XDG_CONFIG_HOME`, never here |
 | **Writes need a grant, per capability and exact target** | Missing grant = refusal; wildcard/empty/unknown capability = `ConfigError` at load. The check lives inside `createEvent` / `createReminder`, never in a frontend |
-| **No MCP write tool before `applyGrantGate`** | The server runs `applyReadOnlyGate(server, false)`. A create tool waits for `@gjsify/mcp`'s grant gate (gjsify PR #2145) and an ADR |
+| **MCP writes are gated twice, and a new one is an ADR** | `applyGrantGate` serves `events_create` / `reminders_create` only when the config grants their capability, and re-checks the exact target per call; the core checks again. A tool with no annotation is dropped, never served unguarded. Adding a write tool is a decision (ADR 0001 §4), not a registrar edit |
 | **Dedupe by source key** | Every create takes `source` + `sourceId`; the key goes into `X-REMINDER-SOURCE` and decides the UID. A UID holding a different key is an error, never a merge |
 | **The backend port moves iCalendar text only** | Parsing, dedupe, grants, routing stay in `@reminder/core`. A backend that parses is a second copy of the rules |
 | **No raw native error crosses a backend** | Wrap as `BackendError` / `BackendUnavailableError` — a `GLib.Error` JSON-serialises to `{}` |

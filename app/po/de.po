@@ -336,8 +336,8 @@ msgid "(no title)"
 msgstr "(ohne Titel)"
 
 #: src/frontends/cli/mcp.ts:14
-msgid "Run as an MCP server over stdio (read-only)"
-msgstr "Als MCP-Server über stdio ausführen (nur lesend)"
+msgid "Run as an MCP server over stdio"
+msgstr "Als MCP-Server über stdio ausführen"
 
 #: src/frontends/cli/output.ts:45
 msgid "… {omitted} more — raise {flag}"

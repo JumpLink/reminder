@@ -138,6 +138,9 @@ target. The MCP server stays on `applyReadOnlyGate(server, false)` until `@gjsif
 `applyGrantGate` ships (gjsify PR #2145); `priorities_list` can ship before that, since it is
 read-only. Writes come with the gate, not before.
 
+**Update 2026-10-30:** the gate shipped and the server runs on it — see ADR 0001's amendment. The
+`priorities_*` write tools above are still unimplemented.
+
 Core changes this implies, listed so the follow-up work is bounded: `ReminderItem` gains `created`,
 `url` and `parent` (the `RELATED-TO` uid); the reader parses them; an update path exists that
 rewrites a component and keeps unknown properties.
