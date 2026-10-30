@@ -100,3 +100,31 @@ on the same core; nothing in the core assumes a terminal.
   must carry an offset or be a bare date, so the same input never means two instants.
 - Adding CalDAV is a new package and one config value. If it ever needs a change to a caller, the
   port was cut wrong and this ADR is superseded.
+
+## Amendment (2026-10-30) — MCP write tools behind `applyGrantGate`
+
+`@gjsify/mcp` now ships `applyGrantGate` / `requiresCapability` (gjsify PR #2145), so §4's
+"The MCP server exposes no write tool yet" is history. The server registers through
+`applyGrantGate(server, config.grants)` and exposes two write tools, named after ADR 0002's
+`<noun>_<verb>` pattern:
+
+| Tool | Capability | Writes |
+|---|---|---|
+| `events_create` | `calendar.create` | one VEVENT via `createEvent` |
+| `reminders_create` | `reminder.create` | one VTODO via `createReminder` |
+
+Both take the same input as the core create functions, including the required `source` + `sourceId`
+dedupe key (§5), plus `calendar` or `concern` to pick the target. Three checks apply, deliberately
+independent:
+
+1. **Registration.** No grant for the capability means the tool is not in `tools/list` at all. A
+   tool with neither `readOnlyHint: true` nor a declared capability is dropped — a forgotten
+   annotation is a missing tool, never an open one.
+2. **Call.** The gate resolves the target exactly as the action does (explicit calendar → route →
+   `defaults[kind]`) and refuses any target the grants do not name exactly.
+3. **Core.** `createEvent` / `createReminder` check the same grant again, so the CLI and any later
+   UI cannot drift from the MCP surface.
+
+The unit suite pins all three against the fake backend (no grant → absent, matching grant →
+present, unannotated tool → dropped, ungranted target → refused without a write); the GJS stdio
+smoke test still sees a read-only catalogue, because it runs without a config.
