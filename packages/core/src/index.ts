@@ -10,5 +10,7 @@ export * from './limits.ts';
 export * from './dates.ts';
 export * from './read.ts';
 export * from './create.ts';
+export * from './rewrite.ts';
+export * from './update.ts';
 export * from './priorities.ts';
 export * from './i18n.ts';

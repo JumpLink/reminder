@@ -29,6 +29,14 @@ export class BackendError extends ReminderError {
 /** The server rejected the credentials (HTTP 401). Retrying with the same credentials cannot help. */
 export class BackendAuthError extends BackendError {}
 
+/**
+ * The stored copy changed since it was read, so the write was refused (HTTP 412).
+ *
+ * Retrying is only correct after re-reading: the edit was computed from text that no longer is
+ * what the server holds.
+ */
+export class ConflictError extends BackendError {}
+
 /** The configured authentication scheme exists in the model but this build cannot speak it yet. */
 export class UnsupportedAuthError extends ReminderError {
   readonly scheme: string;

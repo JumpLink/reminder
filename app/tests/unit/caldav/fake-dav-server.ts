@@ -10,6 +10,7 @@ export interface RecordedRequest {
   path: string;
   body: string;
   ifNoneMatch: string | undefined;
+  ifMatch: string | undefined;
 }
 
 export interface FakeDav {
@@ -17,6 +18,8 @@ export interface FakeDav {
   requests: RecordedRequest[];
   /** Resources by path, e.g. `/cal/events/a.ics`. */
   resources: Map<string, string>;
+  /** Replace a resource as another client would: new content, new etag. */
+  tamper(path: string, data: string): void;
   close(): Promise<void>;
 }
 
@@ -42,6 +45,10 @@ export async function startFakeDav(options: {
   const resources = new Map(Object.entries(options.resources));
   const requests: RecordedRequest[] = [];
   const expected = `Basic ${Buffer.from(`${options.user}:${options.password}`).toString('base64')}`;
+  // Every resource starts at "e"; a write moves it on, which is what If-Match is checked against.
+  const etags = new Map<string, string>();
+  const etagOf = (path: string) => etags.get(path) ?? '"e"';
+  let revision = 0;
 
   const send = (res: ServerResponse, status: number, body = '', headers = {}) => {
     res.writeHead(status, { 'Content-Type': 'application/xml; charset=utf-8', ...headers });
@@ -55,7 +62,13 @@ export async function startFakeDav(options: {
       const body = Buffer.concat(chunks).toString('utf8');
       const path = (req.url ?? '/').split('?')[0];
       const method = req.method ?? 'GET';
-      requests.push({ method, path, body, ifNoneMatch: req.headers['if-none-match'] as string | undefined });
+      requests.push({
+        method,
+        path,
+        body,
+        ifNoneMatch: req.headers['if-none-match'] as string | undefined,
+        ifMatch: req.headers['if-match'] as string | undefined,
+      });
       if (req.headers.authorization !== expected)
         return send(res, 401, '', { 'WWW-Authenticate': 'Basic realm="x"' });
 
@@ -103,7 +116,7 @@ export async function startFakeDav(options: {
                 .map((h) =>
                   response(
                     h,
-                    `<D:getetag>"e"</D:getetag><C:calendar-data><![CDATA[${resources.get(h)}]]></C:calendar-data>`,
+                    `<D:getetag>${etagOf(h)}</D:getetag><C:calendar-data><![CDATA[${resources.get(h)}]]></C:calendar-data>`,
                   ),
                 )
                 .join(''),
@@ -117,15 +130,19 @@ export async function startFakeDav(options: {
           multistatus(
             inDir
               .filter((p) => resources.get(p)!.includes(`BEGIN:${wanted}`))
-              .map((p) => response(p, '<D:getetag>"e"</D:getetag>'))
+              .map((p) => response(p, `<D:getetag>${etagOf(p)}</D:getetag>`))
               .join(''),
           ),
         );
       }
       if (method === 'PUT') {
         if (req.headers['if-none-match'] === '*' && resources.has(path)) return send(res, 412);
+        const ifMatch = req.headers['if-match'] as string | undefined;
+        if (ifMatch !== undefined && ifMatch !== etagOf(path)) return send(res, 412);
         resources.set(path, body);
-        return send(res, 201, '', { ETag: '"new"' });
+        const etag = `"r${++revision}"`;
+        etags.set(path, etag);
+        return send(res, 201, '', { ETag: etag });
       }
       return send(res, 405);
     });
@@ -137,6 +154,10 @@ export async function startFakeDav(options: {
     url: `http://127.0.0.1:${port}/`,
     requests,
     resources,
+    tamper(path, data) {
+      resources.set(path, data);
+      etags.set(path, `"r${++revision}"`);
+    },
     close: () => new Promise<void>((resolve) => server.close(() => resolve())),
   };
 }

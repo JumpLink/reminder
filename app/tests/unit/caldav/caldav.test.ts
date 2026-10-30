@@ -3,6 +3,7 @@ import {
   BackendAuthError,
   BackendError,
   ConfigError,
+  ConflictError,
   UnsupportedAuthError,
   parseConfig,
 } from '@reminder/core';
@@ -87,7 +88,9 @@ export default async () => {
       await withServer(async (dav) => {
         const b = createCaldavBackend({ url: dav.url, username: USER, password: PASSWORD });
         const [cal] = await b.listCalendars('event');
-        expect((await b.getItem(cal.uid, 'event', 'single'))?.includes('UID:single')).toBe(true);
+        const found = await b.getItem(cal.uid, 'event', 'single');
+        expect(found?.ical.includes('UID:single')).toBe(true);
+        expect(found?.etag).toBe('"e"');
         expect(await b.getItem(cal.uid, 'event', 'missing')).toBe(null);
       });
     });
@@ -103,6 +106,50 @@ export default async () => {
         expect(stored.includes('UID:new-1')).toBe(true);
         expect(dav.requests.find((r) => r.method === 'PUT')?.ifNoneMatch).toBe('*');
         expect((await rejection(b.createItem(cal.uid, 'event', bare))) instanceof BackendError).toBe(true);
+      });
+    });
+
+    await it('updates with If-Match and reports a stale etag as a conflict', async () => {
+      await withServer(async (dav) => {
+        const b = createCaldavBackend({ url: dav.url, username: USER, password: PASSWORD });
+        const [cal] = await b.listCalendars('reminder');
+        const read = await b.getItem(cal.uid, 'reminder', 'todo');
+        const changed = wrap('BEGIN:VTODO\r\nUID:todo\r\nSUMMARY:Task done\r\nEND:VTODO\r\n');
+
+        await b.updateItem(cal.uid, 'reminder', 'todo', changed, read?.etag);
+        const put = dav.requests.filter((r) => r.method === 'PUT').at(-1);
+        expect(put?.path).toBe('/cal/tasks/todo.ics');
+        expect(put?.ifMatch).toBe('"e"');
+        expect(put?.ifNoneMatch).toBe(undefined);
+        expect(dav.resources.get('/cal/tasks/todo.ics')?.includes('SUMMARY:Task done')).toBe(true);
+
+        // `read.etag` is now stale: writing against it must fail rather than drop the other change.
+        dav.tamper(
+          '/cal/tasks/todo.ics',
+          wrap('BEGIN:VTODO\r\nUID:todo\r\nSUMMARY:Elsewhere\r\nEND:VTODO\r\n'),
+        );
+        const err = await rejection(b.updateItem(cal.uid, 'reminder', 'todo', changed, read?.etag));
+        expect(err instanceof ConflictError).toBe(true);
+        expect((err as ConflictError).code).toBe(412);
+        expect(dav.resources.get('/cal/tasks/todo.ics')?.includes('SUMMARY:Elsewhere')).toBe(true);
+      });
+    });
+
+    await it('refuses to update a uid the collection does not hold', async () => {
+      await withServer(async (dav) => {
+        const b = createCaldavBackend({ url: dav.url, username: USER, password: PASSWORD });
+        const [cal] = await b.listCalendars('reminder');
+        const err = await rejection(
+          b.updateItem(
+            cal.uid,
+            'reminder',
+            'ghost',
+            wrap('BEGIN:VTODO\r\nUID:ghost\r\nEND:VTODO\r\n'),
+            '"e"',
+          ),
+        );
+        expect(err instanceof BackendError).toBe(true);
+        expect(dav.requests.some((r) => r.method === 'PUT')).toBe(false);
       });
     });
 

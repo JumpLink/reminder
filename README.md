@@ -9,10 +9,14 @@ things into it. Runs on [GJS](https://gjs.guide) via [gjsify](https://github.com
 - **Creates** events and reminders in the core library, only where a grant names the exact calendar,
   and never twice for the same source (a mail, a letter). Over MCP as `events_create` and
   `reminders_create`, served only when that grant exists.
+- **Changes** a reminder that already exists — title, description, due date, priority, done or open
+  again — by rewriting only the lines it touches, so alarms, recurrence and everything else in the
+  task survive untouched. Over MCP as `reminders_update`.
 - **Backends:** EDS today; CalDAV via `@gjsify/system-accounts` next, behind the same interface.
 
-Status: early. Reads work everywhere; writes are MCP-only and need a grant. Design:
-[ADR 0001](docs/adr/0001-calendar-items-as-their-own-product.md).
+Status: early. Reads work everywhere; writes need a grant. Design:
+[ADR 0001](docs/adr/0001-calendar-items-as-their-own-product.md), updates in
+[ADR 0003](docs/adr/0003-managing-reminders-in-place.md).
 
 ## Requirements
 
@@ -36,6 +40,9 @@ reminder calendars                        # calendars and task lists, with their
 reminder events --from 2026-10-12 --to 2026-10-18
 reminder todos                            # open reminders, by due date
 reminder todos --all --calendar <uid>
+reminder update <uid> --summary 'Call back' --due 2026-11-03 --priority 2
+reminder complete <uid>                   # done: STATUS, PERCENT-COMPLETE and COMPLETED
+reminder reopen <uid>                     # open again
 reminder priorities                       # ranked priorities with open steps (needs priorities.list)
 reminder config                           # where the config file is, and whether it parses
 reminder mcp                              # MCP server over stdio
@@ -55,16 +62,21 @@ Every command takes `--json`. Times print in their own shape: `2026-10-12` is al
 ```
 
 Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list` are read-only and always
-served. `events_create` and `reminders_create` appear only when the config grants `calendar.create`
-respectively `reminder.create` for a calendar; each call must target a granted uid exactly. The gate
-drops any tool that neither declares itself read-only nor declares a granted capability, so a
-forgotten annotation is a missing tool, not an open one.
+served. `events_create`, `reminders_create` and `reminders_update` appear only when the config grants
+`calendar.create`, `reminder.create` respectively `reminder.update` for a calendar; each call must
+target a granted uid exactly. The gate drops any tool that neither declares itself read-only nor
+declares a granted capability, so a forgotten annotation is a missing tool, not an open one.
+
+`reminders_update` changes only the fields a call names — `null` clears `description` and `due`,
+`priority: 0` clears the priority, `status: "completed"` marks the task done. Everything else in the
+stored task stays as it is. There is no delete tool: `status: "cancelled"` is how a reminder goes
+away.
 
 ## Configuration
 
 `$XDG_CONFIG_HOME/reminder/config.json` (or `REMINDER_CONFIG`). Reading needs none. Writing needs a
-grant per capability and calendar uid, exactly as `reminder calendars` prints it; routes pick a
-calendar from what an item concerns. See [config.example.json](config.example.json).
+grant per capability (`calendar.create`, `reminder.create`, `reminder.update`) and calendar uid,
+exactly as `reminder calendars` prints it; routes pick a calendar from what an item concerns. See [config.example.json](config.example.json).
 
 ## Development
 

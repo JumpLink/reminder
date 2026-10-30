@@ -351,7 +351,8 @@ export interface ReminderFields {
   description?: string;
 }
 
-function timeLine(name: string, input: string): string {
+/** `DUE:20260101T090000Z` or `DUE;VALUE=DATE:20260101`, from caller input. */
+export function timeLine(name: string, input: string): string {
   const { value, allDay } = formatInputTime(input);
   return allDay ? `${name};VALUE=DATE:${value}` : `${name}:${value}`;
 }

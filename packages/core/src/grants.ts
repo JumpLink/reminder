@@ -9,7 +9,7 @@
 import { ConfigError, GrantDeniedError } from './errors.ts';
 import { _, fmt } from './i18n.ts';
 
-export const CAPABILITIES = ['calendar.create', 'reminder.create'] as const;
+export const CAPABILITIES = ['calendar.create', 'reminder.create', 'reminder.update'] as const;
 export type Capability = (typeof CAPABILITIES)[number];
 
 export interface Grant {

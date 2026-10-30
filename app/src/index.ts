@@ -9,11 +9,14 @@ import { uiLanguage } from './core/i18n.ts';
 import { VERSION } from './core/runtime.ts';
 import {
   calendarsCommand,
+  completeCommand,
   configCommand,
   eventsCommand,
   mcpCommand,
   prioritiesCommand,
+  reopenCommand,
   todosCommand,
+  updateCommand,
 } from './frontends/cli/index.ts';
 
 function reportError(err: unknown): void {
@@ -28,6 +31,9 @@ const parseArgs = () =>
     .command(eventsCommand)
     .command(todosCommand)
     .command(prioritiesCommand)
+    .command(updateCommand)
+    .command(completeCommand)
+    .command(reopenCommand)
     .command(configCommand)
     .command(mcpCommand)
     .demandCommand(1, _('Give a command — `reminder --help` lists them.'))

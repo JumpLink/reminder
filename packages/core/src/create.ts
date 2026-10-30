@@ -75,7 +75,9 @@ async function prepare(deps: CreateDeps, kind: ItemKind, input: CreateCommon) {
   const existing = await deps.backend.getItem(target, kind, uid);
   if (existing !== null) {
     const stored =
-      kind === 'event' ? readEvent(existing, target)?.source : readReminder(existing, target)?.source;
+      kind === 'event'
+        ? readEvent(existing.ical, target)?.source
+        : readReminder(existing.ical, target)?.source;
     if (stored !== key) {
       throw new ReminderError(
         fmt(_('UID {uid} already exists in "{target}" with a different source — refusing to merge'), {

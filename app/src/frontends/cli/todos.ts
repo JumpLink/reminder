@@ -7,7 +7,7 @@ import type { CommandModule } from 'yargs';
 import { _, fmt, listReminders, REMINDER_LIMIT } from '@reminder/core';
 
 import { createContext } from '../../core/context.ts';
-import { dim, omittedLine, pickArgv, printJson, runAndExit, shortTime } from './output.ts';
+import { omittedLine, pickArgv, printJson, reminderLine, runAndExit } from './output.ts';
 
 export const todosCommand: CommandModule = {
   command: 'todos',
@@ -41,11 +41,7 @@ export const todosCommand: CommandModule = {
       (result) => {
         if (asJson) return printJson(result);
         if (result.reminders.length === 0) console.log(_('No open reminders.'));
-        for (const r of result.reminders) {
-          const box = r.status === 'completed' ? '[x]' : r.status === 'cancelled' ? '[-]' : '[ ]';
-          const due = r.due ? dim(fmt(_('  due {time}'), { time: shortTime(r.due) })) : '';
-          console.log(`${box} ${r.summary ?? _('(no title)')}${due}`);
-        }
+        for (const r of result.reminders) console.log(reminderLine(r));
         const more = omittedLine(result.omitted, '--limit');
         if (more) console.log(more);
       },

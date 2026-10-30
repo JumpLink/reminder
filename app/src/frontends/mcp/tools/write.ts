@@ -1,5 +1,6 @@
 /**
- * The two write tools — creating an event and creating a reminder (ADR 0001 §4/§5).
+ * The write tools — creating an event, creating a reminder (ADR 0001 §4/§5) and changing one
+ * that exists (ADR 0003).
  *
  * Two lines guard them, deliberately independent of each other:
  *
@@ -21,6 +22,7 @@ import {
   createEvent,
   createReminder,
   resolveTarget,
+  updateReminder,
   type ItemKind,
   type ReminderConfig,
 } from '@reminder/core';
@@ -124,6 +126,62 @@ export function registerWriteTools(server: McpServer, context: Context): void {
       try {
         return mcpSuccess(
           await createReminder({ backend: context.backend(), config: context.config() }, params),
+        );
+      } catch (err) {
+        return mcpErrorFrom(err);
+      }
+    },
+  );
+
+  // One tool, not a second `reminders_complete`: completing is `status: "completed"`, and a
+  // separate tool would be a second name for the same capability, the same target check and the
+  // same write — one more thing a model has to choose between for no gain.
+  server.registerTool(
+    'reminders_update',
+    requiresCapability(
+      {
+        title: 'Change a reminder (task)',
+        description:
+          'Change one existing reminder (VTODO) in a task list the config grants `reminder.update` for, at the exact uid. Identify it by `uid` from reminders_list. Only the fields given are changed; everything else in the stored task, including properties this tool does not model (alarms, recurrence, categories), is left as it is. `null` clears `description` and `due`, `priority: 0` clears the priority. `status: "completed"` also stamps COMPLETED and PERCENT-COMPLETE 100; `"needs-action"` reopens and removes both. Without `calendar` the default task list is used. On CalDAV a concurrent change by another client makes this fail rather than overwrite it — re-read and retry. The tool is only served when a matching grant exists.',
+        inputSchema: {
+          calendar: z
+            .string()
+            .min(1)
+            .optional()
+            .describe('Task list uid from calendars_list; a grant must name exactly this uid'),
+          uid: z.string().min(1).describe('The reminder’s UID, as reminders_list reports it'),
+          summary,
+          description: z.string().nullable().optional().describe('null removes the description'),
+          due: z
+            .string()
+            .min(1)
+            .nullable()
+            .optional()
+            .describe('YYYY-MM-DD or ISO-8601 with offset or Z; null removes the due date'),
+          priority: z.number().int().min(0).max(9).optional().describe('1 (highest) to 9, 0 for none'),
+          status: z.enum(['needs-action', 'in-process', 'completed', 'cancelled']).optional(),
+        },
+        annotations: { readOnlyHint: false, openWorldHint: false },
+      },
+      {
+        capability: 'reminder.update',
+        targetOf: (args: { calendar?: string }) => targetOfCall(context.config(), 'reminder', args),
+      },
+    ),
+    async (params) => {
+      try {
+        const { description: newDescription, due, ...rest } = params;
+        return mcpSuccess(
+          await updateReminder(
+            { backend: context.backend(), config: context.config() },
+            {
+              ...rest,
+              // The core clears with an empty string; JSON has null for "no value", so the two
+              // spellings meet here rather than in the core.
+              ...(newDescription === undefined ? {} : { description: newDescription ?? '' }),
+              ...(due === undefined ? {} : { due: due ?? '' }),
+            },
+          ),
         );
       } catch (err) {
         return mcpErrorFrom(err);

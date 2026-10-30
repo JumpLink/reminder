@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-10-29 21:01+0100\n"
+"POT-Creation-Date: 2026-10-30 16:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,36 +18,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: ../packages/caldav/src/backend.ts:67
+#: ../packages/caldav/src/backend.ts:68
 msgid "{label}: the server rejected the credentials (401)"
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:72
+#: ../packages/caldav/src/backend.ts:73
 msgid "{label}: {method} failed with {status}"
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:77
+#: ../packages/caldav/src/backend.ts:78
 msgid "{label}: {message}"
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:107
+#: ../packages/caldav/src/backend.ts:108
 msgid "no calendar \"{uid}\""
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:107
+#: ../packages/caldav/src/backend.ts:108
 msgid "no task list \"{uid}\""
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:170
+#: ../packages/caldav/src/backend.ts:183
 msgid "createItem: the component has no UID"
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:176
+#: ../packages/caldav/src/backend.ts:189
 msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
 msgstr ""
 
-#: ../packages/caldav/src/backend.ts:182
+#: ../packages/caldav/src/backend.ts:195
 msgid "createItem: \"{calendar}\" refused the write (read-only?)"
+msgstr ""
+
+#: ../packages/caldav/src/backend.ts:211
+msgid "updateItem: no \"{uid}\" in \"{calendar}\""
+msgstr ""
+
+#: ../packages/caldav/src/backend.ts:218
+msgid "updateItem: \"{uid}\" changed on the server since it was read"
+msgstr ""
+
+#: ../packages/caldav/src/backend.ts:224
+msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
 msgstr ""
 
 #: ../packages/core/src/config.ts:62
@@ -100,7 +112,7 @@ msgstr ""
 msgid "backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/create.ts:62
+#: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:172
 msgid "summary must not be empty"
 msgstr ""
 
@@ -108,11 +120,12 @@ msgstr ""
 msgid "no enabled calendar \"{uid}\""
 msgstr ""
 
-#: ../packages/core/src/create.ts:70 ../packages/eds/src/driver.gjs.ts:71
+#: ../packages/core/src/create.ts:70 ../packages/core/src/update.ts:50
+#: ../packages/eds/src/driver.gjs.ts:71
 msgid "no enabled task list \"{uid}\""
 msgstr ""
 
-#: ../packages/core/src/create.ts:81
+#: ../packages/core/src/create.ts:83
 msgid ""
 "UID {uid} already exists in \"{target}\" with a different source — refusing "
 "to merge"
@@ -123,11 +136,11 @@ msgstr ""
 msgid "invalid date: {value}"
 msgstr ""
 
-#: ../packages/core/src/errors.ts:37
+#: ../packages/core/src/errors.ts:45
 msgid "authentication \"{scheme}\" is not supported yet — use \"basic\""
 msgstr ""
 
-#: ../packages/core/src/errors.ts:52
+#: ../packages/core/src/errors.ts:60
 msgid "no grant for {capability} on \"{target}\" — add {snippet} to grants"
 msgstr ""
 
@@ -167,7 +180,7 @@ msgstr ""
 msgid "invalid time: {value}"
 msgstr ""
 
-#: ../packages/core/src/ical.ts:371
+#: ../packages/core/src/ical.ts:372
 msgid "start and end must both be dates or both be times"
 msgstr ""
 
@@ -180,6 +193,26 @@ msgstr ""
 msgid ""
 "priorities.list \"{list}\" is not an enabled task list (see `reminder "
 "calendars`)"
+msgstr ""
+
+#: ../packages/core/src/rewrite.ts:94
+msgid "no {component} in the stored item"
+msgstr ""
+
+#: ../packages/core/src/rewrite.ts:97
+msgid "unterminated {component} in the stored item"
+msgstr ""
+
+#: ../packages/core/src/rewrite.ts:186
+msgid "priority must be 0 (none) to 9, not {value}"
+msgstr ""
+
+#: ../packages/core/src/rewrite.ts:192
+msgid "cannot set status \"{value}\""
+msgstr ""
+
+#: ../packages/core/src/rewrite.ts:205
+msgid "nothing to change"
 msgstr ""
 
 #: ../packages/core/src/routing.ts:36
@@ -234,7 +267,11 @@ msgstr ""
 msgid "source id must not contain a line break"
 msgstr ""
 
-#: ../packages/eds/src/driver.gjs.ts:182
+#: ../packages/core/src/update.ts:55
+msgid "no reminder {uid} in \"{target}\""
+msgstr ""
+
+#: ../packages/eds/src/driver.gjs.ts:184 ../packages/eds/src/driver.gjs.ts:194
 msgid "\"{calendar}\" is read-only"
 msgstr ""
 
@@ -337,8 +374,8 @@ msgstr ""
 msgid "recurring"
 msgstr ""
 
-#: src/frontends/cli/events.ts:54 src/frontends/cli/priorities.ts:53
-#: src/frontends/cli/priorities.ts:60 src/frontends/cli/todos.ts:47
+#: src/frontends/cli/events.ts:54 src/frontends/cli/output.ts:48
+#: src/frontends/cli/priorities.ts:53 src/frontends/cli/priorities.ts:60
 msgid "(no title)"
 msgstr ""
 
@@ -346,7 +383,11 @@ msgstr ""
 msgid "Run as an MCP server over stdio"
 msgstr ""
 
-#: src/frontends/cli/output.ts:45
+#: src/frontends/cli/output.ts:47
+msgid "  due {time}"
+msgstr ""
+
+#: src/frontends/cli/output.ts:52
 msgid "… {omitted} more — raise {flag}"
 msgstr ""
 
@@ -418,10 +459,51 @@ msgstr ""
 msgid "No open reminders."
 msgstr ""
 
-#: src/frontends/cli/todos.ts:46
-msgid "  due {time}"
+#: src/frontends/cli/update.ts:22
+msgid "Task list uid (see `reminder calendars`); the default list otherwise"
 msgstr ""
 
-#: src/index.ts:33
+#: src/frontends/cli/update.ts:41
+msgid "Updated {uid}."
+msgstr ""
+
+#: src/frontends/cli/update.ts:48
+msgid "Change a reminder (title, description, due date, priority, status)"
+msgstr ""
+
+#: src/frontends/cli/update.ts:51 src/frontends/cli/update.ts:84
+#: src/frontends/cli/update.ts:95
+msgid "The reminder UID (see `reminder todos --json`)"
+msgstr ""
+
+#: src/frontends/cli/update.ts:53
+msgid "New title"
+msgstr ""
+
+#: src/frontends/cli/update.ts:54
+msgid "New description; empty clears it"
+msgstr ""
+
+#: src/frontends/cli/update.ts:57
+msgid "New due date: YYYY-MM-DD or ISO-8601 with offset or Z; empty clears it"
+msgstr ""
+
+#: src/frontends/cli/update.ts:59
+msgid "1 (highest) to 9; 0 clears it"
+msgstr ""
+
+#: src/frontends/cli/update.ts:63
+msgid "New status"
+msgstr ""
+
+#: src/frontends/cli/update.ts:81
+msgid "Mark a reminder as done"
+msgstr ""
+
+#: src/frontends/cli/update.ts:92
+msgid "Mark a done reminder as open again"
+msgstr ""
+
+#: src/index.ts:39
 msgid "Give a command — `reminder --help` lists them."
 msgstr ""

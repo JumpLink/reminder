@@ -14,7 +14,7 @@ import { createRecorder } from './recorder.ts';
 // The catalogue is the client contract. Adding a tool here is a decision (ADR 0001 §4), not a
 // side effect of a refactor.
 const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'priorities_list', 'reminders_list'];
-const WRITE_TOOLS = ['events_create', 'reminders_create'];
+const WRITE_TOOLS = ['events_create', 'reminders_create', 'reminders_update'];
 
 function withGrants(...grants: ReminderConfig['grants']): ReminderConfig {
   return { ...emptyConfig(), grants };
@@ -53,6 +53,17 @@ export default async () => {
         staticContext(backend, withGrants({ capability: 'reminder.create', target: 'list' })),
       );
       expect([...reminderRec.names()].sort()).toEqualArray([...READ_ONLY_TOOLS, 'reminders_create'].sort());
+
+      // Creating and updating are separate grants: one does not bring the other's tool along.
+      const updateRec = createRecorder();
+      registerTools(
+        updateRec.server,
+        staticContext(backend, withGrants({ capability: 'reminder.update', target: 'list' })),
+      );
+      expect([...updateRec.names()].sort()).toEqualArray([...READ_ONLY_TOOLS, 'reminders_update'].sort());
+      expect(updateRec.tools.find((t) => t.name === 'reminders_update')?.annotations?.readOnlyHint).toBe(
+        false,
+      );
     });
 
     await it('drops a tool that carries no annotation at all', async () => {
@@ -206,6 +217,73 @@ export default async () => {
       });
       expect(res.isError).toBe(true);
       expect(res.content[0].text).toContain('summary');
+    });
+  });
+
+  await describe('MCP reminders_update', async () => {
+    const config = withGrants(
+      { capability: 'reminder.update', target: 'list' },
+      { capability: 'reminder.update', target: 'other' },
+    );
+
+    const open = (uid: string) =>
+      createFakeBackend([calendar('list', 'reminder', 'Todo'), calendar('other', 'reminder', 'Other')], {
+        list: [vtodo(uid, ['SUMMARY:Reply', 'DUE;VALUE=DATE:20261112', 'DESCRIPTION:Ask about the form'])],
+      });
+
+    await it('changes only the fields it is given and clears with null', async () => {
+      const store = open('t1');
+      const rec = createRecorder();
+      registerTools(rec.server, staticContext(store, config));
+      const res = JSON.parse(
+        (await rec.call('reminders_update', { calendar: 'list', uid: 't1', due: null, priority: 2 }))
+          .content[0].text,
+      );
+      expect(res.reminder.due).toBe(null);
+      expect(res.reminder.priority).toBe(2);
+      expect(res.reminder.summary).toBe('Reply');
+      expect(res.reminder.description).toBe('Ask about the form');
+    });
+
+    await it('completes a task and reopens it', async () => {
+      const store = open('t1');
+      const rec = createRecorder();
+      registerTools(rec.server, staticContext(store, config));
+      const done = JSON.parse(
+        (await rec.call('reminders_update', { uid: 't1', calendar: 'list', status: 'completed' })).content[0]
+          .text,
+      );
+      expect(done.reminder.status).toBe('completed');
+      const again = JSON.parse(
+        (await rec.call('reminders_update', { uid: 't1', calendar: 'list', status: 'needs-action' }))
+          .content[0].text,
+      );
+      expect(again.reminder.status).toBe('needs-action');
+      expect(again.reminder.completed).toBe(null);
+    });
+
+    await it('refuses an empty change set and an unknown uid, without writing', async () => {
+      const store = open('t1');
+      const rec = createRecorder();
+      registerTools(rec.server, staticContext(store, config));
+      expect((await rec.call('reminders_update', { calendar: 'list', uid: 't1' })).isError).toBe(true);
+      expect(
+        (await rec.call('reminders_update', { calendar: 'list', uid: 'ghost', summary: 'x' })).isError,
+      ).toBe(true);
+      expect(store.calls.some((c) => c.startsWith('updateItem:'))).toBe(false);
+    });
+
+    await it('refuses a list no grant names, without reading it', async () => {
+      const store = open('t1');
+      const rec = createRecorder();
+      registerTools(
+        rec.server,
+        staticContext(store, withGrants({ capability: 'reminder.update', target: 'list' })),
+      );
+      const res = await rec.call('reminders_update', { calendar: 'other', uid: 't1', summary: 'No' });
+      expect(res.isError).toBe(true);
+      expect(res.content[0].text).toContain('reminder.update');
+      expect(store.calls.some((c) => c.startsWith('getItem:'))).toBe(false);
     });
   });
 

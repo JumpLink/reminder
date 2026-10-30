@@ -9,12 +9,13 @@
  * window and nothing is expanded here.
  */
 
-import { DavClient, DavError, basicAuth, type Collection, type FetchLike } from '@gjsify/dav';
+import { DavClient, DavError, basicAuth, type Collection, type DavObject, type FetchLike } from '@gjsify/dav';
 
 import {
   _,
   BackendAuthError,
   BackendError,
+  ConflictError,
   errorMessage,
   fmt,
   type CalendarBackend,
@@ -109,17 +110,34 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
     return found;
   }
 
-  async function fetchData(c: Collection, urls: string[]): Promise<string[]> {
-    const out: string[] = [];
+  async function fetchObjects(c: Collection, urls: string[]): Promise<DavObject[]> {
+    const out: DavObject[] = [];
     for (let i = 0; i < urls.length; i += MULTIGET_CHUNK) {
-      for (const o of await dav.getObjects(c.url, 'caldav', urls.slice(i, i + MULTIGET_CHUNK)))
-        if (o.data) out.push(o.data);
+      out.push(...(await dav.getObjects(c.url, 'caldav', urls.slice(i, i + MULTIGET_CHUNK))));
     }
     return out;
   }
 
+  async function fetchData(c: Collection, urls: string[]): Promise<string[]> {
+    return (await fetchObjects(c, urls)).flatMap((o) => (o.data ? [o.data] : []));
+  }
+
   const resourceUrl = (c: Collection, uid: string) =>
     `${c.url.replace(/\/$/, '')}/${encodeURIComponent(uid)}.ics`;
+
+  /**
+   * The resource that holds `uid`, with the etag the server reported for it.
+   *
+   * Our own creates live at `<uid>.ics`, so ask there first; other clients name resources freely,
+   * so a miss falls back to a scan. @gjsify/dav has no UID filter for calendar-query.
+   */
+  async function locate(c: Collection, kind: ItemKind, uid: string): Promise<DavObject | null> {
+    const holds = (o: DavObject) => o.data !== undefined && uidOf(o.data) === uid;
+    const direct = (await fetchObjects(c, [resourceUrl(c, uid)])).find(holds);
+    if (direct) return direct;
+    const listed = await dav.listObjects(c.url, 'caldav', { component: COMPONENT[kind] });
+    return (await fetchObjects(c, listed.map((o) => o.url))).find(holds) ?? null;
+  }
 
   return {
     id: 'caldav',
@@ -154,13 +172,8 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
 
     getItem: (calendarUid, kind, uid) =>
       boundary('getItem', async () => {
-        const c = await collection(kind, calendarUid);
-        // Our own creates live at <uid>.ics, so ask there first; other clients name resources
-        // freely, so a miss falls back to a scan. @gjsify/dav has no UID filter for calendar-query.
-        const direct = (await fetchData(c, [resourceUrl(c, uid)])).find((t) => uidOf(t) === uid);
-        if (direct) return direct;
-        const listed = await dav.listObjects(c.url, 'caldav', { component: COMPONENT[kind] });
-        return (await fetchData(c, listed.map((o) => o.url))).find((t) => uidOf(t) === uid) ?? null;
+        const found = await locate(await collection(kind, calendarUid), kind, uid);
+        return found?.data === undefined ? null : { ical: found.data, etag: found.etag };
       }),
 
     createItem: (calendarUid, kind, ical) =>
@@ -186,6 +199,34 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
           throw err;
         }
         return uid;
+      }),
+
+    updateItem: (calendarUid, kind, uid, ical, etag) =>
+      boundary('updateItem', async () => {
+        const c = await collection(kind, calendarUid);
+        // The resource is looked up again: between the read and this call nothing moved it, but
+        // the port passes a UID, not a URL, and only the server knows which path holds it.
+        const found = await locate(c, kind, uid);
+        if (!found) throw new BackendError(
+            fmt(_('updateItem: no "{uid}" in "{calendar}"'), { uid, calendar: calendarUid }),
+          );
+        try {
+          await dav.put(found.url, wrap(ical), etag ? { ifMatch: etag } : {});
+        } catch (err) {
+          if (err instanceof DavError && err.isPreconditionFailed)
+            throw new ConflictError(
+              fmt(_('updateItem: "{uid}" changed on the server since it was read'), { uid }),
+              'http',
+              412,
+            );
+          if (err instanceof DavError && err.status === 403)
+            throw new BackendError(
+              fmt(_('updateItem: "{calendar}" refused the write (read-only?)'), { calendar: calendarUid }),
+              'http',
+              403,
+            );
+          throw err;
+        }
       }),
   };
 }
