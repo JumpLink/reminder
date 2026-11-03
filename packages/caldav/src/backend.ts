@@ -129,13 +129,13 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
    * The resource that holds `uid`, with the etag the server reported for it.
    *
    * Our own creates live at `<uid>.ics`, so ask there first; other clients name resources freely,
-   * so a miss falls back to a scan. @gjsify/dav has no UID filter for calendar-query.
+   * so a miss asks the server for the UID with a calendar-query prop-filter.
    */
   async function locate(c: Collection, kind: ItemKind, uid: string): Promise<DavObject | null> {
     const holds = (o: DavObject) => o.data !== undefined && uidOf(o.data) === uid;
     const direct = (await fetchObjects(c, [resourceUrl(c, uid)])).find(holds);
     if (direct) return direct;
-    const listed = await dav.listObjects(c.url, 'caldav', { component: COMPONENT[kind] });
+    const listed = await dav.listObjects(c.url, 'caldav', { component: COMPONENT[kind], uid });
     return (await fetchObjects(c, listed.map((o) => o.url))).find(holds) ?? null;
   }
 

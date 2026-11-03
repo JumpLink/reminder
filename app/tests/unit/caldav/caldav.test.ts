@@ -95,6 +95,23 @@ export default async () => {
       });
     });
 
+    await it('finds an item stored under a foreign resource name with a uid filter', async () => {
+      await withServer(async (dav) => {
+        dav.resources.set(
+          '/cal/events/renamed-by-other-client.ics',
+          wrap('BEGIN:VEVENT\r\nUID:foreign\r\nDTSTART:20261012T080000Z\r\nSUMMARY:Other\r\nEND:VEVENT\r\n'),
+        );
+        const b = createCaldavBackend({ url: dav.url, username: USER, password: PASSWORD });
+        const [cal] = await b.listCalendars('event');
+        const found = await b.getItem(cal.uid, 'event', 'foreign');
+        expect(found?.ical.includes('UID:foreign')).toBe(true);
+        const query = dav.requests.find((r) => r.method === 'REPORT' && r.body.includes('text-match'));
+        expect(query?.body.includes('foreign')).toBe(true);
+        const multigets = dav.requests.filter((r) => r.body.includes('calendar-multiget'));
+        expect(multigets.every((r) => !r.body.includes('single.ics'))).toBe(true);
+      });
+    });
+
     await it('creates a wrapped component with If-None-Match and refuses a duplicate', async () => {
       await withServer(async (dav) => {
         const b = createCaldavBackend({ url: dav.url, username: USER, password: PASSWORD });

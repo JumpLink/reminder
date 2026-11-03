@@ -124,12 +124,14 @@ export async function startFakeDav(options: {
           );
         }
         const wanted = /comp-filter name="(VEVENT|VTODO)"/.exec(body)?.[1] ?? 'VEVENT';
+        const wantedUid = /<C:text-match[^>]*>([^<]*)<\/C:text-match>/.exec(body)?.[1];
         return send(
           res,
           207,
           multistatus(
             inDir
               .filter((p) => resources.get(p)!.includes(`BEGIN:${wanted}`))
+              .filter((p) => wantedUid === undefined || resources.get(p)!.includes(`UID:${wantedUid}\r\n`))
               .map((p) => response(p, `<D:getetag>${etagOf(p)}</D:getetag>`))
               .join(''),
           ),
