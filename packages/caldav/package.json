@@ -16,7 +16,7 @@
     "src"
   ],
   "dependencies": {
-    "@gjsify/dav": "0.64.16",
+    "@gjsify/dav": "0.64.32",
     "@reminder/core": "*"
   }
 }
