@@ -14,4 +14,6 @@ export * from './create.ts';
 export * from './rewrite.ts';
 export * from './update.ts';
 export * from './priorities.ts';
+export * from './cache.ts';
+export * from './secrets.ts';
 export * from './i18n.ts';
