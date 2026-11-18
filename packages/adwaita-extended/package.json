@@ -1,0 +1,50 @@
+{
+  "name": "@gjsify/adwaita-extended",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "description": "Reusable GTK4/libadwaita widgets that libadwaita itself does not ship, each with a story. Incubating in reminder; moves to gjsify unchanged. Knows nothing about the app that embeds it: never imports @reminder/* or @gjsify/pim.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./due-state": "./src/due-state.ts"
+  },
+  "scripts": {
+    "check": "gjsify tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint .",
+    "stories": "gjsify storybook",
+    "stories:build": "gjsify storybook --build-only --out dist/storybook.gjs.mjs",
+    "i18n:extract": "./dev-i18n.sh"
+  },
+  "files": [
+    "src",
+    "po",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@girs/adw-1": "^5.4.0",
+    "@girs/gtk-4.0": "^5.4.0",
+    "@girs/gobject-2.0": "^4.1.0"
+  },
+  "devDependencies": {
+    "@girs/adw-1": "5.4.0",
+    "@girs/gdk-4.0": "5.4.0",
+    "@girs/gio-2.0": "^4.1.0",
+    "@girs/gjs": "^4.1.0",
+    "@girs/glib-2.0": "^4.1.0",
+    "@girs/gobject-2.0": "^4.1.0",
+    "@girs/gtk-4.0": "5.4.0",
+    "@gjsify/cli": "0.64.32",
+    "@types/node": "^26.1.2",
+    "@gjsify/stories": "0.64.32",
+    "@gjsify/storybook": "0.64.32"
+  },
+  "gjsify": {
+    "storybook": {
+      "applicationId": "org.gjsify.AdwaitaExtended.Storybook",
+      "title": "Adwaita Extended",
+      "stories": "src",
+      "globals": "auto"
+    }
+  }
+}

@@ -22,6 +22,8 @@ import cacheFs from './unit/cache/cache-fs.test.ts';
 import caldav from './unit/caldav/caldav.test.ts';
 import eds from './unit/eds/optional.test.ts';
 
+import dueState from './unit/widgets/due-state.test.ts';
+
 import mcpTools from './unit/mcp/tools.test.ts';
 
 import i18n from './unit/i18n/i18n.test.ts';
@@ -44,6 +46,7 @@ run({
   cacheFs,
   caldav,
   eds,
+  dueState,
   mcpTools,
   i18n,
 });
