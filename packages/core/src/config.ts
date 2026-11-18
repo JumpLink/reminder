@@ -3,9 +3,20 @@
  *
  * Unknown top-level keys are carried through and written back. A build that does not know a key
  * must not erase it on save: curlew learned that an older build dropping `grants` fails closed on
- * read and destructively on write.
+ * read and destructively on write. The same holds for keys inside an account.
+ *
+ * Two spellings, one model (docs/adr/0005). A file with `accounts` names them; a file without is
+ * read as ONE account, `default`, taking the top-level `backend` and `caldav` as they are written.
+ * The spelling a file was read in is the spelling it is written back in: there is no version
+ * number, no migration and no rewrite on save.
  */
 
+import {
+  checkAccountTargets,
+  DEFAULT_ACCOUNT_ID,
+  parseAccountId,
+  type AccountRef,
+} from './accounts.ts';
 import { ConfigError } from './errors.ts';
 import { parseGrants, type Grant } from './grants.ts';
 import { parseDefaults, parseRoutes, type RoutingConfig } from './routing.ts';
@@ -40,20 +51,68 @@ export interface CaldavConfig {
   passwordEnv: string;
 }
 
-export interface ReminderConfig extends RoutingConfig {
+/** One place calendars come from: an id the person chose plus what its backend needs. */
+export interface AccountConfig extends AccountRef {
+  id: string;
   backend: BackendId;
-  grants: Grant[];
-  priorities: PrioritiesConfig;
-  /** Present when `backend` is `caldav`. */
+  /** Present when `backend` is `caldav`. Two CalDAV accounts carry two URLs and two variables. */
   caldav?: CaldavConfig;
   /** Keys this build does not know, kept verbatim. */
   extra: Record<string, unknown>;
 }
 
-const KNOWN = new Set(['backend', 'grants', 'routes', 'defaults', 'priorities', 'caldav']);
+export interface ReminderConfig extends RoutingConfig {
+  /** Every configured account, in file order. Never empty. */
+  accounts: AccountConfig[];
+  /**
+   * The one-account spelling, present only for a file written without `accounts` — and the marker
+   * that says so. Undefined means the file names its accounts, and asking "which backend" has no
+   * answer: read `accounts`.
+   */
+  backend?: BackendId;
+  /** The one-account spelling's CalDAV section; see `backend`. */
+  caldav?: CaldavConfig;
+  grants: Grant[];
+  priorities: PrioritiesConfig;
+  /** Keys this build does not know, kept verbatim. */
+  extra: Record<string, unknown>;
+}
+
+const KNOWN = new Set(['accounts', 'backend', 'grants', 'routes', 'defaults', 'priorities', 'caldav']);
+const ACCOUNT_KNOWN = new Set(['id', 'backend', 'caldav']);
 
 export function emptyConfig(): ReminderConfig {
-  return { backend: 'eds', grants: [], routes: [], defaults: {}, priorities: {}, extra: {} };
+  return {
+    accounts: [{ id: DEFAULT_ACCOUNT_ID, backend: 'eds', extra: {} }],
+    backend: 'eds',
+    grants: [],
+    routes: [],
+    defaults: {},
+    priorities: {},
+    extra: {},
+  };
+}
+
+/**
+ * `index` names the account the value came from; without one the file has no `accounts` and the
+ * message is the one a v1 config always got. Two whole msgids rather than a translated fragment
+ * glued onto a translated sentence: only the whole sentence can be reordered by a translator.
+ */
+function parseBackendId(value: unknown, index?: number): BackendId {
+  if (!(BACKENDS as readonly unknown[]).includes(value)) {
+    const backend = JSON.stringify(value);
+    const known = BACKENDS.join(', ');
+    throw new ConfigError(
+      index === undefined
+        ? fmt(_('backend {backend} is not supported (known: {known})'), { backend, known })
+        : fmt(_('accounts[{index}]: backend {backend} is not supported (known: {known})'), {
+            index,
+            backend,
+            known,
+          }),
+    );
+  }
+  return value as BackendId;
 }
 
 function parsePriorities(value: unknown): PrioritiesConfig {
@@ -112,35 +171,86 @@ function parseCaldav(value: unknown): CaldavConfig {
   };
 }
 
+function parseAccounts(value: unknown): AccountConfig[] {
+  if (!Array.isArray(value) || value.length === 0)
+    throw new ConfigError(_('accounts must be a list with at least one account'));
+  const seen = new Set<string>();
+  return value.map((entry: unknown, index): AccountConfig => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry))
+      throw new ConfigError(fmt(_('accounts[{index}] must be an object'), { index }));
+    const record = entry as Record<string, unknown>;
+    const id = parseAccountId(record.id, index);
+    if (seen.has(id)) throw new ConfigError(fmt(_('accounts[{index}]: id "{id}" is used twice'), { index, id }));
+    seen.add(id);
+    const backend = parseBackendId(record.backend ?? 'eds', index);
+    const extra: Record<string, unknown> = {};
+    for (const [key, v] of Object.entries(record)) if (!ACCOUNT_KNOWN.has(key)) extra[key] = v;
+    // Another backend's section stays in the file untouched (see the header: never erase on save).
+    if (backend !== 'caldav' && record.caldav !== undefined) extra.caldav = record.caldav;
+    return { id, backend, ...(backend === 'caldav' ? { caldav: parseCaldav(record.caldav) } : {}), extra };
+  });
+}
+
+/** Everything in the file that names a calendar: what §2 of docs/adr/0005 asks to be qualified. */
+function targetsOf(config: ReminderConfig): string[] {
+  return [
+    ...config.grants.map((g) => g.target),
+    ...config.routes.map((r) => r.target),
+    ...Object.values(config.defaults),
+    ...(config.priorities.list ? [config.priorities.list] : []),
+  ];
+}
+
 export function parseConfig(raw: unknown): ReminderConfig {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw))
     throw new ConfigError(_('config must be a JSON object'));
   const record = raw as Record<string, unknown>;
-  const backend = record.backend ?? 'eds';
-  if (!(BACKENDS as readonly unknown[]).includes(backend)) {
-    throw new ConfigError(
-      fmt(_('backend {backend} is not supported (known: {known})'), {
-        backend: JSON.stringify(backend),
-        known: BACKENDS.join(', '),
-      }),
-    );
-  }
   const extra: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(record)) if (!KNOWN.has(key)) extra[key] = value;
-  // Another backend's section stays in the file untouched (see the header: never erase on save).
-  if (backend !== 'caldav' && record.caldav !== undefined) extra.caldav = record.caldav;
-  return {
-    backend: backend as BackendId,
+
+  let shape: Pick<ReminderConfig, 'accounts' | 'backend' | 'caldav'>;
+  if (record.accounts === undefined) {
+    const backend = parseBackendId(record.backend ?? 'eds');
+    const caldav = backend === 'caldav' ? parseCaldav(record.caldav) : undefined;
+    // Another backend's section stays in the file untouched (see the header: never erase on save).
+    if (backend !== 'caldav' && record.caldav !== undefined) extra.caldav = record.caldav;
+    shape = {
+      accounts: [{ id: DEFAULT_ACCOUNT_ID, backend, ...(caldav ? { caldav } : {}), extra: {} }],
+      backend,
+      ...(caldav ? { caldav } : {}),
+    };
+  } else {
+    // Guessing which of the two spellings wins is how a write lands on the wrong server.
+    for (const key of ['backend', 'caldav']) {
+      if (record[key] !== undefined)
+        throw new ConfigError(fmt(_('a file with accounts must not also have a top-level {key}'), { key }));
+    }
+    shape = { accounts: parseAccounts(record.accounts) };
+  }
+
+  const config: ReminderConfig = {
+    ...shape,
     grants: parseGrants(record.grants),
     routes: parseRoutes(record.routes),
     defaults: parseDefaults(record.defaults),
     priorities: parsePriorities(record.priorities),
-    ...(backend === 'caldav' ? { caldav: parseCaldav(record.caldav) } : {}),
     extra,
   };
+  checkAccountTargets(config.accounts, targetsOf(config));
+  return config;
+}
+
+function serializeAccount(account: AccountConfig): Record<string, unknown> {
+  const { extra, id, backend, caldav } = account;
+  return { ...extra, id, backend, ...(caldav ? { caldav } : {}) };
 }
 
 export function serializeConfig(config: ReminderConfig): string {
-  const { extra, ...known } = config;
-  return `${JSON.stringify({ ...extra, ...known }, null, 2)}\n`;
+  const { extra, accounts, backend, caldav, ...rest } = config;
+  // Written back in the spelling it was read in: `backend` present means the file had no accounts.
+  const shape =
+    backend === undefined
+      ? { accounts: accounts.map(serializeAccount) }
+      : { backend, ...(caldav ? { caldav } : {}) };
+  return `${JSON.stringify({ ...extra, ...shape, ...rest }, null, 2)}\n`;
 }

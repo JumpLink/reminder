@@ -21,7 +21,9 @@ export const configCommand: CommandModule = {
         const config = loadConfig(path);
         return {
           path,
-          backend: config.backend,
+          // Ids, not backends: with several accounts there is no single backend, and `reminder
+          // accounts` is where the per-account detail belongs.
+          accounts: config.accounts.map((a) => a.id),
           grants: config.grants.length,
           routes: config.routes.length,
           defaults: Object.keys(config.defaults),
@@ -31,8 +33,8 @@ export const configCommand: CommandModule = {
         if (asJson) return printJson(summary);
         console.log(summary.path);
         console.log(
-          fmt(_('backend {backend} · {grants} grants · {routes} routes · defaults: {defaults}'), {
-            backend: summary.backend,
+          fmt(_('accounts {accounts} · {grants} grants · {routes} routes · defaults: {defaults}'), {
+            accounts: summary.accounts.join(', '),
             grants: summary.grants,
             routes: summary.routes,
             defaults: summary.defaults.join(', ') || _('none'),

@@ -9,6 +9,7 @@ import { uiLanguage } from './core/i18n.ts';
 import { IDENTITY } from './core/identity.ts';
 import { VERSION } from './core/runtime.ts';
 import {
+  accountsCommand,
   calendarsCommand,
   completeCommand,
   configCommand,
@@ -28,6 +29,7 @@ function reportError(err: unknown): void {
 
 const parseArgs = () =>
   yargs(hideBin(process.argv))
+    .command(accountsCommand)
     .command(calendarsCommand)
     .command(eventsCommand)
     .command(todosCommand)

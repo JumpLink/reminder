@@ -1,5 +1,6 @@
 ../packages/caldav/src/backend.ts
 ../packages/caldav/src/index.ts
+../packages/core/src/accounts.ts
 ../packages/core/src/backend.ts
 ../packages/core/src/compare.ts
 ../packages/core/src/config.ts
@@ -27,7 +28,9 @@ src/core/config.ts
 src/core/context.ts
 src/core/i18n-init.ts
 src/core/i18n.ts
+src/core/identity.ts
 src/core/runtime.ts
+src/frontends/cli/accounts.ts
 src/frontends/cli/calendars.ts
 src/frontends/cli/config.ts
 src/frontends/cli/events.ts

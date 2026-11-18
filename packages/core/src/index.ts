@@ -3,6 +3,7 @@ export * from './errors.ts';
 export * from './backend.ts';
 export * from './ical.ts';
 export * from './source-key.ts';
+export * from './accounts.ts';
 export * from './grants.ts';
 export * from './routing.ts';
 export * from './config.ts';
