@@ -26,10 +26,6 @@ import Template, { type Children, GTypeName, InternalChildren } from './window.b
 // oxlint-disable-next-line no-unsafe-declaration-merging -- GJS installs the internal children
 export interface MainWindow extends Children {}
 
-// The exact types the Gtk 5.x typings ask for, read off the call sites instead of imported from the nested copy.
-type NestedMenuModel = NonNullable<Gtk.MenuButton['menuModel']>;
-type NestedAction = Parameters<Adw.ApplicationWindow['add_action']>[0];
-
 function placeholder(title: string, description: string, icon: string): Adw.StatusPage {
   return new Adw.StatusPage({ title, description, iconName: icon, vexpand: true });
 }
@@ -89,10 +85,9 @@ export class MainWindow extends Adw.ApplicationWindow {
     menu.append(_('Keyboard Shortcuts'), 'win.shortcuts');
     menu.append(_('About reminder'), 'app.about');
     const label = _('Main Menu');
-    // duplicate @girs/gio-2.0 (4.x via app deps, 5.x via @girs/gtk-4.0 5.4.0): remove once the @girs versions are aligned
     const button = new Gtk.MenuButton({
       iconName: 'open-menu-symbolic',
-      menuModel: menu as unknown as NestedMenuModel,
+      menuModel: menu,
       primary: true,
       tooltipText: label,
     });
@@ -127,14 +122,12 @@ export class MainWindow extends Adw.ApplicationWindow {
     VIEW_NAMES.forEach((name, index) => {
       const action = new Gio.SimpleAction({ name: `view-${name}` });
       action.connect('activate', () => this.stack.set_visible_child_name(name));
-      // duplicate @girs/gio-2.0 (4.x via app deps, 5.x via @girs/gtk-4.0 5.4.0): remove once the @girs versions are aligned
-      this.add_action(action as unknown as NestedAction);
+      this.add_action(action);
       app?.set_accels_for_action(`win.view-${name}`, [`<primary>${index + 1}`]);
     });
     const shortcuts = new Gio.SimpleAction({ name: 'shortcuts' });
     shortcuts.connect('activate', () => this.showShortcuts(views));
-    // duplicate @girs/gio-2.0 (4.x via app deps, 5.x via @girs/gtk-4.0 5.4.0): remove once the @girs versions are aligned
-    this.add_action(shortcuts as unknown as NestedAction);
+    this.add_action(shortcuts);
     app?.set_accels_for_action('win.shortcuts', ['<primary>question']);
   }
 
