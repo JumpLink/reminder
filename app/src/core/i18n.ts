@@ -16,7 +16,9 @@ import { fileURLToPath } from 'node:url';
 
 import { _, setCoreTranslator } from '@reminder/core';
 
-export const TEXT_DOMAIN = 'reminder';
+import { IDENTITY } from './identity.ts';
+
+export const TEXT_DOMAIN = IDENTITY.gettextDomain;
 
 interface GjsGettext {
   LocaleCategory: { ALL: number };
