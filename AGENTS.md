@@ -30,19 +30,19 @@ exists: [ADR 0003](docs/adr/0003-managing-reminders-in-place.md).
 
 | Package | What | May import |
 |---|---|---|
-| `@reminder/core` | types, errors, `CalendarBackend` port, iCalendar, grants, routing, config model, read + create + update | nothing (`types: []`) |
-| `@reminder/eds` | EDS driver for the port; typelibs load lazily | `@reminder/core`, `gi://` |
+| `@gjsify/pim` | incubating ([ADR 0016](docs/adr/0016-gjsify-pim-incubates-here.md), MIT): the `CalendarBackend` port, its types and backend errors; drivers `@gjsify/pim/caldav` and `@gjsify/pim/eds` (typelibs load lazily) | `@gjsify/dav`, `gi://` in `*.gjs.ts` only — never `@reminder/*` |
+| `@reminder/core` | types, errors, iCalendar, grants, routing, config model, read + create + update; re-exports the port from `@gjsify/pim` | the root of `@gjsify/pim` only (`types: []`) |
 | `@reminder/cache-fs` | `CacheStore` driver: files under `$XDG_CACHE_HOME`, atomic writes ([ADR 0010](docs/adr/0010-cache-and-synchronisation.md)) | `@reminder/core`, `node:*` |
 | `@reminder/secrets-libsecret` | `SecretStore` driver over `gi://Secret`, lazy; no service = unavailable ([ADR 0011](docs/adr/0011-credentials-through-a-secret-store-port.md)) | `@reminder/core`, `gi://` |
 | `reminder-cli` (`app/`) | yargs CLI, MCP server, config file I/O, backend factory | everything |
 
-A new backend (CalDAV) is a new package implementing `CalendarBackend` plus a `backend` value in
-`BACKENDS`; callers do not change.
+A new backend is a new driver in `@gjsify/pim` implementing `CalendarBackend` plus a `backend`
+value in `BACKENDS`; callers do not change.
 
 ## Conventions
 
 - Files with a `gi://` import are named `*.gjs.ts`; EDS namespaces are imported **type-only** at top
-  level and loaded through `optionalNamespace` (see `packages/eds/src/optional.ts`).
+  level and loaded through `optionalNamespace` (see `packages/pim/src/optional.ts`).
 - No TS parameter properties (Node runs the sources with strip-types). No `any`.
 - User-facing strings: English msgids through `_()`/`_n()` (gettext, German in `app/po/de.po`); see docs/i18n-status.md. MCP tool text and JSON output stay English. Sort with code-unit compare, not `localeCompare`.
 - Result caps live in `packages/core/src/limits.ts` only; the CLI help and MCP schemas read them.

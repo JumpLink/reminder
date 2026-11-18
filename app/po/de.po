@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 16:12+0100\n"
+"POT-Creation-Date: 2026-11-18 16:27+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -16,53 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: ../packages/caldav/src/backend.ts:68
-msgid "{label}: the server rejected the credentials (401)"
-msgstr "{label}: Der Server hat die Zugangsdaten abgelehnt (401)"
-
-#: ../packages/caldav/src/backend.ts:73
-msgid "{label}: {method} failed with {status}"
-msgstr "{label}: {method} ist mit {status} fehlgeschlagen"
-
-#: ../packages/caldav/src/backend.ts:78
-msgid "{label}: {message}"
-msgstr "{label}: {message}"
-
-#: ../packages/caldav/src/backend.ts:108
-msgid "no calendar \"{uid}\""
-msgstr "Kein Kalender „{uid}“"
-
-#: ../packages/caldav/src/backend.ts:108
-msgid "no task list \"{uid}\""
-msgstr "Keine Aufgabenliste „{uid}“"
-
-#: ../packages/caldav/src/backend.ts:183
-msgid "createItem: the component has no UID"
-msgstr "createItem: Die Komponente hat keine UID"
-
-#: ../packages/caldav/src/backend.ts:189
-msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
-msgstr "createItem: „{uid}“ existiert in „{calendar}“ bereits"
-
-#: ../packages/caldav/src/backend.ts:195
-msgid "createItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-"createItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
-
-#: ../packages/caldav/src/backend.ts:211
-msgid "updateItem: no \"{uid}\" in \"{calendar}\""
-msgstr "updateItem: Kein „{uid}“ in „{calendar}“"
-
-#: ../packages/caldav/src/backend.ts:218
-msgid "updateItem: \"{uid}\" changed on the server since it was read"
-msgstr ""
-"updateItem: „{uid}“ hat sich auf dem Server geändert, seit es gelesen wurde"
-
-#: ../packages/caldav/src/backend.ts:224
-msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-"updateItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
 
 #: ../packages/core/src/accounts.ts:30
 msgid "accounts[{index}]: id must be a non-empty string"
@@ -187,12 +140,12 @@ msgstr ""
 msgid "summary must not be empty"
 msgstr "Der Titel darf nicht leer sein"
 
-#: ../packages/core/src/create.ts:70 ../packages/eds/src/driver.gjs.ts:71
+#: ../packages/core/src/create.ts:70 ../packages/pim/src/eds/driver.gjs.ts:73
 msgid "no enabled calendar \"{uid}\""
 msgstr "Kein aktivierter Kalender „{uid}“"
 
 #: ../packages/core/src/create.ts:70 ../packages/core/src/update.ts:50
-#: ../packages/eds/src/driver.gjs.ts:71
+#: ../packages/pim/src/eds/driver.gjs.ts:73
 msgid "no enabled task list \"{uid}\""
 msgstr "Keine aktivierte Aufgabenliste „{uid}“"
 
@@ -209,13 +162,13 @@ msgstr ""
 msgid "invalid date: {value}"
 msgstr "Ungültiges Datum: {value}"
 
-#: ../packages/core/src/errors.ts:45
+#: ../packages/core/src/errors.ts:28
 msgid "authentication \"{scheme}\" is not supported yet — use \"basic\""
 msgstr ""
 "Die Authentifizierung „{scheme}“ wird noch nicht unterstützt — verwende "
 "„basic“"
 
-#: ../packages/core/src/errors.ts:60
+#: ../packages/core/src/errors.ts:43
 msgid "no grant for {capability} on \"{target}\" — add {snippet} to grants"
 msgstr ""
 "Keine Freigabe für {capability} auf „{target}“ — füge {snippet} zu grants "
@@ -346,7 +299,8 @@ msgstr "\"{ref}\" ist keine Geheimnis-Referenz — schreibe <Konto>:<Zweck>"
 
 #: ../packages/core/src/secrets.ts:60
 msgid "the environment is read-only — export the variable instead"
-msgstr "Die Umgebung ist schreibgeschützt — exportiere stattdessen die Variable"
+msgstr ""
+"Die Umgebung ist schreibgeschützt — exportiere stattdessen die Variable"
 
 #: ../packages/core/src/secrets.ts:84
 msgid "no secret store configured"
@@ -368,15 +322,63 @@ msgstr "Die Quell-ID darf keinen Zeilenumbruch enthalten"
 msgid "no reminder {uid} in \"{target}\""
 msgstr "Keine Erinnerung {uid} in „{target}“"
 
-#: ../packages/eds/src/driver.gjs.ts:184 ../packages/eds/src/driver.gjs.ts:194
+#: ../packages/pim/src/caldav/backend.ts:63
+msgid "{label}: the server rejected the credentials (401)"
+msgstr "{label}: Der Server hat die Zugangsdaten abgelehnt (401)"
+
+#: ../packages/pim/src/caldav/backend.ts:68
+msgid "{label}: {method} failed with {status}"
+msgstr "{label}: {method} ist mit {status} fehlgeschlagen"
+
+#: ../packages/pim/src/caldav/backend.ts:73
+msgid "{label}: {message}"
+msgstr "{label}: {message}"
+
+#: ../packages/pim/src/caldav/backend.ts:104
+msgid "no calendar \"{uid}\""
+msgstr "Kein Kalender „{uid}“"
+
+#: ../packages/pim/src/caldav/backend.ts:104
+msgid "no task list \"{uid}\""
+msgstr "Keine Aufgabenliste „{uid}“"
+
+#: ../packages/pim/src/caldav/backend.ts:179
+msgid "createItem: the component has no UID"
+msgstr "createItem: Die Komponente hat keine UID"
+
+#: ../packages/pim/src/caldav/backend.ts:185
+msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
+msgstr "createItem: „{uid}“ existiert in „{calendar}“ bereits"
+
+#: ../packages/pim/src/caldav/backend.ts:191
+msgid "createItem: \"{calendar}\" refused the write (read-only?)"
+msgstr ""
+"createItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
+
+#: ../packages/pim/src/caldav/backend.ts:207
+msgid "updateItem: no \"{uid}\" in \"{calendar}\""
+msgstr "updateItem: Kein „{uid}“ in „{calendar}“"
+
+#: ../packages/pim/src/caldav/backend.ts:214
+msgid "updateItem: \"{uid}\" changed on the server since it was read"
+msgstr ""
+"updateItem: „{uid}“ hat sich auf dem Server geändert, seit es gelesen wurde"
+
+#: ../packages/pim/src/caldav/backend.ts:220
+msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
+msgstr ""
+"updateItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
+
+#: ../packages/pim/src/eds/driver.gjs.ts:186
+#: ../packages/pim/src/eds/driver.gjs.ts:196
 msgid "\"{calendar}\" is read-only"
 msgstr "„{calendar}“ ist schreibgeschützt"
 
-#: ../packages/eds/src/errors.ts:11
+#: ../packages/pim/src/eds/errors.ts:12
 msgid "{message}: {cause}"
 msgstr "{message}: {cause}"
 
-#: ../packages/eds/src/optional.ts:22
+#: ../packages/pim/src/optional.ts:23
 msgid "{label} typelib not available: {message}"
 msgstr "Typelib {label} nicht verfügbar: {message}"
 
@@ -400,23 +402,23 @@ msgstr "{path}: {message}"
 msgid "no secret stored for \"{ref}\""
 msgstr "Für \"{ref}\" ist kein Geheimnis gespeichert"
 
-#: src/core/context.ts:74
+#: src/core/context.ts:76
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr "Geheimnis \"{ref}\" lässt sich nicht lesen: {reason}"
 
-#: src/core/context.ts:84
+#: src/core/context.ts:87
 msgid "account \"{account}\": {message}"
 msgstr "Konto „{account}“: {message}"
 
-#: src/core/context.ts:99
+#: src/core/context.ts:102
 msgid "backend \"caldav\" needs a caldav section"
 msgstr "Das Backend „caldav“ braucht einen caldav-Abschnitt"
 
-#: src/core/context.ts:103
+#: src/core/context.ts:107
 msgid "the passwordSecret has not been resolved yet"
 msgstr "Das passwordSecret wurde noch nicht aufgelöst"
 
-#: src/core/context.ts:107
+#: src/core/context.ts:111
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
 

@@ -1,7 +1,8 @@
 /**
  * Lazy, cached access to an OPTIONAL GObject-Introspection namespace. Pure — the `gi://` import
- * lives in the caller's loader thunk. Same idea as `@reminder/eds`, but the failure here is a
- * plain Error: this driver turns it into an `unavailable` outcome and never lets it escape.
+ * lives in the caller's loader thunk. Same idea as `optionalNamespace` in `@gjsify/pim`, but the
+ * failure here is a plain Error: this driver turns it into an `unavailable` outcome and never
+ * lets it escape.
  */
 
 export interface OptionalNamespace<T> {

@@ -11,19 +11,10 @@
 
 import { DavClient, DavError, basicAuth, type Collection, type DavObject, type FetchLike } from '@gjsify/dav';
 
-import {
-  _,
-  BackendAuthError,
-  BackendError,
-  ConflictError,
-  errorMessage,
-  fmt,
-  type CalendarBackend,
-  type CalendarInfo,
-  type ItemKind,
-  type ItemQuery,
-  type RawItem,
-} from '@reminder/core';
+import type { CalendarBackend, ItemQuery } from '../backend.ts';
+import { BackendAuthError, BackendError, ConflictError, errorMessage } from '../errors.ts';
+import { _, fmt } from '../i18n.ts';
+import type { CalendarInfo, ItemKind, RawItem } from '../types.ts';
 
 const COMPONENT: Record<ItemKind, string> = { event: 'VEVENT', reminder: 'VTODO' };
 /** Multiget URLs per request, to keep request bodies bounded on large calendars. */
@@ -36,7 +27,11 @@ export interface CaldavOptions {
   password: string;
   /** Injectable for tests and custom TLS setups; defaults to the runtime's fetch. */
   fetch?: FetchLike;
+  /** PRODID of the VCALENDAR a bare component is wrapped in; name the app that wrote it. */
+  prodId?: string;
 }
+
+const DEFAULT_PRODID = '-//gjsify//pim//EN';
 
 /** UID of a component, from unfolded text. The one line the port lets a backend look at. */
 function uidOf(ical: string): string | null {
@@ -45,10 +40,10 @@ function uidOf(ical: string): string | null {
   return value ? value : null;
 }
 
-function wrap(ical: string): string {
+function wrap(ical: string, prodId: string): string {
   if (/^BEGIN:VCALENDAR/m.test(ical)) return ical;
   const body = ical.replace(/\r?\n/g, '\r\n');
-  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//reminder//CalDAV//EN\r\n${body.endsWith('\r\n') ? body : `${body}\r\n`}END:VCALENDAR\r\n`;
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:${prodId}\r\n${body.endsWith('\r\n') ? body : `${body}\r\n`}END:VCALENDAR\r\n`;
 }
 
 function icalUtc(iso: string): string {
@@ -80,6 +75,7 @@ function davError(label: string, err: unknown): Error {
 
 export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
   const dav = new DavClient({ auth: basicAuth(options.username, options.password), fetch: options.fetch });
+  const prodId = options.prodId ?? DEFAULT_PRODID;
   let collections: Promise<Collection[]> | null = null;
 
   async function boundary<T>(label: string, fn: () => Promise<T>): Promise<T> {
@@ -182,7 +178,7 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
         const uid = uidOf(ical);
         if (!uid) throw new BackendError(_('createItem: the component has no UID'));
         try {
-          await dav.put(resourceUrl(c, uid), wrap(ical), { ifNoneMatch: true });
+          await dav.put(resourceUrl(c, uid), wrap(ical, prodId), { ifNoneMatch: true });
         } catch (err) {
           if (err instanceof DavError && err.isPreconditionFailed)
             throw new BackendError(
@@ -211,7 +207,7 @@ export function createCaldavBackend(options: CaldavOptions): CalendarBackend {
             fmt(_('updateItem: no "{uid}" in "{calendar}"'), { uid, calendar: calendarUid }),
           );
         try {
-          await dav.put(found.url, wrap(ical), etag ? { ifMatch: etag } : {});
+          await dav.put(found.url, wrap(ical, prodId), etag ? { ifMatch: etag } : {});
         } catch (err) {
           if (err instanceof DavError && err.isPreconditionFailed)
             throw new ConflictError(

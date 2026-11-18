@@ -3,7 +3,7 @@
  * is a plain dynamic import the bundler leaves alone, so a missing typelib is a rejection.
  */
 
-import { optionalNamespace } from './optional.ts';
+import { optionalNamespace } from '../optional.ts';
 
 export const eds = optionalNamespace(
   'EDataServer',

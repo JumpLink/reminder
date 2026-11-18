@@ -7,7 +7,7 @@
 // it can never see — or touch — the calendars of the person running it.
 import type EDataServer from 'gi://EDataServer?version=1.2';
 import { formatUtc, listPriorities, readReminder, type CalendarBackend } from '@reminder/core';
-import { createEdsBackend } from '@reminder/eds';
+import { createEdsBackend } from '@gjsify/pim/eds';
 import assert from 'node:assert';
 import GLib from 'gi://GLib?version=2.0';
 

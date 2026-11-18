@@ -1,4 +1,5 @@
-import { BackendError, BackendUnavailableError, _, errorMessage, fmt } from '@reminder/core';
+import { BackendError, BackendUnavailableError, errorMessage } from '../errors.ts';
+import { _, fmt } from '../i18n.ts';
 
 /**
  * Wrap a native failure as a BackendError naming the call. GJS reports a GError's domain as a

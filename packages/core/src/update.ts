@@ -11,7 +11,7 @@
  * (`ConflictError`) instead of overwriting their edit with text computed from a stale copy.
  */
 
-import type { CalendarBackend } from './backend.ts';
+import type { CalendarBackend } from '@gjsify/pim';
 import type { ReminderConfig } from './config.ts';
 import { ReminderError } from './errors.ts';
 import { requireGrant } from './grants.ts';

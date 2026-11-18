@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@gjsify/unit';
-import { BackendError, BackendUnavailableError } from '@reminder/core';
-import { createEdsBackend, edsError, optionalNamespace, unwrapList, unwrapResult } from '@reminder/eds';
+import { BackendError, BackendUnavailableError, setCoreTranslator } from '@reminder/core';
+import { optionalNamespace } from '@gjsify/pim';
+import { createEdsBackend, edsError, unwrapList, unwrapResult } from '@gjsify/pim/eds';
 
 async function rejection(promise: Promise<unknown>): Promise<unknown> {
   try {
@@ -32,6 +33,21 @@ export default async () => {
       const err = await rejection(ns.get());
       expect(err instanceof BackendUnavailableError).toBe(true);
       expect((err as Error).message).toContain('ECal typelib not available');
+    });
+
+    await it('translates its message through the core translator', async () => {
+      setCoreTranslator({
+        gettext: (msgid) => (msgid === '{label} typelib not available: {message}' ? 'X {label}' : msgid),
+        ngettext: (s, p, n) => (n === 1 ? s : p),
+      });
+      try {
+        const err = await rejection(
+          optionalNamespace('ECal', async () => Promise.reject(new Error('gone'))).get(),
+        );
+        expect((err as Error).message).toBe('X ECal');
+      } finally {
+        setCoreTranslator(null);
+      }
     });
 
     await it('caches the failure', async () => {

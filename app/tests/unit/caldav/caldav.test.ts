@@ -7,7 +7,7 @@ import {
   UnsupportedAuthError,
   parseConfig,
 } from '@reminder/core';
-import { createCaldavBackend } from '@reminder/caldav';
+import { createCaldavBackend } from '@gjsify/pim/caldav';
 
 import { createBackend } from '../../../src/core/context.ts';
 import { startFakeDav } from './fake-dav-server.ts';

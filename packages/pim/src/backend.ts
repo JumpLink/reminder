@@ -1,10 +1,9 @@
 /**
- * The CalendarBackend port — the seam between what reminder decides and where the data lives.
+ * The CalendarBackend port — the seam between what an app decides and where the data lives.
  *
- * A backend moves iCalendar TEXT and nothing else. Parsing, dedupe, grants and routing live in
- * this package, so a second backend (CalDAV over `@gjsify/system-accounts`) is a transport and
- * not a second copy of those rules. CalDAV speaks iCalendar on the wire; EDS hands out the same
- * text via `as_ical_string()`.
+ * A backend moves iCalendar TEXT and nothing else. Parsing, dedupe and any policy live with the
+ * consumer, so a second backend is a transport and not a second copy of those rules. CalDAV speaks
+ * iCalendar on the wire; EDS hands out the same text via `as_ical_string()`.
  */
 
 import type { CalendarInfo, ItemKind, RawItem } from './types.ts';

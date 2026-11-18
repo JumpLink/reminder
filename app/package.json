@@ -55,9 +55,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@reminder/cache-fs": "*",
-    "@reminder/caldav": "*",
     "@reminder/core": "*",
-    "@reminder/eds": "*",
     "@reminder/secrets-libsecret": "*",
     "yargs": "^18.1.0",
     "zod": "^4.4.3"
@@ -74,6 +72,7 @@
     "@gjsify/cli": "0.64.32",
     "@gjsify/mcp": "0.64.32",
     "@gjsify/node-globals": "0.64.32",
+    "@gjsify/pim": "*",
     "@gjsify/rolldown-native": "0.64.32",
     "@gjsify/runtime": "0.64.32",
     "@gjsify/unit": "0.64.32",

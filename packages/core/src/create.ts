@@ -10,7 +10,7 @@
  * ends in an error, not a duplicate — but it is the backend that catches it, not this check.
  */
 
-import type { CalendarBackend } from './backend.ts';
+import type { CalendarBackend } from '@gjsify/pim';
 import type { ReminderConfig } from './config.ts';
 import { InputError, ReminderError } from './errors.ts';
 import { createCapability, requireGrant } from './grants.ts';

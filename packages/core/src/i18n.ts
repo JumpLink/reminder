@@ -1,3 +1,5 @@
+import { setPimTranslator } from '@gjsify/pim';
+
 /**
  * Translation for strings the core hands to a person — without the core importing gettext.
  *
@@ -26,6 +28,8 @@ let current: CoreTranslator = SOURCE;
 /** Register the frontend's translator (null restores the English source strings). */
 export function setCoreTranslator(translator: CoreTranslator | null): void {
   current = translator ?? SOURCE;
+  // The backends' messages come from @gjsify/pim and share this catalogue.
+  setPimTranslator(translator);
 }
 
 export function _(msgid: string): string {
