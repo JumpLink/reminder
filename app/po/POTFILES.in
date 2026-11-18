@@ -1,7 +1,9 @@
+../packages/cache-fs/src/index.ts
 ../packages/caldav/src/backend.ts
 ../packages/caldav/src/index.ts
 ../packages/core/src/accounts.ts
 ../packages/core/src/backend.ts
+../packages/core/src/cache.ts
 ../packages/core/src/compare.ts
 ../packages/core/src/config.ts
 ../packages/core/src/create.ts
@@ -16,6 +18,7 @@
 ../packages/core/src/read.ts
 ../packages/core/src/rewrite.ts
 ../packages/core/src/routing.ts
+../packages/core/src/secrets.ts
 ../packages/core/src/source-key.ts
 ../packages/core/src/types.ts
 ../packages/core/src/update.ts
@@ -24,6 +27,10 @@
 ../packages/eds/src/index.ts
 ../packages/eds/src/libs.gjs.ts
 ../packages/eds/src/optional.ts
+../packages/secrets-libsecret/src/index.ts
+../packages/secrets-libsecret/src/libs.gjs.ts
+../packages/secrets-libsecret/src/optional.ts
+../packages/secrets-libsecret/src/store.gjs.ts
 src/core/config.ts
 src/core/context.ts
 src/core/i18n-init.ts

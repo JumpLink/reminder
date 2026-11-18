@@ -1,0 +1,24 @@
+{
+  "name": "@reminder/cache-fs",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "File-system driver for the @reminder/core CacheStore port: one JSON file per source under $XDG_CACHE_HOME/<cacheDirName>, atomic writes, modes 0700/0600. The cache is derived data (docs/adr/0010).",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@reminder/core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2"
+  }
+}

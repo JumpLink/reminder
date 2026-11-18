@@ -11,6 +11,7 @@
     "@girs/glib-2.0@^4.1.0",
     "@girs/gobject-2.0@^4.1.0",
     "@girs/icalglib-3.0@^4.1.0",
+    "@girs/secret-1@^4.1.0",
     "@gjsify/cli@0.64.32",
     "@gjsify/mcp@0.64.32",
     "@gjsify/node-globals@0.64.32",
@@ -1323,6 +1324,18 @@
       "dependencies": {
         "@girs/gjs": "^5.5.0",
         "@girs/glib-2.0": "^5.5.0"
+      }
+    },
+    "node_modules/@girs/secret-1": {
+      "version": "4.9.0",
+      "resolved": "https://registry.npmjs.org/@girs/secret-1/-/secret-1-4.9.0.tgz",
+      "integrity": "sha512-GPXW/NLuHbb41jnEE9P+xUULGri4iFVZCYVd92JBdwOVfRE2bwr311Zn1iNrtGCQ5zQFuI20zgqrAhPX/zhXlQ==",
+      "dependencies": {
+        "@girs/gjs": "^4.9.0",
+        "@girs/gio-2.0": "^4.9.0",
+        "@girs/glib-2.0": "^4.9.0",
+        "@girs/gmodule-2.0": "^4.9.0",
+        "@girs/gobject-2.0": "^4.9.0"
       }
     },
     "node_modules/@girs/shumate-1.0": {
@@ -11671,10 +11684,10 @@
       "resolved": "https://registry.npmjs.org/router/-/router-2.2.0.tgz",
       "integrity": "sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHajDYgwlJCOzLSk+cIPAnsEqV955GjILJnKbdQC1nVPz+gAYQ==",
       "dependencies": {
-        "debug": "^4.4.0",
         "depd": "^2.0.0",
-        "is-promise": "^4.0.0",
+        "debug": "^4.4.0",
         "parseurl": "^1.3.3",
+        "is-promise": "^4.0.0",
         "path-to-regexp": "^8.0.0"
       }
     },

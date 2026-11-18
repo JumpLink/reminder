@@ -18,6 +18,7 @@ import {
   type AccountRef,
 } from './accounts.ts';
 import { ConfigError } from './errors.ts';
+import { parseSecretRef } from './secrets.ts';
 import { parseGrants, type Grant } from './grants.ts';
 import { parseDefaults, parseRoutes, type RoutingConfig } from './routing.ts';
 import { _, fmt } from './i18n.ts';
@@ -49,6 +50,11 @@ export interface CaldavConfig {
   /** Required for `basic`. */
   username: string;
   passwordEnv: string;
+  /**
+   * `<account>:<purpose>` — the password lives in a SecretStore (docs/adr/0011) instead of an
+   * environment variable. Naming both `passwordEnv` and `passwordSecret` is a ConfigError.
+   */
+  passwordSecret?: string;
 }
 
 /** One place calendars come from: an id the person chose plus what its backend needs. */
@@ -163,11 +169,17 @@ function parseCaldav(value: unknown): CaldavConfig {
   if (auth === 'basic' && !username) throw new ConfigError(_('caldav.username is required for basic auth'));
   if ('password' in r)
     throw new ConfigError(_('caldav.password must not be in the file — set passwordEnv and export the variable'));
+  const passwordSecret = text('passwordSecret');
+  if (passwordSecret !== undefined) {
+    if (r.passwordEnv !== undefined) throw new ConfigError(_('caldav: set passwordEnv or passwordSecret, not both'));
+    parseSecretRef(passwordSecret);
+  }
   return {
     url,
     auth: auth as CaldavAuth,
     username: username ?? '',
     passwordEnv: text('passwordEnv') ?? DEFAULT_PASSWORD_ENV,
+    ...(passwordSecret !== undefined ? { passwordSecret } : {}),
   };
 }
 
@@ -240,9 +252,16 @@ export function parseConfig(raw: unknown): ReminderConfig {
   return config;
 }
 
+/** With a secret reference the default `passwordEnv` is not written, or the file would name both. */
+function serializeCaldav(caldav: CaldavConfig): Record<string, unknown> {
+  if (caldav.passwordSecret === undefined) return { ...caldav };
+  const { passwordEnv: _env, ...rest } = caldav;
+  return rest;
+}
+
 function serializeAccount(account: AccountConfig): Record<string, unknown> {
   const { extra, id, backend, caldav } = account;
-  return { ...extra, id, backend, ...(caldav ? { caldav } : {}) };
+  return { ...extra, id, backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}) };
 }
 
 export function serializeConfig(config: ReminderConfig): string {
@@ -251,6 +270,6 @@ export function serializeConfig(config: ReminderConfig): string {
   const shape =
     backend === undefined
       ? { accounts: accounts.map(serializeAccount) }
-      : { backend, ...(caldav ? { caldav } : {}) };
+      : { backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}) };
   return `${JSON.stringify({ ...extra, ...shape, ...rest }, null, 2)}\n`;
 }

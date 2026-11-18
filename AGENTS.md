@@ -32,6 +32,8 @@ exists: [ADR 0003](docs/adr/0003-managing-reminders-in-place.md).
 |---|---|---|
 | `@reminder/core` | types, errors, `CalendarBackend` port, iCalendar, grants, routing, config model, read + create + update | nothing (`types: []`) |
 | `@reminder/eds` | EDS driver for the port; typelibs load lazily | `@reminder/core`, `gi://` |
+| `@reminder/cache-fs` | `CacheStore` driver: files under `$XDG_CACHE_HOME`, atomic writes ([ADR 0010](docs/adr/0010-cache-and-synchronisation.md)) | `@reminder/core`, `node:*` |
+| `@reminder/secrets-libsecret` | `SecretStore` driver over `gi://Secret`, lazy; no service = unavailable ([ADR 0011](docs/adr/0011-credentials-through-a-secret-store-port.md)) | `@reminder/core`, `gi://` |
 | `reminder-cli` (`app/`) | yargs CLI, MCP server, config file I/O, backend factory | everything |
 
 A new backend (CalDAV) is a new package implementing `CalendarBackend` plus a `backend` value in

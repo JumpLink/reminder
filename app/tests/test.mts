@@ -14,6 +14,9 @@ import read from './unit/core/read.test.ts';
 import create from './unit/core/create.test.ts';
 import update from './unit/core/update.test.ts';
 import priorities from './unit/core/priorities.test.ts';
+import cache from './unit/core/cache.test.ts';
+import secrets from './unit/secrets/secrets.test.ts';
+import cacheFs from './unit/cache/cache-fs.test.ts';
 
 import caldav from './unit/caldav/caldav.test.ts';
 import eds from './unit/eds/optional.test.ts';
@@ -34,6 +37,9 @@ run({
   create,
   update,
   priorities,
+  cache,
+  secrets,
+  cacheFs,
   caldav,
   eds,
   mcpTools,

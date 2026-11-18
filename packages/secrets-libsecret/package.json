@@ -1,0 +1,22 @@
+{
+  "name": "@reminder/secrets-libsecret",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "Secret Service driver for the @reminder/core SecretStore port over gi://Secret (libsecret). The typelib loads on first use; a host without it, or without a running service, answers unavailable instead of throwing.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@girs/secret-1": "^4.1.0",
+    "@reminder/core": "*"
+  }
+}
