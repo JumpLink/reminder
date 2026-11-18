@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-10-30 16:50+0100\n"
+"POT-Creation-Date: 2026-11-18 15:13+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -64,44 +64,93 @@ msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
 msgstr ""
 "updateItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
 
-#: ../packages/core/src/config.ts:62
+#: ../packages/core/src/accounts.ts:30
+msgid "accounts[{index}]: id must be a non-empty string"
+msgstr "accounts[{index}]: id muss ein nicht leerer String sein"
+
+#: ../packages/core/src/accounts.ts:33
+msgid "accounts[{index}]: id must be at most {max} characters"
+msgstr "accounts[{index}]: id darf höchstens {max} Zeichen lang sein"
+
+#: ../packages/core/src/accounts.ts:38
+msgid ""
+"accounts[{index}]: id \"{id}\" must start with a lowercase letter or digit "
+"and hold only those, \"-\" and \"_\""
+msgstr ""
+"accounts[{index}]: id „{id}“ muss mit einem Kleinbuchstaben oder einer "
+"Ziffer beginnen und darf nur diese, „-“ und „_“ enthalten"
+
+#: ../packages/core/src/accounts.ts:46
+msgid ""
+"accounts[{index}]: id \"{id}\" is reserved — it would read as a URL scheme"
+msgstr ""
+"accounts[{index}]: id „{id}“ ist reserviert — sie würde als URL-Schema "
+"gelesen"
+
+#: ../packages/core/src/accounts.ts:108
+msgid ""
+"with several accounts every target must read \"<account>:<uid>\" (accounts: "
+"{accounts}) — these do not: {targets}"
+msgstr ""
+"Bei mehreren Konten muss jedes Ziel „<account>:<uid>“ lauten (Konten: "
+"{accounts}) — diese nicht: {targets}"
+
+#: ../packages/core/src/accounts.ts:132
+msgid ""
+"\"{target}\" names no account — take a uid from `reminder calendars` "
+"(accounts: {accounts})"
+msgstr ""
+"„{target}“ nennt kein Konto — nimm eine uid aus `reminder calendars` "
+"(Konten: {accounts})"
+
+#: ../packages/core/src/config.ts:107
+msgid "backend {backend} is not supported (known: {known})"
+msgstr "Das Backend {backend} wird nicht unterstützt (bekannt: {known})"
+
+#: ../packages/core/src/config.ts:108
+msgid "accounts[{index}]: backend {backend} is not supported (known: {known})"
+msgstr ""
+"accounts[{index}]: Das Backend {backend} wird nicht unterstützt (bekannt: "
+"{known})"
+
+#: ../packages/core/src/config.ts:121
 msgid "priorities must be an object"
 msgstr "priorities muss ein Objekt sein"
 
-#: ../packages/core/src/config.ts:66
+#: ../packages/core/src/config.ts:125
 msgid "priorities.list must be a non-empty task list uid"
 msgstr "priorities.list muss eine nicht leere Aufgabenlisten-UID sein"
 
-#: ../packages/core/src/config.ts:74
+#: ../packages/core/src/config.ts:133
 msgid "backend \"caldav\" needs a caldav object with url and username"
 msgstr "Das Backend „caldav“ braucht ein caldav-Objekt mit url und username"
 
-#: ../packages/core/src/config.ts:79
+#: ../packages/core/src/config.ts:138
 msgid "caldav.{key} must be a non-empty string"
 msgstr "caldav.{key} muss ein nicht leerer String sein"
 
-#: ../packages/core/src/config.ts:83
+#: ../packages/core/src/config.ts:142
 msgid "caldav.url is required"
 msgstr "caldav.url ist erforderlich"
 
-#: ../packages/core/src/config.ts:88 ../packages/core/src/config.ts:91
+#: ../packages/core/src/config.ts:147 ../packages/core/src/config.ts:150
 msgid "caldav.url must be an http(s) URL"
 msgstr "caldav.url muss eine http(s)-URL sein"
 
-#: ../packages/core/src/config.ts:94
+#: ../packages/core/src/config.ts:153
 msgid "caldav.url must use https unless the server is on this machine"
 msgstr ""
 "caldav.url muss https verwenden, außer der Server läuft auf diesem Rechner"
 
-#: ../packages/core/src/config.ts:98
+#: ../packages/core/src/config.ts:157
 msgid "caldav.auth {auth} is not supported (known: {known})"
 msgstr "caldav.auth {auth} wird nicht unterstützt (bekannt: {known})"
 
-#: ../packages/core/src/config.ts:104
+#: ../packages/core/src/config.ts:163
 msgid "caldav.username is required for basic auth"
 msgstr "caldav.username ist für Basic-Authentifizierung erforderlich"
 
-#: ../packages/core/src/config.ts:106
+#: ../packages/core/src/config.ts:165
 msgid ""
 "caldav.password must not be in the file — set passwordEnv and export the "
 "variable"
@@ -109,13 +158,26 @@ msgstr ""
 "caldav.password darf nicht in der Datei stehen — setze passwordEnv und "
 "exportiere die Variable"
 
-#: ../packages/core/src/config.ts:117
+#: ../packages/core/src/config.ts:176
+msgid "accounts must be a list with at least one account"
+msgstr "accounts muss eine Liste mit mindestens einem Konto sein"
+
+#: ../packages/core/src/config.ts:180
+msgid "accounts[{index}] must be an object"
+msgstr "accounts[{index}] muss ein Objekt sein"
+
+#: ../packages/core/src/config.ts:183
+msgid "accounts[{index}]: id \"{id}\" is used twice"
+msgstr "accounts[{index}]: id „{id}“ wird zweimal verwendet"
+
+#: ../packages/core/src/config.ts:206
 msgid "config must be a JSON object"
 msgstr "Die Konfiguration muss ein JSON-Objekt sein"
 
-#: ../packages/core/src/config.ts:122
-msgid "backend {backend} is not supported (known: {known})"
-msgstr "Das Backend {backend} wird nicht unterstützt (bekannt: {known})"
+#: ../packages/core/src/config.ts:226
+msgid "a file with accounts must not also have a top-level {key}"
+msgstr ""
+"Eine Datei mit accounts darf zusätzlich kein {key} auf oberster Ebene haben"
 
 #: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:172
 msgid "summary must not be empty"
@@ -302,31 +364,43 @@ msgstr "{message}: {cause}"
 msgid "{label} typelib not available: {message}"
 msgstr "Typelib {label} nicht verfügbar: {message}"
 
-#: src/core/config.ts:36
+#: src/core/config.ts:38
 msgid "cannot read {path}: {message}"
 msgstr "{path} kann nicht gelesen werden: {message}"
 
-#: src/core/config.ts:43
+#: src/core/config.ts:45
 msgid "{path} is not valid JSON: {message}"
 msgstr "{path} ist kein gültiges JSON: {message}"
 
-#: src/core/config.ts:49
+#: src/core/config.ts:51
 msgid "{path}: {message}"
 msgstr "{path}: {message}"
 
-#: src/core/context.ts:33
+#: src/core/context.ts:36
+msgid "account \"{account}\": {message}"
+msgstr "Konto „{account}“: {message}"
+
+#: src/core/context.ts:50
 msgid "backend \"caldav\" needs a caldav section"
 msgstr "Das Backend „caldav“ braucht einen caldav-Abschnitt"
 
-#: src/core/context.ts:37
+#: src/core/context.ts:55
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
 
 #. TRANSLATORS: Not shown. The language code of THIS catalogue ("de" in de.po); it selects the
 #. language of the --help chrome ("Options:", "Commands:").
-#: src/core/i18n.ts:66
+#: src/core/i18n.ts:68
 msgid "en"
 msgstr "de"
+
+#: src/frontends/cli/accounts.ts:29
+msgid "List the configured accounts"
+msgstr "Die eingerichteten Konten auflisten"
+
+#: src/frontends/cli/accounts.ts:63
+msgid "{calendars} calendars · {lists} task lists"
+msgstr "{calendars} Kalender · {lists} Aufgabenlisten"
 
 #: src/frontends/cli/calendars.ts:15
 msgid "List calendars and task lists"
@@ -352,14 +426,15 @@ msgstr "Erinnerung"
 msgid "Show the config file path and validate it"
 msgstr "Pfad der Konfigurationsdatei anzeigen und prüfen"
 
-#: src/frontends/cli/config.ts:34
+#: src/frontends/cli/config.ts:36
 msgid ""
-"backend {backend} · {grants} grants · {routes} routes · defaults: {defaults}"
+"accounts {accounts} · {grants} grants · {routes} routes · defaults: "
+"{defaults}"
 msgstr ""
-"Backend {backend} · {grants} Freigaben · {routes} Routen · Standards: "
+"Konten {accounts} · {grants} Freigaben · {routes} Routen · Standards: "
 "{defaults}"
 
-#: src/frontends/cli/config.ts:38
+#: src/frontends/cli/config.ts:40
 msgid "none"
 msgstr "keine"
 
@@ -531,6 +606,6 @@ msgstr "Eine Erinnerung als erledigt markieren"
 msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
-#: src/index.ts:39
+#: src/index.ts:42
 msgid "Give a command — `reminder --help` lists them."
 msgstr "Gib einen Befehl an — `reminder --help` listet sie auf."

@@ -1,3 +1,4 @@
+export { accountsCommand } from './accounts.ts';
 export { calendarsCommand } from './calendars.ts';
 export { configCommand } from './config.ts';
 export { eventsCommand } from './events.ts';

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-10-30 16:50+0100\n"
+"POT-Creation-Date: 2026-11-18 15:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,54 +62,105 @@ msgstr ""
 msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
 msgstr ""
 
-#: ../packages/core/src/config.ts:62
+#: ../packages/core/src/accounts.ts:30
+msgid "accounts[{index}]: id must be a non-empty string"
+msgstr ""
+
+#: ../packages/core/src/accounts.ts:33
+msgid "accounts[{index}]: id must be at most {max} characters"
+msgstr ""
+
+#: ../packages/core/src/accounts.ts:38
+msgid ""
+"accounts[{index}]: id \"{id}\" must start with a lowercase letter or digit "
+"and hold only those, \"-\" and \"_\""
+msgstr ""
+
+#: ../packages/core/src/accounts.ts:46
+msgid ""
+"accounts[{index}]: id \"{id}\" is reserved — it would read as a URL scheme"
+msgstr ""
+
+#: ../packages/core/src/accounts.ts:108
+msgid ""
+"with several accounts every target must read \"<account>:<uid>\" (accounts: "
+"{accounts}) — these do not: {targets}"
+msgstr ""
+
+#: ../packages/core/src/accounts.ts:132
+msgid ""
+"\"{target}\" names no account — take a uid from `reminder calendars` "
+"(accounts: {accounts})"
+msgstr ""
+
+#: ../packages/core/src/config.ts:107
+msgid "backend {backend} is not supported (known: {known})"
+msgstr ""
+
+#: ../packages/core/src/config.ts:108
+msgid "accounts[{index}]: backend {backend} is not supported (known: {known})"
+msgstr ""
+
+#: ../packages/core/src/config.ts:121
 msgid "priorities must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:66
+#: ../packages/core/src/config.ts:125
 msgid "priorities.list must be a non-empty task list uid"
 msgstr ""
 
-#: ../packages/core/src/config.ts:74
+#: ../packages/core/src/config.ts:133
 msgid "backend \"caldav\" needs a caldav object with url and username"
 msgstr ""
 
-#: ../packages/core/src/config.ts:79
+#: ../packages/core/src/config.ts:138
 msgid "caldav.{key} must be a non-empty string"
 msgstr ""
 
-#: ../packages/core/src/config.ts:83
+#: ../packages/core/src/config.ts:142
 msgid "caldav.url is required"
 msgstr ""
 
-#: ../packages/core/src/config.ts:88 ../packages/core/src/config.ts:91
+#: ../packages/core/src/config.ts:147 ../packages/core/src/config.ts:150
 msgid "caldav.url must be an http(s) URL"
 msgstr ""
 
-#: ../packages/core/src/config.ts:94
+#: ../packages/core/src/config.ts:153
 msgid "caldav.url must use https unless the server is on this machine"
 msgstr ""
 
-#: ../packages/core/src/config.ts:98
+#: ../packages/core/src/config.ts:157
 msgid "caldav.auth {auth} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:104
+#: ../packages/core/src/config.ts:163
 msgid "caldav.username is required for basic auth"
 msgstr ""
 
-#: ../packages/core/src/config.ts:106
+#: ../packages/core/src/config.ts:165
 msgid ""
 "caldav.password must not be in the file — set passwordEnv and export the "
 "variable"
 msgstr ""
 
-#: ../packages/core/src/config.ts:117
+#: ../packages/core/src/config.ts:176
+msgid "accounts must be a list with at least one account"
+msgstr ""
+
+#: ../packages/core/src/config.ts:180
+msgid "accounts[{index}] must be an object"
+msgstr ""
+
+#: ../packages/core/src/config.ts:183
+msgid "accounts[{index}]: id \"{id}\" is used twice"
+msgstr ""
+
+#: ../packages/core/src/config.ts:206
 msgid "config must be a JSON object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:122
-msgid "backend {backend} is not supported (known: {known})"
+#: ../packages/core/src/config.ts:226
+msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 
 #: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:172
@@ -283,30 +334,42 @@ msgstr ""
 msgid "{label} typelib not available: {message}"
 msgstr ""
 
-#: src/core/config.ts:36
+#: src/core/config.ts:38
 msgid "cannot read {path}: {message}"
 msgstr ""
 
-#: src/core/config.ts:43
+#: src/core/config.ts:45
 msgid "{path} is not valid JSON: {message}"
 msgstr ""
 
-#: src/core/config.ts:49
+#: src/core/config.ts:51
 msgid "{path}: {message}"
 msgstr ""
 
-#: src/core/context.ts:33
+#: src/core/context.ts:36
+msgid "account \"{account}\": {message}"
+msgstr ""
+
+#: src/core/context.ts:50
 msgid "backend \"caldav\" needs a caldav section"
 msgstr ""
 
-#: src/core/context.ts:37
+#: src/core/context.ts:55
 msgid "export the CalDAV password as {name}"
 msgstr ""
 
 #. TRANSLATORS: Not shown. The language code of THIS catalogue ("de" in de.po); it selects the
 #. language of the --help chrome ("Options:", "Commands:").
-#: src/core/i18n.ts:66
+#: src/core/i18n.ts:68
 msgid "en"
+msgstr ""
+
+#: src/frontends/cli/accounts.ts:29
+msgid "List the configured accounts"
+msgstr ""
+
+#: src/frontends/cli/accounts.ts:63
+msgid "{calendars} calendars · {lists} task lists"
 msgstr ""
 
 #: src/frontends/cli/calendars.ts:15
@@ -333,12 +396,13 @@ msgstr ""
 msgid "Show the config file path and validate it"
 msgstr ""
 
-#: src/frontends/cli/config.ts:34
+#: src/frontends/cli/config.ts:36
 msgid ""
-"backend {backend} · {grants} grants · {routes} routes · defaults: {defaults}"
+"accounts {accounts} · {grants} grants · {routes} routes · defaults: "
+"{defaults}"
 msgstr ""
 
-#: src/frontends/cli/config.ts:38
+#: src/frontends/cli/config.ts:40
 msgid "none"
 msgstr ""
 
@@ -504,6 +568,6 @@ msgstr ""
 msgid "Mark a done reminder as open again"
 msgstr ""
 
-#: src/index.ts:39
+#: src/index.ts:42
 msgid "Give a command — `reminder --help` lists them."
 msgstr ""
