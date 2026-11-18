@@ -4,7 +4,7 @@
   "license": "AGPL-3.0-or-later",
   "private": true,
   "type": "module",
-  "description": "reminder app: the `reminder` binary — CLI and MCP frontends over the @reminder/* packages, bundled to a single .gjs.mjs and run on GJS via gjsify.",
+  "description": "reminder app: the `reminder` binary \u2014 CLI and MCP frontends over the @reminder/* packages, bundled to a single .gjs.mjs and run on GJS via gjsify.",
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts"
@@ -54,9 +54,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@reminder/cache-fs": "*",
     "@reminder/caldav": "*",
     "@reminder/core": "*",
     "@reminder/eds": "*",
+    "@reminder/secrets-libsecret": "*",
     "yargs": "^18.1.0",
     "zod": "^4.4.3"
   },
@@ -68,6 +70,7 @@
     "@girs/glib-2.0": "^4.1.0",
     "@girs/gobject-2.0": "^4.1.0",
     "@girs/icalglib-3.0": "^4.1.0",
+    "@girs/secret-1": "^4.1.0",
     "@gjsify/cli": "0.64.32",
     "@gjsify/mcp": "0.64.32",
     "@gjsify/node-globals": "0.64.32",

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 15:13+0100\n"
+"POT-Creation-Date: 2026-11-18 16:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,73 +93,77 @@ msgid ""
 "(accounts: {accounts})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:107
+#: ../packages/core/src/config.ts:113
 msgid "backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:108
+#: ../packages/core/src/config.ts:114
 msgid "accounts[{index}]: backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:121
+#: ../packages/core/src/config.ts:127
 msgid "priorities must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:125
+#: ../packages/core/src/config.ts:131
 msgid "priorities.list must be a non-empty task list uid"
 msgstr ""
 
-#: ../packages/core/src/config.ts:133
+#: ../packages/core/src/config.ts:139
 msgid "backend \"caldav\" needs a caldav object with url and username"
 msgstr ""
 
-#: ../packages/core/src/config.ts:138
+#: ../packages/core/src/config.ts:144
 msgid "caldav.{key} must be a non-empty string"
 msgstr ""
 
-#: ../packages/core/src/config.ts:142
+#: ../packages/core/src/config.ts:148
 msgid "caldav.url is required"
 msgstr ""
 
-#: ../packages/core/src/config.ts:147 ../packages/core/src/config.ts:150
+#: ../packages/core/src/config.ts:153 ../packages/core/src/config.ts:156
 msgid "caldav.url must be an http(s) URL"
 msgstr ""
 
-#: ../packages/core/src/config.ts:153
+#: ../packages/core/src/config.ts:159
 msgid "caldav.url must use https unless the server is on this machine"
 msgstr ""
 
-#: ../packages/core/src/config.ts:157
+#: ../packages/core/src/config.ts:163
 msgid "caldav.auth {auth} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:163
+#: ../packages/core/src/config.ts:169
 msgid "caldav.username is required for basic auth"
 msgstr ""
 
-#: ../packages/core/src/config.ts:165
+#: ../packages/core/src/config.ts:171
 msgid ""
 "caldav.password must not be in the file — set passwordEnv and export the "
 "variable"
 msgstr ""
 
-#: ../packages/core/src/config.ts:176
+#: ../packages/core/src/config.ts:174
+msgid "caldav: set passwordEnv or passwordSecret, not both"
+msgstr ""
+
+#: ../packages/core/src/config.ts:188
 msgid "accounts must be a list with at least one account"
 msgstr ""
 
-#: ../packages/core/src/config.ts:180
+#: ../packages/core/src/config.ts:192
 msgid "accounts[{index}] must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:183
+#: ../packages/core/src/config.ts:195
 msgid "accounts[{index}]: id \"{id}\" is used twice"
 msgstr ""
 
-#: ../packages/core/src/config.ts:206
+#: ../packages/core/src/config.ts:218
 msgid "config must be a JSON object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:226
+#: ../packages/core/src/config.ts:238
 msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 
@@ -306,6 +310,18 @@ msgstr ""
 msgid "no calendar given and no default {kind} calendar configured"
 msgstr ""
 
+#: ../packages/core/src/secrets.ts:41
+msgid "\"{ref}\" is not a secret reference — write <account>:<purpose>"
+msgstr ""
+
+#: ../packages/core/src/secrets.ts:60
+msgid "the environment is read-only — export the variable instead"
+msgstr ""
+
+#: ../packages/core/src/secrets.ts:84
+msgid "no secret store configured"
+msgstr ""
+
 #: ../packages/core/src/source-key.ts:16
 msgid "invalid source \"{source}\": letters, digits, . _ - only"
 msgstr ""
@@ -334,6 +350,10 @@ msgstr ""
 msgid "{label} typelib not available: {message}"
 msgstr ""
 
+#: ../packages/secrets-libsecret/src/store.gjs.ts:29
+msgid "secret service not available: {message}"
+msgstr ""
+
 #: src/core/config.ts:38
 msgid "cannot read {path}: {message}"
 msgstr ""
@@ -346,15 +366,27 @@ msgstr ""
 msgid "{path}: {message}"
 msgstr ""
 
-#: src/core/context.ts:36
+#: src/core/context.ts:73
+msgid "no secret stored for \"{ref}\""
+msgstr ""
+
+#: src/core/context.ts:74
+msgid "secret \"{ref}\" cannot be read: {reason}"
+msgstr ""
+
+#: src/core/context.ts:84
 msgid "account \"{account}\": {message}"
 msgstr ""
 
-#: src/core/context.ts:50
+#: src/core/context.ts:99
 msgid "backend \"caldav\" needs a caldav section"
 msgstr ""
 
-#: src/core/context.ts:55
+#: src/core/context.ts:103
+msgid "the passwordSecret has not been resolved yet"
+msgstr ""
+
+#: src/core/context.ts:107
 msgid "export the CalDAV password as {name}"
 msgstr ""
 
