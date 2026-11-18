@@ -88,6 +88,8 @@ configuration, not permission; the grant check follows.
 
 ### 7. CLI and MCP first, a UI later
 
+> Superseded by [ADR 0004](0004-the-ui-is-next-three-views-on-the-same-core.md): the UI is now a third frontend.
+
 `reminder calendars | events | todos | config | mcp` on GJS via gjsify. A GNOME UI can come later
 on the same core; nothing in the core assumes a terminal.
 
