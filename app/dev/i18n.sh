@@ -14,7 +14,8 @@ POT="po/$DOMAIN.pot"
 case "${1:-}" in
 extract)
     # Paths are relative to app/, so the #: references stay stable for every checkout.
-    find src ../packages/*/src -type f -name '*.ts' | sort > po/POTFILES.in
+    # adwaita-extended binds its own domain (dgettext) and ships its own catalogue.
+    find src ../packages/*/src -type f -name '*.ts' ! -path '../packages/adwaita-extended/*' | sort > po/POTFILES.in
     xgettext \
         --files-from=po/POTFILES.in \
         --output="$POT" \

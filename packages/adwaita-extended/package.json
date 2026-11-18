@@ -13,10 +13,12 @@
     "check": "gjsify tsc --noEmit --project tsconfig.json",
     "lint": "gjsify lint .",
     "stories": "gjsify storybook",
-    "stories:build": "gjsify storybook --build-only --out dist/storybook.gjs.mjs"
+    "stories:build": "gjsify storybook --build-only --out dist/storybook.gjs.mjs",
+    "i18n:extract": "./dev-i18n.sh"
   },
   "files": [
     "src",
+    "po",
     "LICENSE"
   ],
   "peerDependencies": {
