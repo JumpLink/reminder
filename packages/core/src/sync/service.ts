@@ -295,7 +295,11 @@ export function createSyncService(options: SyncServiceOptions): SyncService {
     async setSources(sources) {
       if (stopped) return;
       const wanted = new Map(sources.map((s) => [idOf(s.key), s]));
-      for (const [id, rt] of runtimes) if (!wanted.has(id)) drop(rt);
+      for (const [id, rt] of runtimes) {
+        // A source that moved to another server is a new source: its queue slot and its
+        // per-host count belong to the old host.
+        if (wanted.get(id)?.host !== rt.source.host) drop(rt);
+      }
       const added: Runtime[] = [];
       for (const [id, source] of wanted) {
         const existing = runtimes.get(id);

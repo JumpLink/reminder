@@ -309,6 +309,18 @@ export default async () => {
       await s.time.advance(10 * MIN);
       expect(s.net.calls.filter((c) => c.key.source === 'cal-a').length).toBe(1);
     });
+
+    await it('treats a source that moved to another host as new', async () => {
+      const s = setup(() => changed('x'), [a]);
+      await s.service.start();
+      await flush();
+      expect(s.net.calls.length).toBe(1);
+      await s.service.setSources([{ ...a, host: 'moved.example.org' }]);
+      await flush();
+      expect(s.net.calls.length).toBe(2);
+      expect(s.time.pending()).toBe(1);
+      expect(s.service.status(a.key)?.state.kind).toBe('current');
+    });
   });
 
   await describe('sync: concurrency and stop', async () => {
