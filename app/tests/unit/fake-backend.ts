@@ -16,6 +16,8 @@ export interface FakeBackend extends CalendarBackend {
   /** Every stored component, by calendar uid. */
   store: Map<string, string[]>;
   calls: string[];
+  /** The calendarUid of every listItems call, undefined for an all-calendars read. */
+  queried: (string | undefined)[];
   /** Change a stored item behind the core's back, as a second client would. */
   tamper(calendarUid: string, uid: string, ical: string): void;
 }
@@ -34,6 +36,7 @@ export function createFakeBackend(
 ): FakeBackend {
   const store = new Map<string, string[]>(calendars.map((c) => [c.uid, [...(items[c.uid] ?? [])]]));
   const calls: string[] = [];
+  const queried: (string | undefined)[] = [];
   // Like a CalDAV server: one opaque revision per resource, changed by every write.
   const etags = new Map<string, string>();
   const etagKey = (calendarUid: string, uid: string) => `${calendarUid}/${uid}`;
@@ -51,6 +54,7 @@ export function createFakeBackend(
     id: 'fake',
     store,
     calls,
+    queried,
     tamper(calendarUid, uid, ical) {
       const found = find(calendarUid, uid);
       if (!found) throw new BackendError(`no ${uid} in ${calendarUid}`);
@@ -63,6 +67,7 @@ export function createFakeBackend(
     },
     async listItems(query) {
       calls.push(`listItems:${query.kind}`);
+      queried.push(query.calendarUid);
       const out = [];
       for (const c of calendars) {
         if (c.kind !== query.kind || (query.calendarUid && c.uid !== query.calendarUid)) continue;

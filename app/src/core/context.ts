@@ -17,8 +17,10 @@ import {
   createMemoryCacheStore,
   createMultiBackend,
   fmt,
+  guardDisabledCache,
   parseSecretRef,
   UnsupportedAuthError,
+  withoutDisabled,
   type AccountConfig,
   type BackendAccount,
   type CacheStore,
@@ -153,8 +155,10 @@ export function createContext(): Context {
   let secrets: SecretStore | null = null;
   const context: Context = {
     config: () => (config ??= loadConfig()),
-    backend: () => (backend ??= createBackend(context.config())),
-    cache: () => (cache ??= createCache()),
+    // Disabled sources (docs/adr/0006) are cut here, so no frontend can reach one by accident.
+    backend: () => (backend ??= withoutDisabled(createBackend(context.config()), context.config().disabled)),
+    cache: () =>
+      (cache ??= guardDisabledCache(createCache(), context.config().accounts, context.config().disabled)),
     secrets: () => (secrets ??= createSecrets()),
   };
   return context;
@@ -168,8 +172,9 @@ export function staticContext(
 ): Context {
   return {
     config: () => config,
-    backend: () => backend,
-    cache: () => stores.cache ?? createMemoryCacheStore(),
+    backend: () => withoutDisabled(backend, config.disabled),
+    cache: () =>
+      guardDisabledCache(stores.cache ?? createMemoryCacheStore(), config.accounts, config.disabled),
     secrets: () => stores.secrets ?? createEnvSecretStore({}),
   };
 }
