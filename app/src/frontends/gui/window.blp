@@ -1,0 +1,14 @@
+using Gtk 4.0;
+using Adw 1;
+
+// The window's frame. The switcher shell (header bar, view switcher, page stack) is built by
+// `createSwitcherShell` in window.ts and set as the child of `host`: its breakpoints belong to
+// the window, so they cannot live in a template of their own.
+template $ReminderWindow: Adw.ApplicationWindow {
+  default-width: 800;
+  default-height: 600;
+  width-request: 360;
+  height-request: 294;
+
+  content: Adw.Bin host {};
+}

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 18:32+0100\n"
+"POT-Creation-Date: 2026-11-18 18:47+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -522,6 +522,10 @@ msgstr "wiederkehrend"
 msgid "(no title)"
 msgstr "(ohne Titel)"
 
+#: src/frontends/cli/gui.ts:14
+msgid "Open the graphical interface"
+msgstr "Grafische Oberfläche öffnen"
+
 #: src/frontends/cli/mcp.ts:14
 msgid "Run as an MCP server over stdio"
 msgstr "Als MCP-Server über stdio ausführen"
@@ -652,6 +656,54 @@ msgstr "Eine Erinnerung als erledigt markieren"
 msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
-#: src/index.ts:42
+#: src/frontends/gui/main.ts:37
+msgid "Calendar events and reminders from your existing calendars."
+msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
+
+#: src/frontends/gui/window.ts:47
+msgid "Calendar"
+msgstr "Kalender"
+
+#: src/frontends/gui/window.ts:48
+msgid "Events from your calendars will appear here."
+msgstr "Termine aus Ihren Kalendern erscheinen hier."
+
+#: src/frontends/gui/window.ts:52
+msgid "Tasks"
+msgstr "Aufgaben"
+
+#: src/frontends/gui/window.ts:53
+msgid "Your reminders will appear here."
+msgstr "Ihre Erinnerungen erscheinen hier."
+
+#: src/frontends/gui/window.ts:57
+msgid "Board"
+msgstr "Board"
+
+#: src/frontends/gui/window.ts:58
+msgid "Your reminders as cards will appear here."
+msgstr "Ihre Erinnerungen als Karten erscheinen hier."
+
+#: src/frontends/gui/window.ts:85 src/frontends/gui/window.ts:129
+msgid "Keyboard Shortcuts"
+msgstr "Tastenkürzel"
+
+#: src/frontends/gui/window.ts:86
+msgid "About reminder"
+msgstr "Über reminder"
+
+#: src/frontends/gui/window.ts:87
+msgid "Main Menu"
+msgstr "Hauptmenü"
+
+#: src/frontends/gui/window.ts:125
+msgid "General"
+msgstr "Allgemein"
+
+#: src/frontends/gui/window.ts:130
+msgid "Quit"
+msgstr "Beenden"
+
+#: src/index.ts:44
 msgid "Give a command — `reminder --help` lists them."
 msgstr "Gib einen Befehl an — `reminder --help` listet sie auf."
