@@ -78,6 +78,12 @@ away.
 grant per capability (`calendar.create`, `reminder.create`, `reminder.update`) and calendar uid,
 exactly as `reminder calendars` prints it; routes pick a calendar from what an item concerns. See [config.example.json](config.example.json).
 
+Several accounts — a local one and a CalDAV server, two servers — live in one file under `accounts`,
+each with an id you choose. `reminder accounts` lists them. Reads then cover every account at once
+and every uid carries its account: a target reads `<account-id>:<uid>`, exactly as `reminder
+calendars` prints it. See [config.accounts.example.json](config.accounts.example.json). A file
+without `accounts` is one account and stays as it is — nothing to migrate, no prefix to write.
+
 ## Development
 
 ```sh

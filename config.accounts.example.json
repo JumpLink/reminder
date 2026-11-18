@@ -1,0 +1,27 @@
+{
+  "accounts": [
+    { "id": "private", "backend": "eds" },
+    {
+      "id": "work",
+      "backend": "caldav",
+      "caldav": {
+        "url": "https://dav.example.org/",
+        "auth": "basic",
+        "username": "user@example.org",
+        "passwordEnv": "REMINDER_WORK_CALDAV_PASSWORD"
+      }
+    }
+  ],
+  "grants": [
+    { "capability": "reminder.create", "target": "private:<task-list-uid-from-reminder-calendars>" },
+    { "capability": "calendar.create", "target": "work:<calendar-url-from-reminder-calendars>" }
+  ],
+  "routes": [
+    { "concerns": ["invoice", "tax"], "kind": "reminder", "target": "private:<task-list-uid-for-paperwork>" }
+  ],
+  "priorities": { "list": "private:<task-list-uid-for-priorities>" },
+  "defaults": {
+    "event": "work:<calendar-url-from-reminder-calendars>",
+    "reminder": "private:<task-list-uid-from-reminder-calendars>"
+  }
+}
