@@ -114,7 +114,10 @@ export function createCaldavDeltaReader(options: CaldavDeltaOptions): CaldavDelt
     const touched = new Set(result.changed.map((o) => o.url));
     const kept = items.filter((i) => !gone.has(i.href) && !touched.has(i.href));
     // `sync` asks for etags only, so a changed object carries no body: multiget those and no more.
-    const fresh = await fetchItems(c.url, [...touched]);
+    // Unlike the full read's calendar-query, sync-collection cannot filter by component, so a
+    // collection holding events and tasks reports both; keep only the kind asked for.
+    const wanted = new RegExp(`^BEGIN:${COMPONENT[kind]}\\r?$`, 'm');
+    const fresh = (await fetchItems(c.url, [...touched])).filter((i) => wanted.test(i.ical));
     return {
       kind: 'changed',
       marker: encodeMarker({ ctag: now.ctag, syncToken: result.syncToken ?? now.syncToken }),

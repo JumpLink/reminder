@@ -93,6 +93,19 @@ export default async () => {
       });
     });
 
+    await it('keeps a task that changed in the same collection out of an event delta', async () => {
+      await withServer('token', async (dav) => {
+        const { r, previous } = await first(dav);
+        dav.tamper(
+          '/cal/events/t.ics',
+          'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VTODO\r\nUID:t\r\nSUMMARY:Task\r\nEND:VTODO\r\nEND:VCALENDAR\r\n',
+        );
+        const got = await r.read(events(dav), 'event', previous);
+        if (got.kind !== 'changed') throw new Error('expected a change');
+        expect(summaries(got.items)).toBe('Alpha,Beta,Gamma');
+      });
+    });
+
     await it('drops a deleted item through the sync token without fetching anything', async () => {
       await withServer('token', async (dav) => {
         const { r, previous } = await first(dav);
