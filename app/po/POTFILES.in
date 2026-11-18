@@ -19,6 +19,7 @@
 ../packages/core/src/source-key.ts
 ../packages/core/src/types.ts
 ../packages/core/src/update.ts
+../packages/core/src/visibility.ts
 ../packages/pim/src/backend.ts
 ../packages/pim/src/caldav/backend.ts
 ../packages/pim/src/caldav/index.ts

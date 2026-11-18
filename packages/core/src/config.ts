@@ -19,6 +19,7 @@ import {
 } from './accounts.ts';
 import { ConfigError } from './errors.ts';
 import { parseSecretRef } from './secrets.ts';
+import { parseDisabled } from './visibility.ts';
 import { parseGrants, type Grant } from './grants.ts';
 import { parseDefaults, parseRoutes, type RoutingConfig } from './routing.ts';
 import { _, fmt } from './i18n.ts';
@@ -80,11 +81,16 @@ export interface ReminderConfig extends RoutingConfig {
   caldav?: CaldavConfig;
   grants: Grant[];
   priorities: PrioritiesConfig;
+  /**
+   * Calendar and task-list uids that are off (docs/adr/0006): not listed, queried, written or
+   * cached. Same spelling as a grant target. Everything not named here is enabled.
+   */
+  disabled: string[];
   /** Keys this build does not know, kept verbatim. */
   extra: Record<string, unknown>;
 }
 
-const KNOWN = new Set(['accounts', 'backend', 'grants', 'routes', 'defaults', 'priorities', 'caldav']);
+const KNOWN = new Set(['accounts', 'backend', 'grants', 'routes', 'defaults', 'priorities', 'caldav', 'disabled']);
 const ACCOUNT_KNOWN = new Set(['id', 'backend', 'caldav']);
 
 export function emptyConfig(): ReminderConfig {
@@ -95,6 +101,7 @@ export function emptyConfig(): ReminderConfig {
     routes: [],
     defaults: {},
     priorities: {},
+    disabled: [],
     extra: {},
   };
 }
@@ -210,6 +217,7 @@ function targetsOf(config: ReminderConfig): string[] {
     ...config.routes.map((r) => r.target),
     ...Object.values(config.defaults),
     ...(config.priorities.list ? [config.priorities.list] : []),
+    ...config.disabled,
   ];
 }
 
@@ -246,6 +254,7 @@ export function parseConfig(raw: unknown): ReminderConfig {
     routes: parseRoutes(record.routes),
     defaults: parseDefaults(record.defaults),
     priorities: parsePriorities(record.priorities),
+    disabled: parseDisabled(record.disabled),
     extra,
   };
   checkAccountTargets(config.accounts, targetsOf(config));
@@ -265,11 +274,13 @@ function serializeAccount(account: AccountConfig): Record<string, unknown> {
 }
 
 export function serializeConfig(config: ReminderConfig): string {
-  const { extra, accounts, backend, caldav, ...rest } = config;
+  const { extra, accounts, backend, caldav, disabled, ...rest } = config;
   // Written back in the spelling it was read in: `backend` present means the file had no accounts.
   const shape =
     backend === undefined
       ? { accounts: accounts.map(serializeAccount) }
       : { backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}) };
-  return `${JSON.stringify({ ...extra, ...shape, ...rest }, null, 2)}\n`;
+  // An empty list is not written: a file that never disabled anything stays as it was.
+  const off = disabled.length > 0 ? { disabled } : {};
+  return `${JSON.stringify({ ...extra, ...shape, ...rest, ...off }, null, 2)}\n`;
 }
