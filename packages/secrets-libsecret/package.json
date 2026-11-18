@@ -16,7 +16,7 @@
     "src"
   ],
   "dependencies": {
-    "@girs/secret-1": "^4.1.0",
+    "@girs/secret-1": "5.4.0",
     "@reminder/core": "*"
   }
 }
