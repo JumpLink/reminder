@@ -20,6 +20,10 @@ export interface FakeDav {
   resources: Map<string, string>;
   /** Replace a resource as another client would: new content, new etag. */
   tamper(path: string, data: string): void;
+  /** Delete a resource as another client would. */
+  remove(path: string): void;
+  /** From now on every sync token the server handed out is answered with 403 valid-sync-token. */
+  expireTokens(): void;
   close(): Promise<void>;
 }
 
@@ -30,10 +34,11 @@ const response = (href: string, prop: string) =>
 const multistatus = (inner: string) =>
   `<?xml version="1.0" encoding="utf-8"?><D:multistatus ${NS}>${inner}</D:multistatus>`;
 
-const collection = (href: string, name: string, comps: string[]) =>
+const collection = (href: string, name: string, comps: string[], version: string) =>
   response(
     href,
     `<D:resourcetype><D:collection/><C:calendar/></D:resourcetype><D:displayname>${name}</D:displayname>` +
+      version +
       `<C:supported-calendar-component-set>${comps.map((c) => `<C:comp name="${c}"/>`).join('')}</C:supported-calendar-component-set>`,
   );
 
@@ -41,6 +46,8 @@ export async function startFakeDav(options: {
   user: string;
   password: string;
   resources: Record<string, string>;
+  /** `token` (default): ctag + RFC 6578 sync-collection. `ctag`: a ctag only, no sync-token. */
+  sync?: 'token' | 'ctag';
 }): Promise<FakeDav> {
   const resources = new Map(Object.entries(options.resources));
   const requests: RecordedRequest[] = [];
@@ -49,6 +56,14 @@ export async function startFakeDav(options: {
   const etags = new Map<string, string>();
   const etagOf = (path: string) => etags.get(path) ?? '"e"';
   let revision = 0;
+  // Collection state: one counter, a change log, and the ctag / sync token derived from it.
+  let rev = 0;
+  let tokensExpired = false;
+  const log: { rev: number; path: string; deleted: boolean }[] = [];
+  const touch = (path: string, deleted: boolean) => log.push({ rev: ++rev, path, deleted });
+  const versionProps = () =>
+    `<CS:getctag>ctag-${rev}</CS:getctag>` +
+    (options.sync === 'ctag' ? '' : `<D:sync-token>tok-${rev}</D:sync-token>`);
 
   const send = (res: ServerResponse, status: number, body = '', headers = {}) => {
     res.writeHead(status, { 'Content-Type': 'application/xml; charset=utf-8', ...headers });
@@ -96,8 +111,8 @@ export async function startFakeDav(options: {
             207,
             multistatus(
               response('/cal/', '<D:resourcetype><D:collection/></D:resourcetype>') +
-                collection('/cal/events/', 'Events', ['VEVENT']) +
-                collection('/cal/tasks/', 'Tasks', ['VTODO']),
+                collection('/cal/events/', 'Events', ['VEVENT'], versionProps()) +
+                collection('/cal/tasks/', 'Tasks', ['VTODO'], versionProps()),
             ),
           );
         return send(res, 404);
@@ -105,6 +120,22 @@ export async function startFakeDav(options: {
       if (method === 'REPORT') {
         const dir = path;
         const inDir = [...resources.keys()].filter((p) => p.startsWith(dir));
+        if (body.includes('sync-collection')) {
+          const token = /<D:sync-token>([^<]*)<\/D:sync-token>/.exec(body)?.[1] ?? '';
+          const since = /^tok-(\d+)$/.exec(token)?.[1];
+          if (options.sync === 'ctag' || tokensExpired || (token !== '' && since === undefined))
+            return send(res, 403, '<D:error xmlns:D="DAV:"><D:valid-sync-token/></D:error>');
+          const after = since === undefined ? -1 : Number(since);
+          const latest = new Map<string, boolean>();
+          for (const c of log) if (c.rev > after && c.path.startsWith(dir)) latest.set(c.path, c.deleted);
+          if (since === undefined) for (const p of inDir) latest.set(p, false);
+          const rows = [...latest].map(([p, deleted]) =>
+            deleted
+              ? `<D:response><D:href>${p}</D:href><D:status>HTTP/1.1 404 Not Found</D:status></D:response>`
+              : response(p, `<D:getetag>${etagOf(p)}</D:getetag>`),
+          );
+          return send(res, 207, multistatus(rows.join('') + `<D:sync-token>tok-${rev}</D:sync-token>`));
+        }
         if (body.includes('calendar-multiget')) {
           const hrefs = [...body.matchAll(/<D:href>([^<]*)<\/D:href>/g)].map((m) => m[1]);
           return send(
@@ -142,6 +173,7 @@ export async function startFakeDav(options: {
         const ifMatch = req.headers['if-match'] as string | undefined;
         if (ifMatch !== undefined && ifMatch !== etagOf(path)) return send(res, 412);
         resources.set(path, body);
+        touch(path, false);
         const etag = `"r${++revision}"`;
         etags.set(path, etag);
         return send(res, 201, '', { ETag: etag });
@@ -159,6 +191,14 @@ export async function startFakeDav(options: {
     tamper(path, data) {
       resources.set(path, data);
       etags.set(path, `"r${++revision}"`);
+      touch(path, false);
+    },
+    remove(path) {
+      resources.delete(path);
+      touch(path, true);
+    },
+    expireTokens() {
+      tokensExpired = true;
     },
     close: () => new Promise<void>((resolve) => server.close(() => resolve())),
   };

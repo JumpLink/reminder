@@ -12,8 +12,9 @@
 import { DavClient, DavError, basicAuth, type Collection, type DavObject, type FetchLike } from '@gjsify/dav';
 
 import type { CalendarBackend, ItemQuery } from '../backend.ts';
-import { BackendAuthError, BackendError, ConflictError, errorMessage } from '../errors.ts';
+import { BackendError, ConflictError } from '../errors.ts';
 import { _, fmt } from '../i18n.ts';
+import { davError } from './errors.ts';
 import type { CalendarInfo, ItemKind, RawItem } from '../types.ts';
 
 const COMPONENT: Record<ItemKind, string> = { event: 'VEVENT', reminder: 'VTODO' };
@@ -53,24 +54,6 @@ function icalUtc(iso: string): string {
 function supports(c: Collection, kind: ItemKind): boolean {
   // A server that names no component set accepts all of them (RFC 4791 §5.2.3).
   return c.components.length === 0 || c.components.includes(COMPONENT[kind]);
-}
-
-/** Classify a failure; 401 is an auth error, everything else a BackendError naming the call. */
-function davError(label: string, err: unknown): Error {
-  if (err instanceof BackendError) return err;
-  if (err instanceof DavError) {
-    if (err.status === 401) return new BackendAuthError(
-      fmt(_('{label}: the server rejected the credentials (401)'), { label }),
-      'http',
-      401,
-    );
-    return new BackendError(
-      fmt(_('{label}: {method} failed with {status}'), { label, method: err.method, status: err.status }),
-      'http',
-      err.status,
-    );
-  }
-  return new BackendError(fmt(_('{label}: {message}'), { label, message: errorMessage(err) }));
 }
 
 export function createCaldavBackend(options: CaldavOptions): CalendarBackend {

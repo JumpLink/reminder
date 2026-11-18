@@ -22,3 +22,22 @@ export interface RawItem {
   calendarUid: string;
   ical: string;
 }
+
+/** One stored component of a collection, as a delta read keeps it between runs. */
+export interface CollectionItem {
+  /** Absolute resource URL: the key a later delta merges on. */
+  href: string;
+  etag: string | null;
+  ical: string;
+}
+
+/** What a caller remembers about one collection: the marker of its last read and the items it got. */
+export interface CollectionPrevious {
+  marker: string;
+  items: CollectionItem[];
+}
+
+/** Outcome of a delta read; `unchanged` carries no items because the caller already holds them. */
+export type CollectionDelta =
+  | { kind: 'unchanged'; marker: string }
+  | { kind: 'changed'; marker: string; items: CollectionItem[] };

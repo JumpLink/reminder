@@ -22,4 +22,7 @@
 - A collection that refuses the write (`403`) surfaces as a read-only `BackendError`.
 - A 401 surfaces as `BackendAuthError`. Recurring events come back as their series definition.
 
-Not yet: OAuth (Google, Microsoft), delta sync.
+Delta reads (`createCaldavDeltaReader`, [ADR 0018](adr/0018-caldav-delta-sync.md)) exist in the driver but
+are not wired into a frontend yet.
+
+Not yet: OAuth (Google, Microsoft).

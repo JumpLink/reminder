@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 18:47+0100\n"
+"POT-Creation-Date: 2026-11-18 21:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -306,48 +306,49 @@ msgstr ""
 msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:63
-msgid "{label}: the server rejected the credentials (401)"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:68
-msgid "{label}: {method} failed with {status}"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:73
-msgid "{label}: {message}"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:104
+#: ../packages/pim/src/caldav/backend.ts:87
+#: ../packages/pim/src/caldav/delta.ts:131
 msgid "no calendar \"{uid}\""
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:104
+#: ../packages/pim/src/caldav/backend.ts:87
 msgid "no task list \"{uid}\""
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:179
+#: ../packages/pim/src/caldav/backend.ts:162
 msgid "createItem: the component has no UID"
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:185
+#: ../packages/pim/src/caldav/backend.ts:168
 msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:191
+#: ../packages/pim/src/caldav/backend.ts:174
 msgid "createItem: \"{calendar}\" refused the write (read-only?)"
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:207
+#: ../packages/pim/src/caldav/backend.ts:190
 msgid "updateItem: no \"{uid}\" in \"{calendar}\""
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:214
+#: ../packages/pim/src/caldav/backend.ts:197
 msgid "updateItem: \"{uid}\" changed on the server since it was read"
 msgstr ""
 
-#: ../packages/pim/src/caldav/backend.ts:220
+#: ../packages/pim/src/caldav/backend.ts:203
 msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
+msgstr ""
+
+#: ../packages/pim/src/caldav/errors.ts:13
+msgid "{label}: the server rejected the credentials (401)"
+msgstr ""
+
+#: ../packages/pim/src/caldav/errors.ts:18
+msgid "{label}: {method} failed with {status}"
+msgstr ""
+
+#: ../packages/pim/src/caldav/errors.ts:23
+msgid "{label}: {message}"
 msgstr ""
 
 #: ../packages/pim/src/eds/driver.gjs.ts:186
@@ -617,51 +618,51 @@ msgstr ""
 msgid "Mark a done reminder as open again"
 msgstr ""
 
-#: src/frontends/gui/main.ts:37
+#: src/frontends/gui/main.ts:38
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
-#: src/frontends/gui/window.ts:47
+#: src/frontends/gui/window.ts:51
 msgid "Calendar"
 msgstr ""
 
-#: src/frontends/gui/window.ts:48
+#: src/frontends/gui/window.ts:52
 msgid "Events from your calendars will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:52
+#: src/frontends/gui/window.ts:56
 msgid "Tasks"
 msgstr ""
 
-#: src/frontends/gui/window.ts:53
+#: src/frontends/gui/window.ts:57
 msgid "Your reminders will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:57
+#: src/frontends/gui/window.ts:61
 msgid "Board"
 msgstr ""
 
-#: src/frontends/gui/window.ts:58
+#: src/frontends/gui/window.ts:62
 msgid "Your reminders as cards will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:85 src/frontends/gui/window.ts:129
+#: src/frontends/gui/window.ts:89 src/frontends/gui/window.ts:147
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/frontends/gui/window.ts:86
+#: src/frontends/gui/window.ts:90
 msgid "About reminder"
 msgstr ""
 
-#: src/frontends/gui/window.ts:87
+#: src/frontends/gui/window.ts:91
 msgid "Main Menu"
 msgstr ""
 
-#: src/frontends/gui/window.ts:125
+#: src/frontends/gui/window.ts:143
 msgid "General"
 msgstr ""
 
-#: src/frontends/gui/window.ts:130
+#: src/frontends/gui/window.ts:148
 msgid "Quit"
 msgstr ""
 
