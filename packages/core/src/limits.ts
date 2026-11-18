@@ -20,3 +20,24 @@ export function capLimit(value: number | undefined, spec: LimitSpec): number {
   if (value === undefined || !Number.isFinite(value)) return spec.default;
   return Math.max(1, Math.min(Math.floor(value), spec.max));
 }
+
+/** The kinds of source the sync service schedules (docs/adr/0017). */
+export type SyncSourceKind = 'caldav' | 'eds' | 'deck' | 'openproject' | 'zenkit';
+
+/** How often a source is refetched while everything works. A failure doubles it up to the cap. */
+export const SYNC_INTERVAL_MS: Record<SyncSourceKind, number> = {
+  caldav: 5 * 60_000,
+  eds: 2 * 60_000,
+  deck: 2 * 60_000,
+  openproject: 5 * 60_000,
+  zenkit: 10 * 60_000,
+};
+
+/** Back-off ceiling: a source that keeps failing is still tried twice an hour. */
+export const SYNC_MAX_INTERVAL_MS = 30 * 60_000;
+
+/** Concurrent fetches against one server (host). */
+export const SYNC_MAX_PER_HOST = 2;
+
+/** A window-focus refresh skips a source that finished an attempt more recently than this. */
+export const SYNC_FOCUS_MIN_GAP_MS = 30_000;

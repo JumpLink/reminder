@@ -15,3 +15,4 @@ record that links back; the old one stays.
 | [0011](0011-credentials-through-a-secret-store-port.md) | Credentials through a `SecretStore` port: the config holds a reference | accepted |
 | [0012](0012-one-interaction-concept-three-size-classes.md) | One interaction concept, three size classes | accepted |
 | [0016](0016-gjsify-pim-incubates-here.md) | `@gjsify/pim`: the backend port and its drivers incubate here, MIT, moving to gjsify when complete | accepted |
+| [0017](0017-sync-schedule-and-states.md) | Sync schedule and states: one core service, states as values, cache first | accepted |
