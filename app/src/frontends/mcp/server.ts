@@ -12,11 +12,12 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { applyGrantGate, serveStdio } from '@gjsify/mcp';
 
 import { createContext, type Context } from '../../core/context.ts';
+import { IDENTITY } from '../../core/identity.ts';
 import { VERSION } from '../../core/runtime.ts';
 import { registerReadTools } from './tools/read.ts';
 import { registerWriteTools } from './tools/write.ts';
 
-const SERVER_NAME = 'reminder';
+const SERVER_NAME = IDENTITY.mcpServerName;
 
 /** Every tool, on any server — split from createMcpServer so tests can pass a recorder. */
 export function registerTools(server: McpServer, context: Context): void {

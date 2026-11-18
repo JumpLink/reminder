@@ -21,10 +21,12 @@ import {
   type ReminderConfig,
 } from '@reminder/core';
 
+import { IDENTITY } from './identity.ts';
+
 export function configPath(env: Record<string, string | undefined> = process.env): string {
   if (env.REMINDER_CONFIG) return env.REMINDER_CONFIG;
   const base = env.XDG_CONFIG_HOME || join(env.HOME || homedir(), '.config');
-  return join(base, 'reminder', 'config.json');
+  return join(base, IDENTITY.configDirName, 'config.json');
 }
 
 export function loadConfig(path: string = configPath()): ReminderConfig {
