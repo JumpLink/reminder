@@ -71,7 +71,7 @@
     "@girs/gtk-4.0": "5.4.0",
     "@girs/icalglib-3.0": "^4.1.0",
     "@girs/secret-1": "^4.1.0",
-    "@gjsify/adwaita-app": "0.64.47",
+    "@gjsify/adwaita-app": "0.64.48",
     "@gjsify/adwaita-extended": "*",
     "@gjsify/cli": "0.64.32",
     "@gjsify/mcp": "0.64.32",
