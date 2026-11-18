@@ -69,6 +69,7 @@
     "@girs/gobject-2.0": "^4.1.0",
     "@girs/icalglib-3.0": "^4.1.0",
     "@girs/secret-1": "^4.1.0",
+    "@gjsify/adwaita-extended": "*",
     "@gjsify/cli": "0.64.32",
     "@gjsify/mcp": "0.64.32",
     "@gjsify/node-globals": "0.64.32",

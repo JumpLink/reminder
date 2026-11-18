@@ -31,6 +31,7 @@ exists: [ADR 0003](docs/adr/0003-managing-reminders-in-place.md).
 | Package | What | May import |
 |---|---|---|
 | `@gjsify/pim` | incubating ([ADR 0016](docs/adr/0016-gjsify-pim-incubates-here.md), MIT): the `CalendarBackend` port, its types and backend errors; drivers `@gjsify/pim/caldav` and `@gjsify/pim/eds` (typelibs load lazily) | `@gjsify/dav`, `gi://` in `*.gjs.ts` only — never `@reminder/*` |
+| `@gjsify/adwaita-extended` | incubating (MIT, moves to gjsify unchanged): GTK4/libadwaita widgets with stories, own gettext domain `gjsify-adwaita-extended`; `DueChip` + pure `dueState` (`/due-state`, Node-safe). Stories: `gjsify workspace @gjsify/adwaita-extended stories`. Lint (`.oxlintrc.json` override) fails on `@reminder/*` and `@gjsify/pim` imports | `gi://`/`@girs/*`, GJS `gettext` — never `@reminder/*`, never `@gjsify/pim` |
 | `@reminder/core` | types, errors, iCalendar, grants, routing, config model, read + create + update; re-exports the port from `@gjsify/pim` | the root of `@gjsify/pim` only (`types: []`) |
 | `@reminder/cache-fs` | `CacheStore` driver: files under `$XDG_CACHE_HOME`, atomic writes ([ADR 0010](docs/adr/0010-cache-and-synchronisation.md)) | `@reminder/core`, `node:*` |
 | `@reminder/secrets-libsecret` | `SecretStore` driver over `gi://Secret`, lazy; no service = unavailable ([ADR 0011](docs/adr/0011-credentials-through-a-secret-store-port.md)) | `@reminder/core`, `gi://` |
