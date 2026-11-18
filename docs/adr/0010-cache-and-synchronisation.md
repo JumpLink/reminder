@@ -63,7 +63,7 @@ an in-memory implementation for tests and for hosts that want no persistence.
 
 ## Consequences
 
-- Fetch scheduling, intervals and back-off are a later decision; this ADR fixes only what is stored.
+- This ADR fixes only what is stored; fetch scheduling, intervals, back-off and the state values are [ADR 0017](0017-sync-schedule-and-states.md).
 - Offline reading works for every source that was fetched once; writes to network sources stay
   refused offline (no queue in the first version).
 - The cache directory needs a `derived` entry in the state manifest, or `werkstatt doctor` lists it.
