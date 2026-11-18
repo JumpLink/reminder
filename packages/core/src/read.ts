@@ -3,7 +3,7 @@
  * every backend gets the same answer for the same data.
  */
 
-import type { CalendarBackend } from './backend.ts';
+import type { CalendarBackend } from '@gjsify/pim';
 import { compare, compareDue } from './compare.ts';
 import { shiftDate, todayUtc, toInstant } from './dates.ts';
 import { readEvent, readReminder } from './ical.ts';

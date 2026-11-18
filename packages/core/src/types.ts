@@ -11,19 +11,7 @@
  * early for half the year.
  */
 
-/** What a calendar holds: VEVENTs or VTODOs. EDS keeps them in separate sources. */
-export type ItemKind = 'event' | 'reminder';
-
-export interface CalendarInfo {
-  /** Backend-specific id; the target a grant and a route name. */
-  uid: string;
-  name: string;
-  kind: ItemKind;
-  /** Which backend serves it, e.g. `eds`. */
-  backend: string;
-  /** Display name of the collection/account it belongs to, when the backend knows one. */
-  account: string | null;
-}
+export type { CalendarInfo, ItemKind, RawItem } from '@gjsify/pim';
 
 export interface EventItem {
   uid: string;
@@ -67,10 +55,4 @@ export interface ReminderItem {
   url: string | null;
   /** UID of the parent VTODO (`RELATED-TO` with `RELTYPE=PARENT`, the RFC 5545 default), or null. */
   parent: string | null;
-}
-
-/** One raw component as a backend returns it: iCalendar text plus where it came from. */
-export interface RawItem {
-  calendarUid: string;
-  ical: string;
 }

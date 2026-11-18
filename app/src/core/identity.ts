@@ -19,4 +19,6 @@ export const IDENTITY = {
   cacheDirName: 'reminder',
   secretSchemaName: 'eu.jumplink.Reminder.Secret',
   mcpServerName: 'reminder',
+  /** PRODID of the VCALENDAR a CalDAV write wraps a new component in. */
+  prodId: '-//reminder//CalDAV//EN',
 } as const;

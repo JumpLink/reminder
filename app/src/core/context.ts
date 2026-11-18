@@ -7,7 +7,7 @@
  * With a single account there is no multiplexer and no prefix: that path is exactly what it was.
  */
 
-import { createCaldavBackend } from '@reminder/caldav';
+import { createCaldavBackend } from '@gjsify/pim/caldav';
 import { cacheRoot, createFsCacheStore } from '@reminder/cache-fs';
 import {
   _,
@@ -26,7 +26,7 @@ import {
   type ReminderConfig,
   type SecretStore,
 } from '@reminder/core';
-import { createEdsBackend } from '@reminder/eds';
+import { createEdsBackend } from '@gjsify/pim/eds';
 import { createLibsecretStore } from '@reminder/secrets-libsecret';
 
 import { loadConfig } from './config.ts';
@@ -111,7 +111,12 @@ export function createAccountBackend(
           about(fmt(_('export the CalDAV password as {name}'), { name: caldav.passwordEnv }), account, named),
         );
       }
-      return createCaldavBackend({ url: caldav.url, username: caldav.username, password });
+      return createCaldavBackend({
+        url: caldav.url,
+        username: caldav.username,
+        password,
+        prodId: IDENTITY.prodId,
+      });
     }
   }
 }

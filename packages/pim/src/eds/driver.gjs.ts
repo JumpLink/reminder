@@ -3,8 +3,8 @@
  *
  * EDS keeps events (`Calendar` sources) and reminders (`Task List` sources) apart, so `kind`
  * picks the source extension and the client type. Every component crosses the port as
- * iCalendar text; parsing happens in `@reminder/core`. Ported from curlew's read-only
- * `curlew calendar` (packages/gnome/src/calendar.gjs.ts), which this project replaces.
+ * iCalendar text; parsing is the consumer's. Ported from curlew's read-only
+ * `curlew calendar` (packages/gnome/src/calendar.gjs.ts) by way of reminder's `@reminder/eds`.
  *
  * Recurring items come back as their series definition (`occur-in-time-range?` selects series
  * with an occurrence in the window); occurrences are not expanded.
@@ -13,8 +13,10 @@
 import type ECal from 'gi://ECal?version=2.0';
 import type EDataServer from 'gi://EDataServer?version=1.2';
 
-import type { CalendarBackend, CalendarInfo, ItemKind, ItemQuery, RawItem } from '@reminder/core';
-import { _, BackendError, fmt } from '@reminder/core';
+import type { CalendarBackend, ItemQuery } from '../backend.ts';
+import { BackendError } from '../errors.ts';
+import { _, fmt } from '../i18n.ts';
+import type { CalendarInfo, ItemKind, RawItem } from '../types.ts';
 
 import { edsError, isBackendFailure, unwrapList, unwrapResult } from './errors.ts';
 import { cal, eds } from './libs.gjs.ts';

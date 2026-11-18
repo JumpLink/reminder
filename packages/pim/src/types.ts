@@ -1,0 +1,24 @@
+/**
+ * What crosses the PIM port. A backend hands out iCalendar text and the calendars it lives in;
+ * parsing into richer types is the consumer's job, so every backend stays a transport.
+ */
+
+/** What a calendar holds: VEVENTs or VTODOs. EDS keeps them in separate sources. */
+export type ItemKind = 'event' | 'reminder';
+
+export interface CalendarInfo {
+  /** Backend-specific id, stable across sessions: EDS's source uid, CalDAV's collection URL. */
+  uid: string;
+  name: string;
+  kind: ItemKind;
+  /** Which backend serves it, e.g. `eds`. */
+  backend: string;
+  /** Display name of the collection/account it belongs to, when the backend knows one. */
+  account: string | null;
+}
+
+/** One raw component as a backend returns it: iCalendar text plus where it came from. */
+export interface RawItem {
+  calendarUid: string;
+  ical: string;
+}

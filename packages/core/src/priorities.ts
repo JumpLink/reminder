@@ -4,7 +4,7 @@
  * iCalendar text, so every backend gets the same ranking and the same ages.
  */
 
-import type { CalendarBackend } from './backend.ts';
+import type { CalendarBackend } from '@gjsify/pim';
 import { compare, compareDue } from './compare.ts';
 import { ConfigError } from './errors.ts';
 import { readReminder } from './ical.ts';

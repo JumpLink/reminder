@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 16:12+0100\n"
+"POT-Creation-Date: 2026-11-18 16:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,50 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-
-#: ../packages/caldav/src/backend.ts:68
-msgid "{label}: the server rejected the credentials (401)"
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:73
-msgid "{label}: {method} failed with {status}"
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:78
-msgid "{label}: {message}"
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:108
-msgid "no calendar \"{uid}\""
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:108
-msgid "no task list \"{uid}\""
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:183
-msgid "createItem: the component has no UID"
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:189
-msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:195
-msgid "createItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:211
-msgid "updateItem: no \"{uid}\" in \"{calendar}\""
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:218
-msgid "updateItem: \"{uid}\" changed on the server since it was read"
-msgstr ""
-
-#: ../packages/caldav/src/backend.ts:224
-msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
 
 #: ../packages/core/src/accounts.ts:30
 msgid "accounts[{index}]: id must be a non-empty string"
@@ -171,12 +127,12 @@ msgstr ""
 msgid "summary must not be empty"
 msgstr ""
 
-#: ../packages/core/src/create.ts:70 ../packages/eds/src/driver.gjs.ts:71
+#: ../packages/core/src/create.ts:70 ../packages/pim/src/eds/driver.gjs.ts:73
 msgid "no enabled calendar \"{uid}\""
 msgstr ""
 
 #: ../packages/core/src/create.ts:70 ../packages/core/src/update.ts:50
-#: ../packages/eds/src/driver.gjs.ts:71
+#: ../packages/pim/src/eds/driver.gjs.ts:73
 msgid "no enabled task list \"{uid}\""
 msgstr ""
 
@@ -191,11 +147,11 @@ msgstr ""
 msgid "invalid date: {value}"
 msgstr ""
 
-#: ../packages/core/src/errors.ts:45
+#: ../packages/core/src/errors.ts:28
 msgid "authentication \"{scheme}\" is not supported yet — use \"basic\""
 msgstr ""
 
-#: ../packages/core/src/errors.ts:60
+#: ../packages/core/src/errors.ts:43
 msgid "no grant for {capability} on \"{target}\" — add {snippet} to grants"
 msgstr ""
 
@@ -338,15 +294,60 @@ msgstr ""
 msgid "no reminder {uid} in \"{target}\""
 msgstr ""
 
-#: ../packages/eds/src/driver.gjs.ts:184 ../packages/eds/src/driver.gjs.ts:194
+#: ../packages/pim/src/caldav/backend.ts:63
+msgid "{label}: the server rejected the credentials (401)"
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:68
+msgid "{label}: {method} failed with {status}"
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:73
+msgid "{label}: {message}"
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:104
+msgid "no calendar \"{uid}\""
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:104
+msgid "no task list \"{uid}\""
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:179
+msgid "createItem: the component has no UID"
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:185
+msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:191
+msgid "createItem: \"{calendar}\" refused the write (read-only?)"
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:207
+msgid "updateItem: no \"{uid}\" in \"{calendar}\""
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:214
+msgid "updateItem: \"{uid}\" changed on the server since it was read"
+msgstr ""
+
+#: ../packages/pim/src/caldav/backend.ts:220
+msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
+msgstr ""
+
+#: ../packages/pim/src/eds/driver.gjs.ts:186
+#: ../packages/pim/src/eds/driver.gjs.ts:196
 msgid "\"{calendar}\" is read-only"
 msgstr ""
 
-#: ../packages/eds/src/errors.ts:11
+#: ../packages/pim/src/eds/errors.ts:12
 msgid "{message}: {cause}"
 msgstr ""
 
-#: ../packages/eds/src/optional.ts:22
+#: ../packages/pim/src/optional.ts:23
 msgid "{label} typelib not available: {message}"
 msgstr ""
 
@@ -370,23 +371,23 @@ msgstr ""
 msgid "no secret stored for \"{ref}\""
 msgstr ""
 
-#: src/core/context.ts:74
+#: src/core/context.ts:76
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr ""
 
-#: src/core/context.ts:84
+#: src/core/context.ts:87
 msgid "account \"{account}\": {message}"
 msgstr ""
 
-#: src/core/context.ts:99
+#: src/core/context.ts:102
 msgid "backend \"caldav\" needs a caldav section"
 msgstr ""
 
-#: src/core/context.ts:103
+#: src/core/context.ts:107
 msgid "the passwordSecret has not been resolved yet"
 msgstr ""
 
-#: src/core/context.ts:107
+#: src/core/context.ts:111
 msgid "export the CalDAV password as {name}"
 msgstr ""
 

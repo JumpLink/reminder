@@ -6,7 +6,7 @@
  * the multiplexer learns that accounts exist, and nothing above it learns that backends do.
  */
 
-import type { CalendarBackend } from './backend.ts';
+import type { CalendarBackend } from '@gjsify/pim';
 import { ConfigError, ReminderError } from './errors.ts';
 import type { CalendarInfo, RawItem } from './types.ts';
 import { _, fmt } from './i18n.ts';

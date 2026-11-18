@@ -4,10 +4,11 @@
  *
  * A static `import 'gi://ECal'` throws at module load on a host without Evolution Data Server
  * (macOS, a container) and takes the whole app with it, `--help` included. Loading on first use
- * turns that into a `BackendUnavailableError` the frontends already know how to report.
+ * turns that into a `BackendUnavailableError` every consumer already knows how to report.
  */
 
-import { BackendUnavailableError, _, errorMessage, fmt } from '@reminder/core';
+import { BackendUnavailableError, errorMessage } from './errors.ts';
+import { _, fmt } from './i18n.ts';
 
 export interface OptionalNamespace<T> {
   get(): Promise<T>;

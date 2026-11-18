@@ -4,7 +4,7 @@
   "license": "AGPL-3.0-or-later",
   "private": true,
   "type": "module",
-  "description": "Pure kernel: event/reminder DTOs, the CalendarBackend port, iCalendar serialisation, grants, routing, config validation and the deduplicating create path. No dependencies, no gi://, no node:* — every decision is unit-testable on Node against a fake backend.",
+  "description": "Pure kernel: event/reminder DTOs, the CalendarBackend port, iCalendar serialisation, grants, routing, config validation and the deduplicating create path. Depends only on the pure root of @gjsify/pim (the port and its errors); no gi://, no node:* — every decision is unit-testable on Node against a fake backend.",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -14,5 +14,8 @@
   },
   "files": [
     "src"
-  ]
+  ],
+  "dependencies": {
+    "@gjsify/pim": "*"
+  }
 }
