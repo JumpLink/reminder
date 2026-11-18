@@ -14,6 +14,7 @@ import {
   completeCommand,
   configCommand,
   eventsCommand,
+  guiCommand,
   mcpCommand,
   prioritiesCommand,
   reopenCommand,
@@ -39,6 +40,7 @@ const parseArgs = () =>
     .command(reopenCommand)
     .command(configCommand)
     .command(mcpCommand)
+    .command(guiCommand)
     .demandCommand(1, _('Give a command — `reminder --help` lists them.'))
     // An unmatched command would leave the GJS main loop running forever.
     .strictCommands()

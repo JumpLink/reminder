@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=reminder
+Comment=Calendar events and reminders from your existing calendars
+Comment[de]=Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern
+Exec=reminder gui
+Icon=eu.jumplink.Reminder
+Terminal=false
+Categories=GNOME;GTK;Office;Calendar;
+StartupNotify=true

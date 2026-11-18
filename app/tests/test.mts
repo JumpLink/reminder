@@ -24,6 +24,8 @@ import eds from './unit/eds/optional.test.ts';
 
 import dueState from './unit/widgets/due-state.test.ts';
 
+import sizeClasses from './unit/gui/size-classes.test.ts';
+
 import mcpTools from './unit/mcp/tools.test.ts';
 
 import i18n from './unit/i18n/i18n.test.ts';
@@ -47,6 +49,7 @@ run({
   caldav,
   eds,
   dueState,
+  sizeClasses,
   mcpTools,
   i18n,
 });

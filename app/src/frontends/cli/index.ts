@@ -2,6 +2,7 @@ export { accountsCommand } from './accounts.ts';
 export { calendarsCommand } from './calendars.ts';
 export { configCommand } from './config.ts';
 export { eventsCommand } from './events.ts';
+export { guiCommand } from './gui.ts';
 export { mcpCommand } from './mcp.ts';
 export { prioritiesCommand } from './priorities.ts';
 export { todosCommand } from './todos.ts';

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>eu.jumplink.Reminder</id>
+  <name>reminder</name>
+  <summary>Calendar events and reminders from your existing calendars</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+  <launchable type="desktop-id">eu.jumplink.Reminder.desktop</launchable>
+  <url type="homepage">https://github.com/JumpLink/reminder</url>
+  <url type="bugtracker">https://github.com/JumpLink/reminder/issues</url>
+  <description>
+    <p>Calendar events and reminders from your existing calendars, as a command line tool, an MCP server and a native window. This is a stub: screenshots and release notes follow with the first release.</p>
+  </description>
+</component>

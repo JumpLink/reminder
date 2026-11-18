@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 18:32+0100\n"
+"POT-Creation-Date: 2026-11-18 18:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -488,6 +488,10 @@ msgstr ""
 msgid "(no title)"
 msgstr ""
 
+#: src/frontends/cli/gui.ts:14
+msgid "Open the graphical interface"
+msgstr ""
+
 #: src/frontends/cli/mcp.ts:14
 msgid "Run as an MCP server over stdio"
 msgstr ""
@@ -613,6 +617,54 @@ msgstr ""
 msgid "Mark a done reminder as open again"
 msgstr ""
 
-#: src/index.ts:42
+#: src/frontends/gui/main.ts:37
+msgid "Calendar events and reminders from your existing calendars."
+msgstr ""
+
+#: src/frontends/gui/window.ts:47
+msgid "Calendar"
+msgstr ""
+
+#: src/frontends/gui/window.ts:48
+msgid "Events from your calendars will appear here."
+msgstr ""
+
+#: src/frontends/gui/window.ts:52
+msgid "Tasks"
+msgstr ""
+
+#: src/frontends/gui/window.ts:53
+msgid "Your reminders will appear here."
+msgstr ""
+
+#: src/frontends/gui/window.ts:57
+msgid "Board"
+msgstr ""
+
+#: src/frontends/gui/window.ts:58
+msgid "Your reminders as cards will appear here."
+msgstr ""
+
+#: src/frontends/gui/window.ts:85 src/frontends/gui/window.ts:129
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: src/frontends/gui/window.ts:86
+msgid "About reminder"
+msgstr ""
+
+#: src/frontends/gui/window.ts:87
+msgid "Main Menu"
+msgstr ""
+
+#: src/frontends/gui/window.ts:125
+msgid "General"
+msgstr ""
+
+#: src/frontends/gui/window.ts:130
+msgid "Quit"
+msgstr ""
+
+#: src/index.ts:44
 msgid "Give a command — `reminder --help` lists them."
 msgstr ""

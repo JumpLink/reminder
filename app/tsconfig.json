@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
+    "allowArbitraryExtensions": true,
     "types": [
       "node",
       "@girs/gjs",
