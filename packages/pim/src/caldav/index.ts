@@ -4,3 +4,4 @@
  */
 
 export { createCaldavBackend, type CaldavOptions } from './backend.ts';
+export { createCaldavDeltaReader, type CaldavDeltaOptions, type CaldavDeltaReader } from './delta.ts';

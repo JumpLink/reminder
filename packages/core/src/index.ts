@@ -1,6 +1,13 @@
 export * from './types.ts';
 export * from './errors.ts';
-export type { CalendarBackend, ItemQuery, StoredItem } from '@gjsify/pim';
+export type {
+  CalendarBackend,
+  CollectionDelta,
+  CollectionItem,
+  CollectionPrevious,
+  ItemQuery,
+  StoredItem,
+} from '@gjsify/pim';
 export * from './ical.ts';
 export * from './source-key.ts';
 export * from './accounts.ts';

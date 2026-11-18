@@ -68,4 +68,4 @@ still in flight.
 - `auth-rejected` needs a caller that knows when credentials changed and calls `reauthenticated`.
 - Source adapters must throw `SyncHttpError` (or a `BackendError` with `domain: 'http'`) to get a
   precise state; anything else reads as `stale`.
-- CalDAV delta (ctag/sync-token) is a later step; the `previousVersion` argument is its hook.
+- CalDAV delta (ctag/sync-token) fills the `previousVersion` hook: [ADR 0018](0018-caldav-delta-sync.md).

@@ -21,6 +21,7 @@ import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
 import caldav from './unit/caldav/caldav.test.ts';
+import caldavDelta from './unit/caldav/delta.test.ts';
 import eds from './unit/eds/optional.test.ts';
 
 import dueState from './unit/widgets/due-state.test.ts';
@@ -49,6 +50,7 @@ run({
   secrets,
   cacheFs,
   caldav,
+  caldavDelta,
   eds,
   dueState,
   sizeClasses,
