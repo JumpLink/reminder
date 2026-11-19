@@ -3,7 +3,7 @@
  * `BackendError` carries `domain: 'http'` and the status in `code`.
  */
 
-import { BackendError, BackendHttpError, BackendUnavailableError, ReminderError, errorMessage } from '../errors.ts';
+import { BackendError, BackendUnavailableError, ReminderError, errorMessage } from '../errors.ts';
 
 /** An HTTP answer that is not success, with the server's Retry-After when it sent one. */
 export class SyncHttpError extends BackendError {
@@ -28,13 +28,18 @@ export interface FailureOutcome {
   retryAfterMs?: number;
 }
 
+/** Any error may carry the wait (`SyncHttpError`, `@gjsify/http-client` errors): read it by shape. */
+function retryAfterOf(err: BackendError): number | undefined {
+  const wait = (err as { retryAfterMs?: unknown }).retryAfterMs;
+  return typeof wait === 'number' && Number.isFinite(wait) ? wait : undefined;
+}
+
 export function classifyFetchError(err: unknown): FailureOutcome {
   if (err instanceof UnreadableAnswerError) return { kind: 'unreadable' };
   if (err instanceof BackendUnavailableError) return { kind: 'stale' };
   if (err instanceof BackendError) {
     const status = err.domain === 'http' ? err.code : undefined;
-    const retryAfterMs =
-      err instanceof SyncHttpError || err instanceof BackendHttpError ? err.retryAfterMs : undefined;
+    const retryAfterMs = retryAfterOf(err);
     if (status === 401) return { kind: 'auth-rejected' };
     if (status === 403) return { kind: 'no-access', reason: errorMessage(err) };
     if (status === 429 || (status === 503 && retryAfterMs !== undefined)) {
