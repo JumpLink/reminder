@@ -13,7 +13,11 @@
     "./priority-marks": "./src/priority-marks.ts",
     "./swipe-rules": "./src/swipe-rules.ts",
     "./adaptive-container": "./src/adaptive-container.ts",
-    "./board-rules": "./src/board-rules.ts"
+    "./board-rules": "./src/board-rules.ts",
+    "./calendar-format": "./src/calendar-format.ts",
+    "./month-rules": "./src/month-rules.ts",
+    "./time-grid-rules": "./src/time-grid-rules.ts",
+    "./agenda-rules": "./src/agenda-rules.ts"
   },
   "scripts": {
     "check": "gjsify tsc --noEmit --project tsconfig.json",
@@ -27,6 +31,9 @@
     "po",
     "LICENSE"
   ],
+  "dependencies": {
+    "@gjsify/calendar-layout": "*"
+  },
   "peerDependencies": {
     "@girs/adw-1": "5.4.0",
     "@girs/gtk-4.0": "5.4.0",
