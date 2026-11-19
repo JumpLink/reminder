@@ -1,0 +1,22 @@
+{
+  "name": "@reminder/zenkit",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "Read-only Zenkit BoardSource: each Zenkit list is a board, a choice field is its columns, a persons field says whose card it is. Plain options in, no config parsing; reminder wires it up elsewhere.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@gjsify/http-client": "*",
+    "@reminder/core": "*"
+  }
+}

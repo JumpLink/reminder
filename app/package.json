@@ -58,6 +58,7 @@
     "@reminder/core": "*",
     "@reminder/deck": "*",
     "@reminder/secrets-libsecret": "*",
+    "@reminder/zenkit": "*",
     "yargs": "^18.1.0",
     "zod": "^4.4.3"
   },

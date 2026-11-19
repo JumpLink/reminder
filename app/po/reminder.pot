@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 18:42+0100\n"
+"POT-Creation-Date: 2026-11-19 19:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -404,6 +404,22 @@ msgstr ""
 
 #: ../packages/secrets-libsecret/src/store.gjs.ts:29
 msgid "secret service not available: {message}"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:108
+msgid "No value"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:172
+msgid "no field {field} in list {id}"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:174
+msgid "field {field} in list {id} has the wrong type for this use"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:257
+msgid "list {id} has no choice field to use as its columns"
 msgstr ""
 
 #: src/core/config-write.ts:112
