@@ -33,6 +33,7 @@ import sourceNames from './unit/widgets/source-names.test.ts';
 import priorityMarks from './unit/widgets/priority-marks.test.ts';
 import swipeRules from './unit/widgets/swipe-rules.test.ts';
 import adaptiveContainer from './unit/widgets/adaptive-container.test.ts';
+import boardRules from './unit/widgets/board-rules.test.ts';
 
 import sizeClasses from './unit/gui/size-classes.test.ts';
 import guiViewModel from './unit/gui/view-model.test.ts';
@@ -74,6 +75,7 @@ run({
   priorityMarks,
   swipeRules,
   adaptiveContainer,
+  boardRules,
   sizeClasses,
   guiViewModel,
   guiSettings,

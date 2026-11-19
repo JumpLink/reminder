@@ -12,7 +12,8 @@
     "./source-names": "./src/source-names.ts",
     "./priority-marks": "./src/priority-marks.ts",
     "./swipe-rules": "./src/swipe-rules.ts",
-    "./adaptive-container": "./src/adaptive-container.ts"
+    "./adaptive-container": "./src/adaptive-container.ts",
+    "./board-rules": "./src/board-rules.ts"
   },
   "scripts": {
     "check": "gjsify tsc --noEmit --project tsconfig.json",
