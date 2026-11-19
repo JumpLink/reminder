@@ -103,7 +103,8 @@ export interface Card {
 }
 
 /** Whose cards a query asks for (ADR 0008 §5). Part of the request, not a filter on the view. */
-export type MineFilter = 'assigned' | 'watching' | 'all';
+export const MINE_FILTERS = ['assigned', 'watching', 'all'] as const;
+export type MineFilter = (typeof MINE_FILTERS)[number];
 
 export interface CardQuery {
   /** Default `assigned`. */

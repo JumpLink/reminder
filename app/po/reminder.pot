@@ -49,7 +49,7 @@ msgid ""
 "(accounts: {accounts})"
 msgstr ""
 
-#: ../packages/core/src/board/types.ts:149
+#: ../packages/core/src/board/types.ts:150
 msgid "no board {id} in this source"
 msgstr ""
 

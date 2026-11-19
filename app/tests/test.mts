@@ -20,6 +20,8 @@ import sync from './unit/core/sync.test.ts';
 import visibility from './unit/core/visibility.test.ts';
 import agenda from './unit/core/agenda.test.ts';
 import board from './unit/board/board.test.ts';
+import boardRules from './unit/board/rules.test.ts';
+import boardMine from './unit/board/mine.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
@@ -34,7 +36,7 @@ import sourceNames from './unit/widgets/source-names.test.ts';
 import priorityMarks from './unit/widgets/priority-marks.test.ts';
 import swipeRules from './unit/widgets/swipe-rules.test.ts';
 import adaptiveContainer from './unit/widgets/adaptive-container.test.ts';
-import boardRules from './unit/widgets/board-rules.test.ts';
+import boardLayout from './unit/widgets/board-rules.test.ts';
 
 import sizeClasses from './unit/gui/size-classes.test.ts';
 import guiViewModel from './unit/gui/view-model.test.ts';
@@ -66,6 +68,8 @@ run({
   visibility,
   agenda,
   board,
+  boardRules,
+  boardMine,
   secrets,
   cacheFs,
   caldav,
@@ -77,7 +81,7 @@ run({
   priorityMarks,
   swipeRules,
   adaptiveContainer,
-  boardRules,
+  boardLayout,
   sizeClasses,
   guiViewModel,
   guiSettings,

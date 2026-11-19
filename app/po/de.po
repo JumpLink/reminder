@@ -56,7 +56,7 @@ msgstr ""
 "„{target}“ nennt kein Konto — nimm eine uid aus `reminder calendars` "
 "(Konten: {accounts})"
 
-#: ../packages/core/src/board/types.ts:149
+#: ../packages/core/src/board/types.ts:150
 msgid "no board {id} in this source"
 msgstr "Diese Quelle kennt kein Board {id}"
 
