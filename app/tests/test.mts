@@ -9,6 +9,7 @@ import routing from './unit/core/routing.test.ts';
 import sourceKey from './unit/core/source-key.test.ts';
 import dates from './unit/core/dates.test.ts';
 import config from './unit/core/config.test.ts';
+import configWrite from './unit/core/config-write.test.ts';
 import accounts from './unit/accounts.test.ts';
 import read from './unit/core/read.test.ts';
 import create from './unit/core/create.test.ts';
@@ -49,6 +50,7 @@ run({
   sourceKey,
   dates,
   config,
+  configWrite,
   accounts,
   read,
   create,
