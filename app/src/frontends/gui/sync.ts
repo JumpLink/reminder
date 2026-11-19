@@ -37,6 +37,10 @@ export interface GuiSync {
   backend: CalendarBackend | null;
   /** One line per account that could not be set up; the rest still syncs. */
   problems: string[];
+  /** Every collection of the accounts that could be listed, disabled ones included. */
+  lists: AccountLists[];
+  /** Account id → why it could not be set up. */
+  failures: ReadonlyMap<string, string>;
 }
 
 /** Stands in for an account that could not be set up: no lists, and every write says why. */
@@ -100,6 +104,7 @@ export async function createGuiSync(
   const backends = new Map<string, CalendarBackend>();
   const lists: AccountLists[] = [];
   const accounts: BackendAccount[] = [];
+  const accountProblems = new Map<string, string>();
   for (const account of config.accounts) {
     // Setup errors already name the account; a listing error does not yet.
     let phase: 'setup' | 'listing' = 'setup';
@@ -117,6 +122,7 @@ export async function createGuiSync(
       const raw = errorMessage(err);
       const message = phase === 'listing' ? about(raw, account, named) : raw;
       problems.push(message);
+      accountProblems.set(account.id, message);
       accounts.push({ id: account.id, backend: unavailableBackend(message) });
     }
   }
@@ -172,5 +178,5 @@ export async function createGuiSync(
     },
     sources: buildSyncSources(config, lists),
   });
-  return { service, backend, problems };
+  return { service, backend, problems, lists, failures: accountProblems };
 }

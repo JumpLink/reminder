@@ -12,13 +12,17 @@ import { AdwaitaApp, readAppDevHooks, runApplication } from '@gjsify/adwaita-app
 
 import { _, errorMessage } from '@reminder/core';
 
-import { createContext } from '../../core/context.ts';
-import { demoActive } from '../../core/demo/index.ts';
+import { configPath } from '../../core/config.ts';
+import { createConfigStore } from '../../core/config-write.ts';
+import { createContext, type Context } from '../../core/context.ts';
+import { createDemoContext, demoActive, demoConfig } from '../../core/demo/index.ts';
 
-import { APP_ID, APP_NAME, APP_VERSION, DEV_HOOK_PREFIX, SIZE_HOOK } from './constants.ts';
+import { APP_ID, APP_NAME, APP_VERSION, DEV_HOOK_PREFIX, PREFS_HOOK, SIZE_HOOK } from './constants.ts';
 import { createTasksModel } from './model.ts';
 import { createGuiSettings, createMemorySettings } from './settings.ts';
-import { createGuiSync } from './sync.ts';
+import { createGuiSync, type GuiSync } from './sync.ts';
+import { applyColorScheme, presentPreferences } from './views/preferences/index.ts';
+import type { PreferencesEnv } from './views/preferences/controller.ts';
 import { MainWindow } from './window.ts';
 
 // Pin GTK 4 before libadwaita pulls it in; keep the import referenced.
@@ -29,25 +33,58 @@ function readSize(): [number, number] | undefined {
   return w > 0 && h > 0 ? [w, h] : undefined;
 }
 
-/** Config, secrets, sync and model — after the window exists, so a slow server never delays it. */
-async function startServices(window: MainWindow): Promise<void> {
-  try {
-    const context = createContext();
-    const config = context.config();
+/**
+ * Config, secrets, sync and model — after the window exists, so a slow server never delays it.
+ * Runs again after every configuration change from the preferences: the old service stops and a
+ * new one starts from the saved config (a re-enabled source is fetched by that start).
+ */
+function createServices(window: MainWindow) {
+  const demo = demoActive();
+  const store = createConfigStore({ demo, path: configPath(), demoConfig });
+  const settings = demo ? createMemorySettings() : createGuiSettings();
+  let context: Context | null = null;
+  let current: GuiSync | null = null;
+
+  const start = async (): Promise<void> => {
+    current?.service.stop();
+    const config = store.read();
+    context = demo ? createDemoContext(new Date(), config) : createContext();
     const sync = await createGuiSync(context);
+    current = sync;
     if (sync.backend === null) {
       window.showError(sync.problems.join('\n') || _('No calendar backend could be set up.'));
       return;
     }
-    const model = createTasksModel({ config, backend: sync.backend, service: sync.service });
-    window.attach({
-      model,
-      settings: demoActive() ? createMemorySettings() : createGuiSettings(),
+    const model = createTasksModel({
+      config: context.config(),
+      backend: sync.backend,
       service: sync.service,
-      problems: sync.problems,
     });
+    window.attach({ model, settings, service: sync.service, problems: sync.problems });
     await model.load();
     await sync.service.start();
+  };
+
+  const env: PreferencesEnv = {
+    store,
+    settings,
+    secrets: () => (context ?? createContext()).secrets(),
+    cache: () => (context ?? createContext()).cache(),
+    lists: () => current?.lists ?? [],
+    failures: () => current?.failures ?? new Map(),
+    rebuild: start,
+  };
+  window.onPreferences = () => presentPreferences(window, env, demo);
+  applyColorScheme(settings.colorScheme());
+  return { start, open: (page?: string) => presentPreferences(window, env, demo, page) };
+}
+
+async function startServices(window: MainWindow): Promise<void> {
+  try {
+    const services = createServices(window);
+    await services.start();
+    const page = process.env[PREFS_HOOK];
+    if (page) services.open(page);
   } catch (err) {
     window.showError(errorMessage(err));
   }

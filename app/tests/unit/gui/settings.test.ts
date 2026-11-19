@@ -4,7 +4,14 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from '@gjsify/unit';
 
-import { createGuiSettings, parseHidden, settingsPath } from '../../../src/frontends/gui/settings.ts';
+import {
+  createGuiSettings,
+  createMemorySettings,
+  parseColorScheme,
+  parseHidden,
+  parseWeekStart,
+  settingsPath,
+} from '../../../src/frontends/gui/settings.ts';
 
 export default async () => {
   await describe('gui settings', async () => {
@@ -45,6 +52,35 @@ export default async () => {
       } finally {
         rmSync(dir, { recursive: true, force: true });
       }
+    });
+
+    await it('keeps the colour scheme, the week start and unknown keys across instances', async () => {
+      const dir = mkdtempSync(join(tmpdir(), 'reminder-gui-'));
+      try {
+        const path = join(dir, 'gui.json');
+        writeFileSync(path, '{"future":{"a":1},"hidden":["x"]}');
+        const first = createGuiSettings(path);
+        expect(first.colorScheme()).toBe('system');
+        first.setColorScheme('dark');
+        first.setWeekStart('monday');
+        const again = createGuiSettings(path);
+        expect(again.colorScheme()).toBe('dark');
+        expect(again.weekStart()).toBe('monday');
+        expect([...again.hidden()].join(',')).toBe('x');
+        expect(readFileSync(path, 'utf8')).toContain('"future"');
+        expect(parseColorScheme('{"colorScheme":"neon"}')).toBe('system');
+        expect(parseWeekStart('{"weekStart":"sunday"}')).toBe('sunday');
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
+    await it('demo settings hold in memory and write nothing', async () => {
+      const memory = createMemorySettings();
+      memory.setColorScheme('light');
+      memory.setHidden('a', true);
+      expect(memory.colorScheme()).toBe('light');
+      expect(memory.hidden().size).toBe(1);
     });
   });
 };

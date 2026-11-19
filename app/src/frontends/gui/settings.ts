@@ -1,5 +1,6 @@
 /**
- * What the window remembers between runs: which sources the person switched off in the overview.
+ * What the window remembers between runs: which sources the person switched off in the overview,
+ * the colour scheme and the first day of the week. None of it is the core's configuration.
  *
  * "Hidden" is a view filter and nothing else. It lives here, in the app's own file, and never
  * reaches the core: `disabled` (docs/adr/0006) is configuration the core enforces, while a hidden
@@ -32,46 +33,101 @@ export function parseHidden(text: string): Set<string> {
   }
 }
 
+export const COLOR_SCHEMES = ['system', 'light', 'dark'] as const;
+export type ColorScheme = (typeof COLOR_SCHEMES)[number];
+
+/** `system` follows the locale. */
+export const WEEK_STARTS = ['system', 'monday', 'sunday', 'saturday'] as const;
+export type WeekStart = (typeof WEEK_STARTS)[number];
+
+function oneOf<T extends string>(list: readonly T[], value: unknown, fallback: T): T {
+  return typeof value === 'string' && (list as readonly string[]).includes(value) ? (value as T) : fallback;
+}
+
+export function parseColorScheme(text: string): ColorScheme {
+  return oneOf(COLOR_SCHEMES, readObject(text).colorScheme, 'system');
+}
+
+export function parseWeekStart(text: string): WeekStart {
+  return oneOf(WEEK_STARTS, readObject(text).weekStart, 'system');
+}
+
+function readObject(text: string): Record<string, unknown> {
+  try {
+    const raw: unknown = JSON.parse(text);
+    return raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
 export interface GuiSettings {
   hidden(): ReadonlySet<string>;
   /** Persist one source's state; returns the new set. */
   setHidden(target: string, hidden: boolean): ReadonlySet<string>;
+  colorScheme(): ColorScheme;
+  setColorScheme(value: ColorScheme): void;
+  weekStart(): WeekStart;
+  setWeekStart(value: WeekStart): void;
 }
 
-export function createGuiSettings(path: string = settingsPath()): GuiSettings {
-  let hidden: Set<string>;
-  try {
-    hidden = parseHidden(readFileSync(path, 'utf8'));
-  } catch {
-    hidden = new Set();
+/**
+ * The settings over a file (when `path` is given) or over memory alone. Keys this build does not
+ * know are written back, like the core's config does.
+ */
+function createSettings(path: string | null): GuiSettings {
+  let text = '';
+  if (path !== null) {
+    try {
+      text = readFileSync(path, 'utf8');
+    } catch {
+      text = '';
+    }
   }
+  const hidden = parseHidden(text);
+  let colorScheme = parseColorScheme(text);
+  let weekStart = parseWeekStart(text);
+  const unknown = readObject(text);
+
+  const save = (): void => {
+    if (path === null) return;
+    try {
+      mkdirSync(dirname(path), { recursive: true });
+      const temp = `${path}.tmp`;
+      const body = { ...unknown, hidden: [...hidden].sort(), colorScheme, weekStart };
+      writeFileSync(temp, `${JSON.stringify(body, null, 2)}\n`, 'utf8');
+      renameSync(temp, path);
+    } catch {
+      // The choice still holds for this run; failing to save it is not worth an error dialog.
+    }
+  };
+
   return {
     hidden: () => new Set(hidden),
     setHidden(target, value) {
       if (value) hidden.add(target);
       else hidden.delete(target);
-      try {
-        mkdirSync(dirname(path), { recursive: true });
-        const temp = `${path}.tmp`;
-        writeFileSync(temp, `${JSON.stringify({ hidden: [...hidden].sort() }, null, 2)}\n`, 'utf8');
-        renameSync(temp, path);
-      } catch {
-        // The choice still holds for this run; failing to save it is not worth an error dialog.
-      }
+      save();
       return new Set(hidden);
     },
+    colorScheme: () => colorScheme,
+    setColorScheme(value) {
+      colorScheme = value;
+      save();
+    },
+    weekStart: () => weekStart,
+    setWeekStart(value) {
+      weekStart = value;
+      save();
+    },
   };
+}
+
+export function createGuiSettings(path: string = settingsPath()): GuiSettings {
+  return createSettings(path);
 }
 
 /** Demo mode: the choices hold for this run only and no file is read or written. */
 export function createMemorySettings(): GuiSettings {
-  const hidden = new Set<string>();
-  return {
-    hidden: () => new Set(hidden),
-    setHidden(target, value) {
-      if (value) hidden.add(target);
-      else hidden.delete(target);
-      return new Set(hidden);
-    },
-  };
+  return createSettings(null);
 }

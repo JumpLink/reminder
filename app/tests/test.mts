@@ -9,6 +9,7 @@ import routing from './unit/core/routing.test.ts';
 import sourceKey from './unit/core/source-key.test.ts';
 import dates from './unit/core/dates.test.ts';
 import config from './unit/core/config.test.ts';
+import configWrite from './unit/core/config-write.test.ts';
 import accounts from './unit/accounts.test.ts';
 import read from './unit/core/read.test.ts';
 import create from './unit/core/create.test.ts';
@@ -37,6 +38,7 @@ import guiSettings from './unit/gui/settings.test.ts';
 import guiModel from './unit/gui/model.test.ts';
 import guiSync from './unit/gui/sync.test.ts';
 import guiDemo from './unit/gui/demo.test.ts';
+import guiPreferences from './unit/gui/preferences.test.ts';
 
 import mcpTools from './unit/mcp/tools.test.ts';
 
@@ -49,6 +51,7 @@ run({
   sourceKey,
   dates,
   config,
+  configWrite,
   accounts,
   read,
   create,
@@ -74,6 +77,7 @@ run({
   guiModel,
   guiSync,
   guiDemo,
+  guiPreferences,
   mcpTools,
   i18n,
 });
