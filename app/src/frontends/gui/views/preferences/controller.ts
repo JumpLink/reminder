@@ -37,6 +37,8 @@ import {
   type ConfigStore,
 } from '../../../../core/config-write.ts';
 import type { GuiSettings } from '../../settings.ts';
+import type { BoardBinding } from '../../board-sync.ts';
+import type { BoardProblem } from '../../board-view-model.ts';
 import type { AccountLists } from '../../sync-sources.ts';
 
 /** What the dialog needs from the running window; `main.ts` supplies the real thing. */
@@ -49,6 +51,10 @@ export interface PreferencesEnv {
   lists(): readonly AccountLists[];
   /** Account id → why it could not be set up. */
   failures(): ReadonlyMap<string, string>;
+  /** Every board of every source that could be listed. */
+  boards(): readonly BoardBinding[];
+  /** Sources that could not even list their boards. */
+  boardProblems(): readonly BoardProblem[];
   /** Rebuild sync and backends from the saved config; resolves when the new service is running. */
   rebuild(): Promise<void>;
 }
@@ -160,7 +166,7 @@ export function grantRows(config: ReminderConfig, lists: readonly AccountLists[]
 }
 
 /** Run a change: failures become a message for the dialog, never an exception. */
-async function change(
+export async function change(
   env: PreferencesEnv,
   edit: (config: ReminderConfig) => Promise<ReminderConfig> | ReminderConfig,
 ): Promise<Outcome> {

@@ -567,17 +567,25 @@ msgstr "Quelle „{id}“: Keine Zugangsdaten — als {ref} speichern"
 msgid "source \"{id}\": {message}"
 msgstr "Quelle „{id}“: {message}"
 
-#: src/core/config-write.ts:112
+#: src/core/config-write.ts:116
 msgid "account \"{id}\" already exists"
 msgstr "Konto „{id}“ existiert bereits"
 
-#: src/core/config-write.ts:133
+#: src/core/config-write.ts:137
 msgid "no account \"{id}\""
 msgstr "Kein Konto „{id}“"
 
-#: src/core/config-write.ts:134
+#: src/core/config-write.ts:138
 msgid "a configuration needs at least one account"
 msgstr "Eine Konfiguration braucht mindestens ein Konto"
+
+#: src/core/config-write.ts:264
+msgid "\"{id}\" is already in use"
+msgstr "„{id}“ wird bereits verwendet"
+
+#: src/core/config-write.ts:275
+msgid "no board source \"{id}\""
+msgstr "Keine Board-Quelle „{id}“"
 
 #: src/core/config.ts:38
 msgid "cannot read {path}: {message}"
@@ -899,6 +907,7 @@ msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
 #: src/frontends/gui/board-view-model.ts:97
+#: src/frontends/gui/views/preferences/board-controller.ts:129
 msgid "Backlog"
 msgstr "Backlog"
 
@@ -907,11 +916,13 @@ msgid "To do"
 msgstr "Zu tun"
 
 #: src/frontends/gui/board-view-model.ts:101
+#: src/frontends/gui/views/preferences/board-controller.ts:133
 #: src/frontends/gui/views/tasks.ts:39
 msgid "In progress"
 msgstr "In Bearbeitung"
 
 #: src/frontends/gui/board-view-model.ts:103
+#: src/frontends/gui/views/preferences/board-controller.ts:135
 msgid "Done"
 msgstr "Fertig"
 
@@ -922,13 +933,14 @@ msgstr "Unsortiert"
 #: src/frontends/gui/board-view-model.ts:153
 #: src/frontends/gui/board-view-model.ts:200 src/frontends/gui/model.ts:139
 #: src/frontends/gui/view-model.ts:103
-#: src/frontends/gui/views/preferences/controller.ts:102
-#: src/frontends/gui/views/preferences/controller.ts:140
+#: src/frontends/gui/views/preferences/controller.ts:108
+#: src/frontends/gui/views/preferences/controller.ts:146
 #: src/frontends/gui/views/tasks.ts:55 src/frontends/gui/views/tasks.ts:129
 msgid "Untitled"
 msgstr "Ohne Titel"
 
 #: src/frontends/gui/board-view-model.ts:292
+#: src/frontends/gui/views/preferences/board-controller.ts:144
 msgid "Assigned to me"
 msgstr "Mir zugewiesen"
 
@@ -952,7 +964,7 @@ msgstr "Einige Boards fehlen — {sources}"
 msgid "No calendar backend could be set up."
 msgstr "Es konnte kein Kalender-Backend eingerichtet werden."
 
-#: src/frontends/gui/main.ts:126
+#: src/frontends/gui/main.ts:129
 msgid "Calendar events and reminders from your existing calendars."
 msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
 
@@ -961,6 +973,7 @@ msgid "Calendars"
 msgstr "Kalender"
 
 #: src/frontends/gui/view-model.ts:58
+#: src/frontends/gui/views/preferences/board-controller.ts:80
 msgid "Task lists"
 msgstr "Aufgabenlisten"
 
@@ -1013,7 +1026,9 @@ msgid "Could not open the card: {message}"
 msgstr "Die Karte konnte nicht geöffnet werden: {message}"
 
 #: src/frontends/gui/views/board.ts:86 src/frontends/gui/views/board.ts:169
-#: src/frontends/gui/views/board.ts:295 src/frontends/gui/window.ts:87
+#: src/frontends/gui/views/board.ts:295
+#: src/frontends/gui/views/preferences/board.ts:31
+#: src/frontends/gui/window.ts:87
 msgid "Board"
 msgstr "Board"
 
@@ -1046,6 +1061,7 @@ msgid "This source has no page of its own."
 msgstr "Diese Quelle hat keine eigene Seite."
 
 #: src/frontends/gui/views/board.ts:136
+#: src/frontends/gui/views/preferences/board.ts:35
 msgid "Cards"
 msgstr "Karten"
 
@@ -1085,6 +1101,7 @@ msgstr "Keine Karte passt zu den Filtern."
 
 #: src/frontends/gui/views/overview.ts:60
 #: src/frontends/gui/views/overview.ts:75
+#: src/frontends/gui/views/preferences/board.ts:38
 msgid "Sources"
 msgstr "Quellen"
 
@@ -1096,14 +1113,18 @@ msgstr ""
 "Konfigurationsdatei."
 
 #: src/frontends/gui/views/preferences/account-add.ts:16
+#: src/frontends/gui/views/preferences/board-source-form.ts:33
 msgid "Name (optional)"
 msgstr "Name (optional)"
 
 #: src/frontends/gui/views/preferences/account-add.ts:17
+#: src/frontends/gui/views/preferences/board-source-form.ts:34
+#: src/frontends/gui/views/preferences/board-source-form.ts:45
 msgid "Server address"
 msgstr "Serveradresse"
 
 #: src/frontends/gui/views/preferences/account-add.ts:18
+#: src/frontends/gui/views/preferences/board-source-form.ts:35
 msgid "User name"
 msgstr "Benutzername"
 
@@ -1201,6 +1222,7 @@ msgstr ""
 "werden."
 
 #: src/frontends/gui/views/preferences/accounts.ts:36
+#: src/frontends/gui/views/preferences/board.ts:66
 msgid "Not available in demo mode"
 msgstr "Im Demo-Modus nicht verfügbar"
 
@@ -1222,6 +1244,7 @@ msgstr "Systemkalender hinzugefügt"
 
 #: src/frontends/gui/views/preferences/accounts.ts:85
 #: src/frontends/gui/views/preferences/agent-access.ts:112
+#: src/frontends/gui/views/preferences/board.ts:192
 msgid "The configuration cannot be read"
 msgstr "Die Konfiguration kann nicht gelesen werden"
 
@@ -1269,39 +1292,186 @@ msgstr "Agenten können nichts ändern."
 msgid "Revoke"
 msgstr "Widerrufen"
 
-#: src/frontends/gui/views/preferences/controller.ts:73
-msgid "System calendars"
-msgstr "Systemkalender"
+#: src/frontends/gui/views/preferences/board-controller.ts:64
+#: src/frontends/gui/views/preferences/board-source-form.ts:18
+msgid "Nextcloud Deck"
+msgstr "Nextcloud Deck"
 
-#: src/frontends/gui/views/preferences/controller.ts:113
-msgid "Create events"
-msgstr "Termine anlegen"
+#: src/frontends/gui/views/preferences/board-controller.ts:64
+#: src/frontends/gui/views/preferences/board-source-form.ts:18
+msgid "OpenProject"
+msgstr "OpenProject"
 
-#: src/frontends/gui/views/preferences/controller.ts:115
-msgid "Create reminders"
-msgstr "Erinnerungen anlegen"
+#: src/frontends/gui/views/preferences/board-controller.ts:64
+#: src/frontends/gui/views/preferences/board-source-form.ts:18
+msgid "Zenkit"
+msgstr "Zenkit"
 
-#: src/frontends/gui/views/preferences/controller.ts:117
-msgid "Change reminders"
-msgstr "Erinnerungen ändern"
+#: src/frontends/gui/views/preferences/board-controller.ts:131
+msgid "Todo"
+msgstr "Todo"
 
-#: src/frontends/gui/views/preferences/controller.ts:217
-msgid "The address must start with https://"
-msgstr "Die Adresse muss mit https:// beginnen"
+#: src/frontends/gui/views/preferences/board-controller.ts:137
+msgid "Ignore column"
+msgstr "Spalte ignorieren"
 
-#: src/frontends/gui/views/preferences/controller.ts:219
-msgid "Enter the server address, e.g. https://dav.example.org/"
-msgstr "Gib die Serveradresse ein, z. B. https://dav.example.org/"
+#: src/frontends/gui/views/preferences/board-controller.ts:139
+msgid "Not placed"
+msgstr "Nicht eingeordnet"
 
-#: src/frontends/gui/views/preferences/controller.ts:221
+#: src/frontends/gui/views/preferences/board-controller.ts:144
+msgid "Watching"
+msgstr "Beobachtet"
+
+#: src/frontends/gui/views/preferences/board-controller.ts:144
+msgid "All cards"
+msgstr "Alle Karten"
+
+#: src/frontends/gui/views/preferences/board-controller.ts:204
+msgid "Enter the server address, e.g. https://cloud.example.org/"
+msgstr "Gib die Serveradresse ein, z. B. https://cloud.example.org/"
+
+#: src/frontends/gui/views/preferences/board-controller.ts:212
+#: src/frontends/gui/views/preferences/controller.ts:227
 msgid "Enter the user name."
 msgstr "Gib den Benutzernamen ein."
 
-#: src/frontends/gui/views/preferences/controller.ts:222
+#: src/frontends/gui/views/preferences/board-controller.ts:214
+msgid "Enter the app password."
+msgstr "Gib das App-Passwort ein."
+
+#: src/frontends/gui/views/preferences/board-controller.ts:214
+msgid "Enter the access token."
+msgstr "Gib das Zugriffstoken ein."
+
+#: src/frontends/gui/views/preferences/board-controller.ts:278
+msgid "This source no longer exists."
+msgstr "Diese Quelle gibt es nicht mehr."
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:26
+msgid ""
+"The password or token is kept in your desktop keyring, not in the "
+"configuration file."
+msgstr ""
+"Das Passwort oder Token liegt im Schlüsselbund deines Desktops, nicht in der "
+"Konfigurationsdatei."
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:29
+msgid "Type"
+msgstr "Typ"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:37
+msgid "New password or token (empty keeps the stored one)"
+msgstr "Neues Passwort oder Token (leer behält das gespeicherte)"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:37
+msgid "App password or token"
+msgstr "App-Passwort oder Token"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:45
+msgid "Server address (optional)"
+msgstr "Serveradresse (optional)"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:52
+msgid "Save"
+msgstr "Speichern"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:52
+msgid "Add source"
+msgstr "Quelle hinzufügen"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:63
+#: src/frontends/gui/views/preferences/board.ts:65
+msgid "Add board source"
+msgstr "Board-Quelle hinzufügen"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:96
+msgid "Source added"
+msgstr "Quelle hinzugefügt"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:96
+msgid "Source saved"
+msgstr "Quelle gespeichert"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:101
+msgid "Remove source"
+msgstr "Quelle entfernen"
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:104
+msgid "Source removed"
+msgstr "Quelle entfernt"
+
+#: src/frontends/gui/views/preferences/board.ts:36
+msgid "Which cards a board shows. A source can choose differently below."
+msgstr "Welche Karten ein Board zeigt. Eine Quelle kann unten abweichen."
+
+#: src/frontends/gui/views/preferences/board.ts:54
+msgid "Same as everywhere"
+msgstr "Wie überall"
+
+#: src/frontends/gui/views/preferences/board.ts:56
+#: src/frontends/gui/views/preferences/board.ts:134
+msgid "Show cards that are"
+msgstr "Karten zeigen, die …"
+
+#: src/frontends/gui/views/preferences/board.ts:66
+msgid "Nextcloud Deck, OpenProject or Zenkit"
+msgstr "Nextcloud Deck, OpenProject oder Zenkit"
+
+#: src/frontends/gui/views/preferences/board.ts:101
+msgid "Default"
+msgstr "Standard"
+
+#: src/frontends/gui/views/preferences/board.ts:127
+msgid "Show on the board"
+msgstr "Im Board zeigen"
+
+#: src/frontends/gui/views/preferences/board.ts:145
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: src/frontends/gui/views/preferences/board.ts:146
+msgid "Off: the source is not contacted and nothing of it is kept."
+msgstr ""
+"Aus: Die Quelle wird nicht kontaktiert und nichts von ihr wird gespeichert."
+
+#: src/frontends/gui/views/preferences/board.ts:156
+msgid "Edit address and credential"
+msgstr "Adresse und Zugangsdaten bearbeiten"
+
+#: src/frontends/gui/views/preferences/board.ts:178
+msgid "No board sources yet"
+msgstr "Noch keine Board-Quellen"
+
+#: src/frontends/gui/views/preferences/controller.ts:79
+msgid "System calendars"
+msgstr "Systemkalender"
+
+#: src/frontends/gui/views/preferences/controller.ts:119
+msgid "Create events"
+msgstr "Termine anlegen"
+
+#: src/frontends/gui/views/preferences/controller.ts:121
+msgid "Create reminders"
+msgstr "Erinnerungen anlegen"
+
+#: src/frontends/gui/views/preferences/controller.ts:123
+msgid "Change reminders"
+msgstr "Erinnerungen ändern"
+
+#: src/frontends/gui/views/preferences/controller.ts:223
+msgid "The address must start with https://"
+msgstr "Die Adresse muss mit https:// beginnen"
+
+#: src/frontends/gui/views/preferences/controller.ts:225
+msgid "Enter the server address, e.g. https://dav.example.org/"
+msgstr "Gib die Serveradresse ein, z. B. https://dav.example.org/"
+
+#: src/frontends/gui/views/preferences/controller.ts:228
 msgid "Enter the password."
 msgstr "Gib das Passwort ein."
 
-#: src/frontends/gui/views/preferences/controller.ts:290
+#: src/frontends/gui/views/preferences/controller.ts:296
 msgid "The account is removed, but cleaning up failed: {message}"
 msgstr "Das Konto ist entfernt, das Aufräumen schlug aber fehl: {message}"
 
@@ -1450,3 +1620,6 @@ msgid "Use invented data: no network, no configuration, nothing saved"
 msgstr ""
 "Erfundene Daten nutzen: kein Netzwerk, keine Konfiguration, nichts wird "
 "gespeichert"
+
+#~ msgid "Hosted service"
+#~ msgstr "Gehosteter Dienst"

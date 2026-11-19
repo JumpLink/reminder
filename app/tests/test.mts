@@ -57,6 +57,7 @@ import guiBoardModel from './unit/gui/board-model.test.ts';
 import guiSync from './unit/gui/sync.test.ts';
 import guiDemo from './unit/gui/demo.test.ts';
 import guiPreferences from './unit/gui/preferences.test.ts';
+import guiPreferencesBoard from './unit/gui/preferences-board.test.ts';
 
 import mcpTools from './unit/mcp/tools.test.ts';
 
@@ -113,6 +114,7 @@ run({
   guiSync,
   guiDemo,
   guiPreferences,
+  guiPreferencesBoard,
   mcpTools,
   i18n,
 });

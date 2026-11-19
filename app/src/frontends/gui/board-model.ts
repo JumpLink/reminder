@@ -35,6 +35,8 @@ export interface BoardModelDeps {
   config: { boards: BoardsConfig };
   /** Sources that could not even list their boards (`bindBoards`). */
   problems?: readonly BoardProblem[];
+  /** Hidden-source keys (`board:<id>`) of the GUI settings; those sources are not drawn. */
+  hidden?: ReadonlySet<string>;
 }
 
 export interface BoardModel {
@@ -108,7 +110,7 @@ export function createBoardModel(deps: BoardModelDeps): BoardModel {
       if (boards.length === 0 && (deps.problems?.length ?? 0) === 0)
         return { ...emptyBoardSnapshot(), loading: false };
       return {
-        boards: [...loaded.values()],
+        boards: [...loaded.values()].filter((b) => !deps.hidden?.has(`board:${b.source}`)),
         problems: [...(deps.problems ?? []), ...failed.values()],
         loading: boards.some((binding) => !answered.has(idOf(binding))),
         configured: true,

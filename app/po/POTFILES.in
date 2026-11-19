@@ -106,6 +106,9 @@ src/frontends/gui/views/preferences/account-add.ts
 src/frontends/gui/views/preferences/account-detail.ts
 src/frontends/gui/views/preferences/accounts.ts
 src/frontends/gui/views/preferences/agent-access.ts
+src/frontends/gui/views/preferences/board-controller.ts
+src/frontends/gui/views/preferences/board-source-form.ts
+src/frontends/gui/views/preferences/board.ts
 src/frontends/gui/views/preferences/controller.ts
 src/frontends/gui/views/preferences/general.ts
 src/frontends/gui/views/preferences/index.ts

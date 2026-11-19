@@ -24,10 +24,14 @@ import {
   qualifyTarget,
   resolveAccountTarget,
   serializeConfig,
+  columnKey,
   type AccountConfig,
+  type ExternalSourceConfig,
   type Grant,
   type ItemKind,
+  type MineFilter,
   type ReminderConfig,
+  type TargetColumn,
 } from '@reminder/core';
 
 import { loadConfig } from './config.ts';
@@ -216,4 +220,68 @@ export function createConfigStore(options: {
   demoConfig: () => ReminderConfig;
 }): ConfigStore {
   return options.demo ? createMemoryConfigStore(options.demoConfig()) : createFileConfigStore(options.path);
+}
+
+/** Whose cards every board shows unless a source says otherwise. */
+export function withBoardsMine(config: ReminderConfig, mine: MineFilter): ReminderConfig {
+  return { ...config, boards: { ...config.boards, mine } };
+}
+
+/** One source's own answer; `null` removes it so the section's default applies again. */
+export function withSourceMine(
+  config: ReminderConfig,
+  source: string,
+  mine: MineFilter | null,
+): ReminderConfig {
+  const { [source]: _dropped, ...others } = config.boards.sources;
+  const sources =
+    mine === null ? others : { ...others, [source]: { ...config.boards.sources[source], mine } };
+  return { ...config, boards: { ...config.boards, sources } };
+}
+
+/**
+ * Put one column in a lane, or (with `null`) back to the default. The file keeps only deviations:
+ * a board with none left disappears. Entries that spell the same column differently (`To-Do` and
+ * `todo`) are one key to the rules, so they are replaced together.
+ */
+export function withColumnLane(
+  config: ReminderConfig,
+  board: string,
+  column: string,
+  lane: TargetColumn | null,
+): ReminderConfig {
+  const key = columnKey(column);
+  const kept = Object.entries(config.boards.columns[board] ?? {}).filter(([name]) => columnKey(name) !== key);
+  const next = Object.fromEntries(lane === null ? kept : [...kept, [column, lane]]);
+  const { [board]: _dropped, ...others } = config.boards.columns;
+  const columns = Object.keys(next).length > 0 ? { ...others, [board]: next } : others;
+  return { ...config, boards: { ...config.boards, columns } };
+}
+
+/** Add an external board source; its id shares the namespace of the account ids. */
+export function withExternalSource(config: ReminderConfig, source: ExternalSourceConfig): ReminderConfig {
+  const taken = [...config.accounts.map((a) => a.id), ...config.boardSources.map((s) => s.id)];
+  if (taken.includes(source.id)) throw new ConfigError(fmt(_('"{id}" is already in use'), { id: source.id }));
+  return { ...config, boardSources: [...config.boardSources, source] };
+}
+
+/** Change one external source in place; the order in the file stays. */
+export function withEditedExternalSource(
+  config: ReminderConfig,
+  id: string,
+  edit: (source: ExternalSourceConfig) => ExternalSourceConfig,
+): ReminderConfig {
+  if (!config.boardSources.some((s) => s.id === id))
+    throw new ConfigError(fmt(_('no board source "{id}"'), { id }));
+  return { ...config, boardSources: config.boardSources.map((s) => (s.id === id ? edit(s) : s)) };
+}
+
+export function withoutExternalSource(config: ReminderConfig, id: string): ReminderConfig {
+  const boardSources = config.boardSources.filter((s) => s.id !== id);
+  const { [id]: _dropped, ...sources } = config.boards.sources;
+  const prefix = `${id}:`;
+  const columns = Object.fromEntries(
+    Object.entries(config.boards.columns).filter(([board]) => !board.startsWith(prefix)),
+  );
+  return { ...config, boardSources, boards: { ...config.boards, sources, columns } };
 }

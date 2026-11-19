@@ -5,13 +5,14 @@ import type Gtk from '@girs/gtk-4.0';
 
 import { createAccountsPage } from './accounts.ts';
 import { createAgentAccessPage } from './agent-access.ts';
+import { createBoardPage } from './board.ts';
 import type { PreferencesEnv } from './controller.ts';
 import { createGeneralPage } from './general.ts';
 import type { PageContext, PrefsPage } from './page-context.ts';
 
 export { applyColorScheme } from './general.ts';
 
-/** `page` is a page name (`accounts`, `agent-access`, `general`); an unknown one keeps the first. */
+/** `page` is a page name (`accounts`, `board`, `agent-access`, `general`); an unknown one keeps the first. */
 export function presentPreferences(
   parent: Gtk.Widget,
   env: PreferencesEnv,
@@ -35,7 +36,12 @@ export function presentPreferences(
       };
     },
   };
-  const pages: PrefsPage[] = [createAccountsPage(ctx), createAgentAccessPage(ctx), createGeneralPage(ctx)];
+  const pages: PrefsPage[] = [
+    createAccountsPage(ctx),
+    createBoardPage(ctx),
+    createAgentAccessPage(ctx),
+    createGeneralPage(ctx),
+  ];
   for (const entry of pages) {
     dialog.add(entry.page);
     ctx.onReload(entry.refresh);
