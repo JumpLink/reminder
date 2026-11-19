@@ -36,8 +36,15 @@ export default async () => {
       expect(columnWidth('medium', 800, 2)).toBe(Math.floor((800 - COLUMN_GAP * 3) / 2));
       expect(columnWidth('medium', 300, 4)).toBe(MIN_COLUMN_WIDTH);
       expect(columnWidth('compact', 400, 4)).toBe(null);
-      expect(columnWidth('wide', 1280, 4)).toBe(null);
       expect(columnWidth('medium', 800, 0)).toBe(null);
+    });
+
+    await it('shares the width among every column when they all show', async () => {
+      // No peek: nothing is scrolled past, the columns simply divide the room.
+      expect(columnWidth('wide', 1280, 4)).toBe(Math.floor((1280 - COLUMN_GAP * 5) / 4));
+      // An inspector took its share, so the columns shrink — down to the floor, then they scroll.
+      expect(columnWidth('wide', 1100, 4)).toBe(Math.floor((1100 - COLUMN_GAP * 5) / 4));
+      expect(columnWidth('wide', 600, 5)).toBe(MIN_COLUMN_WIDTH);
     });
 
     await it('clamps a column index', async () => {

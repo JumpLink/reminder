@@ -38,15 +38,21 @@ export function visibleColumns(sizeClass: SizeClass, count: number): number {
 }
 
 /**
- * Pure: the width of one column in the scrolling strip, or `null` where the column simply fills
- * its share (single and all). In the strip, `visible` columns plus a peek of the next one fill
- * `available`; the peek is dropped when every column already fits.
+ * Pure: the width of one column where columns stand side by side, or `null` in `single`, where
+ * the one column on screen simply fills the page. The `visible` columns share `available`; in the
+ * strip a peek of the next one is kept back, unless every column already fits.
+ *
+ * `all` gets a width too, rather than letting the columns ask for theirs: the board is as wide as
+ * the room it is given, which is not the whole window — an open inspector takes its share — and a
+ * column that cannot shrink would be cut off at the edge instead. Below `MIN_COLUMN_WIDTH` the
+ * columns stop shrinking and the strip scrolls.
  */
 export function columnWidth(sizeClass: SizeClass, available: number, count: number): number | null {
-  if (boardPresentation(sizeClass) !== 'scroll') return null;
+  const presentation = boardPresentation(sizeClass);
+  if (presentation === 'single') return null;
   const visible = visibleColumns(sizeClass, count);
   if (visible === 0 || !Number.isFinite(available)) return null;
-  const peek = count > visible ? COLUMN_PEEK : 0;
+  const peek = presentation === 'scroll' && count > visible ? COLUMN_PEEK : 0;
   const room = available - COLUMN_GAP * (visible + 1) - peek;
   return Math.max(MIN_COLUMN_WIDTH, Math.floor(room / visible));
 }
