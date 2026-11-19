@@ -29,7 +29,7 @@ export function createBoardPage(ctx: PageContext): PrefsPage {
   const page = new Adw.PreferencesPage({
     name: 'board',
     title: _('Board'),
-    iconName: 'view-columns-symbolic',
+    iconName: 'view-grid-symbolic',
   });
   const cards = new Adw.PreferencesGroup({
     title: _('Cards'),
