@@ -24,8 +24,10 @@ export class ColorCheck extends Gtk.CheckButton {
       this,
       'check',
       (cls, c) =>
-        `checkbutton.${cls} check { border-color: ${c}; color: white; }` +
-        `checkbutton.${cls} check:checked { background-color: ${c}; border-color: ${c}; }`,
+        // Adwaita draws the empty ring from currentColor, not a border: tint the ring itself and
+        // keep white for the tick only, or the ring vanishes on a light background.
+        `checkbutton.${cls} check { box-shadow: inset 0 0 0 2px ${c}; }` +
+        `checkbutton.${cls} check:checked { background-color: ${c}; box-shadow: none; color: white; }`,
     );
     this.tint.set(colour);
   }
