@@ -46,6 +46,9 @@
 ../packages/secrets-libsecret/src/store.gjs.ts
 src/core/config.ts
 src/core/context.ts
+src/core/demo/fixtures.ts
+src/core/demo/index.ts
+src/core/demo/memory-backend.ts
 src/core/i18n-init.ts
 src/core/i18n.ts
 src/core/identity.ts
