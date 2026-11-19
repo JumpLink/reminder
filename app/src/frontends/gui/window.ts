@@ -58,6 +58,11 @@ export class MainWindow extends Adw.ApplicationWindow {
   private model: TasksModel | null = null;
   private settings: GuiSettings | null = null;
   private hidden: ReadonlySet<string> = new Set();
+  private service: SyncService | null = null;
+  private handlersConnected = false;
+  private unsubscribe: (() => void) | null = null;
+  /** Set by `main.ts`, which owns what the preferences need. */
+  onPreferences: (() => void) | null = null;
 
   constructor(app: Adw.Application, hooks: { view?: string; size?: [number, number]; demo?: boolean } = {}) {
     super({ application: app, title: APP_NAME });
@@ -114,6 +119,7 @@ export class MainWindow extends Adw.ApplicationWindow {
 
   private buildMenuButton(): Gtk.MenuButton {
     const menu = new Gio.Menu();
+    menu.append(_('Preferences'), 'win.preferences');
     menu.append(_('Keyboard Shortcuts'), 'win.shortcuts');
     menu.append(_('About reminder'), 'app.about');
     const label = _('Main Menu');
@@ -151,23 +157,31 @@ export class MainWindow extends Adw.ApplicationWindow {
     this.tasks.setSizeClass(next);
   }
 
-  /** Called once the config is read and the sync service built; until then the views are empty. */
+  /**
+   * Called when the config is read and the sync service built, and again after every rebuild the
+   * preferences ask for: the previous model's subscription ends and its service has been stopped.
+   */
   attach({ model, settings, service, problems }: WindowServices): void {
+    this.unsubscribe?.();
     this.model = model;
     this.settings = settings;
+    this.service = service;
     this.hidden = settings.hidden();
     this.tasks.setModel(model, this.hidden);
-    model.subscribe(() => {
+    this.unsubscribe = model.subscribe(() => {
       this.overview.setSources(model.calendars(), this.hidden);
       this.overview.setBanner(this.tasks.syncProblems());
     });
-    this.connect('close-request', () => {
-      service.stop();
-      return false;
-    });
-    this.connect('notify::is-active', () => {
-      if (this.isActive) model.focus();
-    });
+    if (!this.handlersConnected) {
+      this.handlersConnected = true;
+      this.connect('close-request', () => {
+        this.service?.stop();
+        return false;
+      });
+      this.connect('notify::is-active', () => {
+        if (this.isActive) this.model?.focus();
+      });
+    }
     if (problems.length > 0) this.toasts.add_toast(new Adw.Toast({ title: problems.join(' · ') }));
   }
 
@@ -194,6 +208,10 @@ export class MainWindow extends Adw.ApplicationWindow {
     refresh.connect('activate', () => this.model?.refresh());
     this.add_action(refresh);
     app?.set_accels_for_action('win.refresh', ['<primary>r', 'F5']);
+    const preferences = new Gio.SimpleAction({ name: 'preferences' });
+    preferences.connect('activate', () => this.onPreferences?.());
+    this.add_action(preferences);
+    app?.set_accels_for_action('win.preferences', ['<primary>comma']);
     const shortcuts = new Gio.SimpleAction({ name: 'shortcuts' });
     shortcuts.connect('activate', () => this.showShortcuts(views));
     this.add_action(shortcuts);
@@ -207,6 +225,7 @@ export class MainWindow extends Adw.ApplicationWindow {
       section.add(Adw.ShortcutsItem.new_from_action(views[name].title, `win.view-${name}`));
     }
     section.add(Adw.ShortcutsItem.new_from_action(_('Refresh'), 'win.refresh'));
+    section.add(Adw.ShortcutsItem.new_from_action(_('Preferences'), 'win.preferences'));
     section.add(Adw.ShortcutsItem.new_from_action(_('Keyboard Shortcuts'), 'win.shortcuts'));
     section.add(Adw.ShortcutsItem.new_from_action(_('Quit'), 'app.quit'));
     const dialog = new Adw.ShortcutsDialog();

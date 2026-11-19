@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 07:27+0100\n"
+"POT-Creation-Date: 2026-11-19 09:16+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -411,6 +411,18 @@ msgstr "{path} ist kein gültiges JSON: {message}"
 msgid "{path}: {message}"
 msgstr "{path}: {message}"
 
+#: src/core/config-write.ts:112
+msgid "account \"{id}\" already exists"
+msgstr "Konto „{id}“ existiert bereits"
+
+#: src/core/config-write.ts:133
+msgid "no account \"{id}\""
+msgstr "Kein Konto „{id}“"
+
+#: src/core/config-write.ts:134
+msgid "a configuration needs at least one account"
+msgstr "Eine Konfiguration braucht mindestens ein Konto"
+
 #: src/core/context.ts:79
 msgid "no secret stored for \"{ref}\""
 msgstr "Für \"{ref}\" ist kein Geheimnis gespeichert"
@@ -661,15 +673,17 @@ msgstr "Eine Erinnerung als erledigt markieren"
 msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
-#: src/frontends/gui/main.ts:39
+#: src/frontends/gui/main.ts:55
 msgid "No calendar backend could be set up."
 msgstr "Es konnte kein Kalender-Backend eingerichtet werden."
 
-#: src/frontends/gui/main.ts:68
+#: src/frontends/gui/main.ts:104
 msgid "Calendar events and reminders from your existing calendars."
 msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
 
 #: src/frontends/gui/model.ts:139 src/frontends/gui/view-model.ts:103
+#: src/frontends/gui/views/preferences/controller.ts:102
+#: src/frontends/gui/views/preferences/controller.ts:140
 #: src/frontends/gui/views/tasks.ts:55 src/frontends/gui/views/tasks.ts:129
 msgid "Untitled"
 msgstr "Ohne Titel"
@@ -731,6 +745,260 @@ msgstr "Nicht aktuell — {sources}"
 msgid "Sources"
 msgstr "Quellen"
 
+#: src/frontends/gui/views/preferences/account-add.ts:14
+msgid ""
+"The password is kept in your desktop keyring, not in the configuration file."
+msgstr "Das Passwort liegt im Schlüsselbund deines Desktops, nicht in der Konfigurationsdatei."
+
+#: src/frontends/gui/views/preferences/account-add.ts:16
+msgid "Name (optional)"
+msgstr "Name (optional)"
+
+#: src/frontends/gui/views/preferences/account-add.ts:17
+msgid "Server address"
+msgstr "Serveradresse"
+
+#: src/frontends/gui/views/preferences/account-add.ts:18
+msgid "User name"
+msgstr "Benutzername"
+
+#: src/frontends/gui/views/preferences/account-add.ts:19
+msgid "Password"
+msgstr "Passwort"
+
+#: src/frontends/gui/views/preferences/account-add.ts:24
+msgid "Add account"
+msgstr "Konto hinzufügen"
+
+#: src/frontends/gui/views/preferences/account-add.ts:46
+msgid "Account added"
+msgstr "Konto hinzugefügt"
+
+#: src/frontends/gui/views/preferences/account-add.ts:58
+#: src/frontends/gui/views/preferences/accounts.ts:31
+msgid "Add CalDAV account"
+msgstr "CalDAV-Konto hinzufügen"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:19
+#: src/frontends/gui/window.ts:73
+msgid "Calendar"
+msgstr "Kalender"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:19
+msgid "Task list"
+msgstr "Aufgabenliste"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:20
+msgid "Fetched and kept up to date"
+msgstr "Wird abgerufen und aktuell gehalten"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:20
+msgid "No longer fetched, local copy removed"
+msgstr "Wird nicht mehr abgerufen, lokale Kopie entfernt"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:21
+msgid "{kind} · {state}"
+msgstr "{kind} · {state}"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:26
+msgid "Remove “{account}”?"
+msgstr "„{account}“ entfernen?"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:28
+msgid ""
+"The account, its local copy and its stored password are removed from this "
+"app. Nothing changes on the server."
+msgstr "Das Konto, seine lokale Kopie und sein gespeichertes Passwort werden aus dieser App entfernt. Auf dem Server ändert sich nichts."
+
+#: src/frontends/gui/views/preferences/account-detail.ts:31
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:32
+msgid "Remove"
+msgstr "Entfernen"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:51
+msgid "Calendars and task lists"
+msgstr "Kalender und Aufgabenlisten"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:53
+msgid ""
+"Switch one off and it is no longer fetched; its local copy is removed. "
+"Switching it on fetches it again."
+msgstr "Ausgeschaltet wird sie nicht mehr abgerufen und ihre lokale Kopie entfernt. Eingeschaltet wird sie wieder abgerufen."
+
+#: src/frontends/gui/views/preferences/account-detail.ts:63
+msgid "Remove account…"
+msgstr "Konto entfernen …"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:76
+msgid "Connected"
+msgstr "Verbunden"
+
+#: src/frontends/gui/views/preferences/account-detail.ts:78
+msgid "The last account cannot be removed."
+msgstr "Das letzte Konto kann nicht entfernt werden."
+
+#: src/frontends/gui/views/preferences/accounts.ts:20
+#: src/frontends/gui/views/preferences/accounts.ts:22
+msgid "Accounts"
+msgstr "Konten"
+
+#: src/frontends/gui/views/preferences/accounts.ts:23
+msgid "Open an account to choose which calendars and task lists are kept."
+msgstr "Öffne ein Konto, um zu wählen, welche Kalender und Aufgabenlisten behalten werden."
+
+#: src/frontends/gui/views/preferences/accounts.ts:32
+msgid "Not available in demo mode"
+msgstr "Im Demo-Modus nicht verfügbar"
+
+#: src/frontends/gui/views/preferences/accounts.ts:32
+msgid "Any server that speaks CalDAV"
+msgstr "Jeder Server mit CalDAV"
+
+#: src/frontends/gui/views/preferences/accounts.ts:38
+msgid "Add system calendars"
+msgstr "Systemkalender hinzufügen"
+
+#: src/frontends/gui/views/preferences/accounts.ts:38
+msgid "The calendars of your desktop accounts"
+msgstr "Die Kalender deiner Desktop-Konten"
+
+#: src/frontends/gui/views/preferences/accounts.ts:43
+msgid "System calendars added"
+msgstr "Systemkalender hinzugefügt"
+
+#: src/frontends/gui/views/preferences/accounts.ts:79
+#: src/frontends/gui/views/preferences/agent-access.ts:104
+msgid "The configuration cannot be read"
+msgstr "Die Konfiguration kann nicht gelesen werden"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:22
+msgid "Agent access"
+msgstr "Agentenzugriff"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:24
+msgid "Granted"
+msgstr "Erlaubt"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:25
+msgid ""
+"Agents can always read. They change something only where it is listed here."
+msgstr "Agenten dürfen immer lesen. Ändern dürfen sie nur, was hier aufgeführt ist."
+
+#: src/frontends/gui/views/preferences/agent-access.ts:27
+#: src/frontends/gui/views/preferences/agent-access.ts:36
+msgid "Grant access"
+msgstr "Zugriff erlauben"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:32
+msgid "May"
+msgstr "Darf"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:35
+msgid "In"
+msgstr "In"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:53
+msgid "Nothing to choose from"
+msgstr "Nichts zur Auswahl"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:74
+msgid "Nothing is granted"
+msgstr "Nichts ist erlaubt"
+
+#: src/frontends/gui/views/preferences/agent-access.ts:75
+msgid "Agents cannot change anything."
+msgstr "Agenten können nichts ändern."
+
+#: src/frontends/gui/views/preferences/agent-access.ts:89
+#: src/frontends/gui/views/preferences/agent-access.ts:90
+msgid "Revoke"
+msgstr "Widerrufen"
+
+#: src/frontends/gui/views/preferences/controller.ts:73
+msgid "System calendars"
+msgstr "Systemkalender"
+
+#: src/frontends/gui/views/preferences/controller.ts:113
+msgid "Create events"
+msgstr "Termine anlegen"
+
+#: src/frontends/gui/views/preferences/controller.ts:115
+msgid "Create reminders"
+msgstr "Erinnerungen anlegen"
+
+#: src/frontends/gui/views/preferences/controller.ts:117
+msgid "Change reminders"
+msgstr "Erinnerungen ändern"
+
+#: src/frontends/gui/views/preferences/controller.ts:217
+msgid "The address must start with https://"
+msgstr "Die Adresse muss mit https:// beginnen"
+
+#: src/frontends/gui/views/preferences/controller.ts:219
+msgid "Enter the server address, e.g. https://dav.example.org/"
+msgstr "Gib die Serveradresse ein, z. B. https://dav.example.org/"
+
+#: src/frontends/gui/views/preferences/controller.ts:221
+msgid "Enter the user name."
+msgstr "Gib den Benutzernamen ein."
+
+#: src/frontends/gui/views/preferences/controller.ts:222
+msgid "Enter the password."
+msgstr "Gib das Passwort ein."
+
+#: src/frontends/gui/views/preferences/controller.ts:290
+msgid "The account is removed, but cleaning up failed: {message}"
+msgstr "Das Konto ist entfernt, das Aufräumen schlug aber fehl: {message}"
+
+#: src/frontends/gui/views/preferences/general.ts:21
+msgid "Light"
+msgstr "Hell"
+
+#: src/frontends/gui/views/preferences/general.ts:21
+msgid "Dark"
+msgstr "Dunkel"
+
+#: src/frontends/gui/views/preferences/general.ts:21
+#: src/frontends/gui/views/preferences/general.ts:32
+msgid "Follow system"
+msgstr "Systemvorgabe"
+
+#: src/frontends/gui/views/preferences/general.ts:26
+msgid "Monday"
+msgstr "Montag"
+
+#: src/frontends/gui/views/preferences/general.ts:28
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: src/frontends/gui/views/preferences/general.ts:30
+msgid "Saturday"
+msgstr "Samstag"
+
+#: src/frontends/gui/views/preferences/general.ts:49
+#: src/frontends/gui/window.ts:223
+msgid "General"
+msgstr "Allgemein"
+
+#: src/frontends/gui/views/preferences/general.ts:50
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+
+#: src/frontends/gui/views/preferences/general.ts:51
+msgid "Dates"
+msgstr "Datum"
+
+#: src/frontends/gui/views/preferences/general.ts:56
+msgid "Color scheme"
+msgstr "Farbschema"
+
+#: src/frontends/gui/views/preferences/general.ts:60
+msgid "First day of the week"
+msgstr "Erster Tag der Woche"
+
 #: src/frontends/gui/views/tasks.ts:38
 msgid "Open"
 msgstr "Offen"
@@ -764,12 +1032,12 @@ msgid "Status"
 msgstr "Status"
 
 #: src/frontends/gui/views/tasks.ts:94 src/frontends/gui/views/tasks.ts:182
-#: src/frontends/gui/window.ts:73
+#: src/frontends/gui/window.ts:78
 msgid "Tasks"
 msgstr "Aufgaben"
 
 #: src/frontends/gui/views/tasks.ts:95 src/frontends/gui/views/tasks.ts:184
-#: src/frontends/gui/window.ts:74
+#: src/frontends/gui/window.ts:79
 msgid "Your reminders will appear here."
 msgstr "Deine Erinnerungen erscheinen hier."
 
@@ -797,43 +1065,39 @@ msgstr "Alle Listen sind ausgeblendet."
 msgid "Cannot load tasks"
 msgstr "Aufgaben konnten nicht geladen werden"
 
-#: src/frontends/gui/window.ts:68
-msgid "Calendar"
-msgstr "Kalender"
-
-#: src/frontends/gui/window.ts:69
+#: src/frontends/gui/window.ts:74
 msgid "Events from your calendars will appear here."
 msgstr "Termine aus Ihren Kalendern erscheinen hier."
 
-#: src/frontends/gui/window.ts:78
+#: src/frontends/gui/window.ts:83
 msgid "Board"
 msgstr "Board"
 
-#: src/frontends/gui/window.ts:79
+#: src/frontends/gui/window.ts:84
 msgid "Your reminders as cards will appear here."
 msgstr "Ihre Erinnerungen als Karten erscheinen hier."
 
-#: src/frontends/gui/window.ts:117 src/frontends/gui/window.ts:210
+#: src/frontends/gui/window.ts:122 src/frontends/gui/window.ts:228
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: src/frontends/gui/window.ts:123 src/frontends/gui/window.ts:229
 msgid "Keyboard Shortcuts"
 msgstr "Tastenkürzel"
 
-#: src/frontends/gui/window.ts:118
+#: src/frontends/gui/window.ts:124
 msgid "About reminder"
 msgstr "Über reminder"
 
-#: src/frontends/gui/window.ts:119
+#: src/frontends/gui/window.ts:125
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/frontends/gui/window.ts:205
-msgid "General"
-msgstr "Allgemein"
-
-#: src/frontends/gui/window.ts:209
+#: src/frontends/gui/window.ts:227
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#: src/frontends/gui/window.ts:211
+#: src/frontends/gui/window.ts:230
 msgid "Quit"
 msgstr "Beenden"
 

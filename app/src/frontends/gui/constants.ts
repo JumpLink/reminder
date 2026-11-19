@@ -46,3 +46,6 @@ export type ViewName = (typeof VIEW_NAMES)[number];
 /** Narrowest and shortest window the layout is built for (a phone in portrait). */
 export const MIN_WIDTH = 360;
 export const MIN_HEIGHT = 294;
+
+/** `REMINDER_APP_PREFS=1` opens the preferences at start, for screenshots. */
+export const PREFS_HOOK = `${DEV_HOOK_PREFIX}_PREFS`;
