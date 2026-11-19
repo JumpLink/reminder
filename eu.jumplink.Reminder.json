@@ -1,0 +1,46 @@
+{
+  "id": "eu.jumplink.Reminder",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "50",
+  "sdk": "org.gnome.Sdk",
+  "sdk-extensions": ["org.freedesktop.Sdk.Extension.node24"],
+  "command": "reminder",
+  "finish-args": [
+    "--share=ipc",
+    "--share=network",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--device=dri",
+    "--talk-name=org.freedesktop.secrets",
+    "--talk-name=org.gnome.OnlineAccounts"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/node24/bin"
+  },
+  "modules": [
+    {
+      "name": "reminder",
+      "buildsystem": "simple",
+      "build-options": {
+        "env": {
+          "XDG_CACHE_HOME": "/run/build/reminder/flatpak-gjsify-cache"
+        }
+      },
+      "build-commands": [
+        "npm install --offline --no-audit --no-fund --prefix /run/build/reminder/.gjsify-cli --cache /run/build/reminder/flatpak-gjsify-cache/npm @gjsify/cli",
+        "PATH=/run/build/reminder/.gjsify-cli/node_modules/.bin:$PATH && gjsify install --immutable --focus reminder-cli && gjsify workspace reminder-cli build",
+        "install -Dm755 app/dist/reminder.gjs.mjs /app/share/eu.jumplink.Reminder/reminder.gjs.mjs",
+        "cp -r app/dist/locale /app/share/eu.jumplink.Reminder/locale",
+        "printf '#!/bin/sh\\nexec env GJSIFY_LOCALE_DIR=/app/share/eu.jumplink.Reminder/locale gjs -m /app/share/eu.jumplink.Reminder/reminder.gjs.mjs \"$@\"\\n' > /app/bin/reminder-wrapper && install -Dm755 /app/bin/reminder-wrapper /app/bin/reminder && rm /app/bin/reminder-wrapper",
+        "install -Dm644 app/data/eu.jumplink.Reminder.desktop /app/share/applications/eu.jumplink.Reminder.desktop",
+        "install -Dm644 app/data/eu.jumplink.Reminder.metainfo.xml /app/share/metainfo/eu.jumplink.Reminder.metainfo.xml",
+        "install -Dm644 app/data/icons/hicolor/scalable/apps/eu.jumplink.Reminder.svg /app/share/icons/hicolor/scalable/apps/eu.jumplink.Reminder.svg",
+        "install -Dm644 app/data/icons/hicolor/symbolic/apps/eu.jumplink.Reminder-symbolic.svg /app/share/icons/hicolor/symbolic/apps/eu.jumplink.Reminder-symbolic.svg"
+      ],
+      "sources": [
+        { "type": "dir", "path": "." },
+        "gjsify-sources.json"
+      ]
+    }
+  ]
+}
