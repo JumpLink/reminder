@@ -11,11 +11,21 @@ import type { SizeClass } from './size-class.ts';
  * One content widget, shown where the window has room for it: wide → inspector on the end side,
  * medium → `Adw.Dialog`, compact → `Adw.BottomSheet`.
  *
- * The pane owns the split view and the sheet, so the caller hands over its main content with
+ * The pane owns the inspector and the sheet, so the caller hands over its main content with
  * `setMain` instead of wiring three containers. A single `Adw.ToolbarView` (header + content) is
  * what moves between containers, so the content keeps its state (scroll, entries) when the size
  * class changes. Signal `closed` fires when the user dismisses the pane, not on `close()`.
  */
+/** How wide the inspector is beside the content, px — the range libadwaita uses is 320…420. */
+const INSPECTOR_WIDTH = 360;
+
+/** How much of the pane the bottom sheet covers, and the floor below which it stops shrinking. */
+const SHEET_HEIGHT_SHARE = 0.7;
+const SHEET_MIN_HEIGHT = 320;
+
+/** Room above the sheet's header, so the drag handle is not drawn across the title. */
+const SHEET_HANDLE_SPACE = 14;
+
 export class AdaptivePane extends Adw.Bin {
   static {
     GObject.registerClass({ GTypeName: 'GjsifyAdwAdaptivePane', Signals: { closed: {} } }, AdaptivePane);
@@ -24,14 +34,16 @@ export class AdaptivePane extends Adw.Bin {
   private sizeClass: SizeClass = 'compact';
   private open: PaneContainer | null = null;
   private moving = false;
-  private readonly split = new Adw.OverlaySplitView({
-    sidebarPosition: Gtk.PackType.END,
-    collapsed: false,
-    showSidebar: false,
-    minSidebarWidth: 320,
-    maxSidebarWidth: 420,
-  });
-  private readonly sheet = new Adw.BottomSheet({ showDragHandle: true });
+  /**
+   * The inspector is a second child beside the content, not an `Adw.OverlaySplitView`: the pane
+   * already sits inside the window's own split view, and a split view whose sidebar is shown
+   * inside another one measures its content with a nonsense width (GTK logs
+   * `gtk_widget_size_allocate(): … width -2147482688`). Nothing here needs the overlay — the
+   * inspector never collapses; below `wide` the shell moves into the dialog or the sheet instead.
+   */
+  private readonly row = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0 });
+  private readonly divider = new Gtk.Separator({ orientation: Gtk.Orientation.VERTICAL });
+  private readonly sheet = new Adw.BottomSheet({ showDragHandle: true, hexpand: true });
   private readonly shell = new Adw.ToolbarView();
   private readonly header = new Adw.HeaderBar({ showEndTitleButtons: false, showStartTitleButtons: false });
   private readonly title = new Adw.WindowTitle({ title: '', subtitle: '' });
@@ -49,15 +61,15 @@ export class AdaptivePane extends Adw.Bin {
     this.header.pack_end(close);
     this.shell.add_top_bar(this.header);
 
-    this.sheet.set_content(this.split);
-    this.set_child(this.sheet);
+    this.row.append(this.sheet);
+    this.set_child(this.row);
     this.sheet.connect('notify::open', () => {
       if (!this.sheet.open && !this.moving && this.open === 'sheet') this.dismissed();
     });
   }
 
   setMain(widget: Gtk.Widget | null): void {
-    this.split.set_content(widget);
+    this.sheet.set_content(widget);
   }
 
   get container(): PaneContainer | null {
@@ -97,14 +109,22 @@ export class AdaptivePane extends Adw.Bin {
     this.remove();
     switch (target) {
       case 'inspector':
-        this.split.set_sidebar(this.shell);
-        this.split.set_show_sidebar(true);
+        this.shell.set_size_request(INSPECTOR_WIDTH, -1);
+        this.shell.set_margin_top(0);
+        this.row.append(this.divider);
+        this.row.append(this.shell);
         break;
       case 'sheet':
+        // A bottom sheet is as tall as its sheet asks to be, and a scrolling detail asks for
+        // almost nothing — without a height the sheet opens as a sliver showing only its header.
+        this.shell.set_size_request(-1, this.sheetHeight());
+        this.shell.set_margin_top(SHEET_HANDLE_SPACE);
         this.sheet.set_sheet(this.shell);
         this.sheet.set_open(true);
         break;
       case 'dialog': {
+        this.shell.set_size_request(-1, -1);
+        this.shell.set_margin_top(0);
         const dialog = new Adw.Dialog({ contentWidth: 480, contentHeight: 520 });
         dialog.set_child(this.shell);
         dialog.connect('closed', () => {
@@ -122,6 +142,11 @@ export class AdaptivePane extends Adw.Bin {
     this.moving = false;
   }
 
+  /** How tall the sheet opens: most of the pane, but never less than `SHEET_MIN_HEIGHT`. */
+  private sheetHeight(): number {
+    return Math.max(SHEET_MIN_HEIGHT, Math.round(this.get_height() * SHEET_HEIGHT_SHARE));
+  }
+
   /** Empties whichever container holds the shell, so it can be set into another. */
   private remove(): void {
     const was = this.moving;
@@ -136,9 +161,9 @@ export class AdaptivePane extends Adw.Bin {
       this.sheet.set_open(false);
       this.sheet.set_sheet(null);
     }
-    if (this.split.get_sidebar() === this.shell) {
-      this.split.set_show_sidebar(false);
-      this.split.set_sidebar(null);
+    if (this.shell.get_parent() === this.row) {
+      this.row.remove(this.divider);
+      this.row.remove(this.shell);
     }
     this.moving = was;
   }

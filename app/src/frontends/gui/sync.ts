@@ -20,13 +20,17 @@ import {
   type SyncService,
 } from '@reminder/core';
 
+import { isBoardCacheKey } from '../../core/board-cache.ts';
+import { createBoardSources } from '../../core/board-sources.ts';
 import {
   about,
   createAccountBackend,
   resolveSecretPasswordsPerAccount,
   type Context,
 } from '../../core/context.ts';
-import { buildSyncSources, type AccountLists } from './sync-sources.ts';
+import { bindBoards, boardSyncSources, createBoardSyncFetch, type BoardBinding } from './board-sync.ts';
+import type { BoardProblem } from './board-view-model.ts';
+import { buildSyncSources, hostOf, type AccountLists } from './sync-sources.ts';
 
 export interface GuiSync {
   service: SyncService;
@@ -41,6 +45,10 @@ export interface GuiSync {
   lists: AccountLists[];
   /** Account id → why it could not be set up. */
   failures: ReadonlyMap<string, string>;
+  /** Every board of every source, on the same schedule as the task lists. */
+  boards: BoardBinding[];
+  /** One line per board source that could not even be listed; the other boards still load. */
+  boardProblems: BoardProblem[];
 }
 
 /** Stands in for an account that could not be set up: no lists, and every write says why. */
@@ -167,16 +175,46 @@ export async function createGuiSync(
     };
   };
 
+  // The boards of the configured accounts, plus whatever the context adds on its own (demo mode).
+  // A source whose account is broken gets a null backend and contributes no board.
+  const boardSet = createBoardSources(
+    {
+      config,
+      backend: (account) => backends.get(account.id) ?? null,
+      // Every account was listed above; a board source asking again would double that listing.
+      calendars: (account) => lists.find((entry) => entry.account === account.id)?.calendars ?? null,
+      identity: context.boardIdentity?.(),
+    },
+    { host: (account) => hostOf(config, account.id) },
+  );
+  problems.push(...boardSet.problems);
+  const bound = await bindBoards([...boardSet.sources, ...(context.extraBoardSources?.() ?? [])]);
+  const boardFetch = createBoardSyncFetch(bound.bindings);
+
   const service = createSyncService({
     cache,
     fetch: (key, previous) =>
-      readers.has(key.account) ? caldavFetch(key, previous) : edsFetch(key, previous),
+      isBoardCacheKey(key)
+        ? boardFetch(key, previous)
+        : readers.has(key.account)
+          ? caldavFetch(key, previous)
+          : edsFetch(key, previous),
     clock: { now: () => Date.now() },
     scheduler: {
       setTimeout: (callback, ms) => setTimeout(callback, ms),
       clearTimeout: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>),
     },
-    sources: buildSyncSources(config, lists),
+    // Board keys do not go through `enabledSyncSources`: a disabled list is already cut from the
+    // backend the source reads (`board-sources.ts`), and a board key is no calendar target.
+    sources: [...buildSyncSources(config, lists), ...boardSyncSources(bound.bindings)],
   });
-  return { service, backend, problems, lists, failures: accountProblems };
+  return {
+    service,
+    backend,
+    problems,
+    lists,
+    failures: accountProblems,
+    boards: bound.bindings,
+    boardProblems: bound.problems,
+  };
 }

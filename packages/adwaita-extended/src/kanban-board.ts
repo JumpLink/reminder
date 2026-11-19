@@ -12,6 +12,7 @@ import {
   columnOffset,
   columnWidth,
   COLUMN_GAP,
+  MIN_COLUMN_WIDTH,
   neighbourFocus,
   snapColumn,
   type BoardPresentation,
@@ -54,9 +55,15 @@ export class KanbanBoard extends Gtk.Box {
   });
   private readonly carousel = new Adw.Carousel({ spacing: COLUMN_GAP, vexpand: true, hexpand: true });
   private readonly strip = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: COLUMN_GAP });
+  /**
+   * Both side-by-side presentations scroll sideways. `all` needs it too: a window wide enough for
+   * the size class is not necessarily wide enough for every column — open an inspector beside the
+   * board and the rest would be pushed past the window edge instead of scrolling.
+   */
   private readonly scroller = new Gtk.ScrolledWindow({
     hscrollbarPolicy: Gtk.PolicyType.AUTOMATIC,
     vscrollbarPolicy: Gtk.PolicyType.NEVER,
+    minContentWidth: MIN_COLUMN_WIDTH,
     vexpand: true,
     hexpand: true,
   });
@@ -82,8 +89,6 @@ export class KanbanBoard extends Gtk.Box {
     this.carousel.set_margin_start(COLUMN_GAP);
     this.carousel.set_margin_end(COLUMN_GAP);
     this.carousel.set_margin_bottom(COLUMN_GAP);
-    this.scroller.set_child(this.strip);
-
     this.append(this.switcherScroll);
     this.append(this.holder);
 
@@ -169,12 +174,14 @@ export class KanbanBoard extends Gtk.Box {
         break;
       case 'scroll':
         this.host = this.strip;
+        this.scroller.set_child(this.strip);
         this.holder.set_child(this.scroller);
         for (const c of this.columns) this.strip.append(c);
         break;
       case 'all':
         this.host = this.all;
-        this.holder.set_child(this.all);
+        this.scroller.set_child(this.all);
+        this.holder.set_child(this.scroller);
         for (const c of this.columns) this.all.append(c);
         break;
     }

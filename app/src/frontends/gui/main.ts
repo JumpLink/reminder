@@ -19,7 +19,16 @@ import { createContext, type Context } from '../../core/context.ts';
 import { defaultLocaleDir } from '../../core/i18n.ts';
 import { createDemoContext, demoActive, demoConfig } from '../../core/demo/index.ts';
 
-import { APP_ID, APP_NAME, APP_VERSION, DEV_HOOK_PREFIX, PREFS_HOOK, SIZE_HOOK } from './constants.ts';
+import {
+  APP_ID,
+  APP_NAME,
+  APP_VERSION,
+  CARD_HOOK,
+  DEV_HOOK_PREFIX,
+  PREFS_HOOK,
+  SIZE_HOOK,
+} from './constants.ts';
+import { createBoardModel } from './board-model.ts';
 import { createTasksModel } from './model.ts';
 import { createGuiSettings, createMemorySettings } from './settings.ts';
 import { createGuiSync, type GuiSync } from './sync.ts';
@@ -62,7 +71,13 @@ function createServices(window: MainWindow) {
       backend: sync.backend,
       service: sync.service,
     });
-    window.attach({ model, settings, service: sync.service, problems: sync.problems });
+    const board = createBoardModel({
+      boards: sync.boards,
+      service: sync.service,
+      config: context.config(),
+      problems: sync.boardProblems,
+    });
+    window.attach({ model, board, settings, service: sync.service, problems: sync.problems });
     await model.load();
     await sync.service.start();
   };
@@ -87,6 +102,8 @@ async function startServices(window: MainWindow): Promise<void> {
     await services.start();
     const page = process.env[PREFS_HOOK];
     if (page) services.open(page);
+    // After `start`, so the first sync has filled the board the hook wants a card from.
+    if (process.env[CARD_HOOK]) window.openFirstCard();
   } catch (err) {
     window.showError(errorMessage(err));
   }

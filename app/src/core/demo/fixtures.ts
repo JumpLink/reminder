@@ -24,6 +24,23 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
   { id: 'work', name: 'Studio' },
 ];
 
+/**
+ * Who "me" is while the demo runs — an invented person, so a board can hold cards that are
+ * somebody else's and the "mine" filter has something to leave out. A task list has no server
+ * identity to ask, so this is what a real setup would configure.
+ */
+export const DEMO_IDENTITY = {
+  id: 'alex@example.org',
+  displayName: 'Alex Sommer',
+  addresses: ['alex@example.org'],
+} as const;
+
+/** The other two invented people the demo's cards are shared with. */
+export const DEMO_PEOPLE = {
+  ines: { name: 'Ines Falk', address: 'ines@example.org' },
+  jonas: { name: 'Jonas Reiter', address: 'jonas@example.org' },
+} as const;
+
 export const DEMO_LISTS: readonly DemoList[] = [
   { account: 'home', uid: 'tasks', name: 'Tasks', readOnly: false },
   { account: 'home', uid: 'groceries', name: 'Groceries', readOnly: false },
@@ -42,6 +59,11 @@ export const demoCalendars = (account: string): CalendarInfo[] => {
   }));
 };
 
+interface DemoAttendee {
+  name: string;
+  address: string;
+}
+
 interface DemoTask {
   list: string;
   uid: string;
@@ -53,6 +75,17 @@ interface DemoTask {
   priority?: number;
   /** Completed this many days ago. */
   doneAgo?: number;
+  /**
+   * The `STATUS` to write instead of `NEEDS-ACTION`, so the board has a card in every lane:
+   * `BACKLOG` is not an RFC 5545 value and lands in the backlog lane by name (ADR 0008).
+   */
+  status?: 'BACKLOG' | 'IN-PROCESS';
+  /** `ATTENDEE` lines. Without any, the task is whoever's list it is — see the VTODO adapter. */
+  attendees?: readonly DemoAttendee[];
+  /** `CATEGORIES`, drawn as the card's labels. */
+  labels?: readonly string[];
+  /** `URL` — what "Open in original" opens. */
+  url?: string;
 }
 
 const TASKS: readonly DemoTask[] = [
@@ -96,6 +129,54 @@ const TASKS: readonly DemoTask[] = [
   { list: 'work:tasks', uid: 'w04', summary: 'Submit the expense report', due: -6, doneAgo: 3 },
   { list: 'work:reading', uid: 'r01', summary: 'Read the accessibility guide' },
   { list: 'work:reading', uid: 'r02', summary: 'Skim the release notes', due: 5, priority: 9 },
+  // From here on the board's lanes: a backlog and an in-progress card per account, cards that
+  // belong to somebody else, labels, and one card with a page of its own.
+  {
+    list: 'home:tasks',
+    uid: 'd10',
+    summary: 'Plan the bathroom retiling',
+    status: 'BACKLOG',
+    labels: ['home'],
+  },
+  {
+    list: 'home:tasks',
+    uid: 'd11',
+    summary: 'Fix the squeaking garden gate',
+    status: 'IN-PROCESS',
+    due: 2,
+    labels: ['repair'],
+  },
+  {
+    list: 'work:tasks',
+    uid: 'w05',
+    summary: 'Draft the studio newsletter',
+    status: 'IN-PROCESS',
+    due: 1,
+    labels: ['writing'],
+    attendees: [{ name: DEMO_IDENTITY.displayName, address: DEMO_IDENTITY.addresses[0] }, DEMO_PEOPLE.ines],
+  },
+  {
+    list: 'work:tasks',
+    uid: 'w06',
+    summary: 'Collect feedback on the new logo',
+    status: 'BACKLOG',
+    labels: ['design'],
+  },
+  {
+    list: 'work:tasks',
+    uid: 'w07',
+    summary: 'Hand over the print files',
+    due: 4,
+    labels: ['print'],
+    attendees: [DEMO_PEOPLE.jonas],
+  },
+  {
+    list: 'work:reading',
+    uid: 'r03',
+    summary: 'Read the notes on adaptive layouts',
+    labels: ['reading'],
+    url: 'https://example.org/notes/adaptive-layouts',
+  },
 ];
 
 const pad = (n: number): string => String(n).padStart(2, '0');
@@ -123,10 +204,14 @@ function vtodo(task: DemoTask, now: Date): string {
     );
   }
   if (task.priority) lines.push(`PRIORITY:${task.priority}`);
+  if (task.url) lines.push(`URL:${task.url}`);
+  if (task.labels?.length) lines.push(`CATEGORIES:${task.labels.join(',')}`);
+  for (const attendee of task.attendees ?? [])
+    lines.push(`ATTENDEE;CN=${attendee.name}:mailto:${attendee.address}`);
   if (task.doneAgo !== undefined) {
     const finished = new Date(now.getTime() - task.doneAgo * 24 * 60 * 60 * 1000);
     lines.push('STATUS:COMPLETED', `COMPLETED:${utcStamp(finished)}`);
-  } else lines.push('STATUS:NEEDS-ACTION');
+  } else lines.push(`STATUS:${task.status ?? 'NEEDS-ACTION'}`);
   lines.push('END:VTODO', '');
   return lines.join('\r\n');
 }

@@ -11,6 +11,9 @@ const CSS = `
 .gjsify-board-label { padding: 0 6px; border-radius: 99px; background-color: alpha(currentColor, 0.1); }
 .gjsify-board-avatar:not(:first-child) { margin-left: -6px; }
 .gjsify-board-avatar { border: 2px solid @card_bg_color; border-radius: 50%; }
+.gjsify-filter-chip { padding: 2px 2px 2px 10px; border-radius: 99px; background-color: @accent_bg_color; color: @accent_fg_color; }
+.gjsify-filter-chip button { min-width: 20px; min-height: 20px; padding: 0; border-radius: 99px; }
+.gjsify-filter-chip button:hover { background-color: alpha(@accent_fg_color, 0.12); }
 .gjsify-swipe-content { background-color: @view_bg_color; }
 .gjsify-swipe-backdrop.primary { background-color: @success_bg_color; color: @success_fg_color; }
 .gjsify-swipe-backdrop.secondary { background-color: @warning_bg_color; color: @warning_fg_color; }

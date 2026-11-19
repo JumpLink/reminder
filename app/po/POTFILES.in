@@ -62,9 +62,12 @@
 ../packages/secrets-libsecret/src/store.gjs.ts
 ../packages/zenkit/src/index.ts
 ../packages/zenkit/src/source.ts
+src/core/board-cache.ts
+src/core/board-sources.ts
 src/core/config-write.ts
 src/core/config.ts
 src/core/context.ts
+src/core/demo/board-source.ts
 src/core/demo/fixtures.ts
 src/core/demo/index.ts
 src/core/demo/memory-backend.ts
@@ -83,6 +86,9 @@ src/frontends/cli/output.ts
 src/frontends/cli/priorities.ts
 src/frontends/cli/todos.ts
 src/frontends/cli/update.ts
+src/frontends/gui/board-model.ts
+src/frontends/gui/board-sync.ts
+src/frontends/gui/board-view-model.ts
 src/frontends/gui/constants.ts
 src/frontends/gui/main.ts
 src/frontends/gui/model.ts
@@ -91,6 +97,7 @@ src/frontends/gui/signals.ts
 src/frontends/gui/sync-sources.ts
 src/frontends/gui/sync.ts
 src/frontends/gui/view-model.ts
+src/frontends/gui/views/board.ts
 src/frontends/gui/views/overview.ts
 src/frontends/gui/views/preferences/account-add.ts
 src/frontends/gui/views/preferences/account-detail.ts

@@ -1,6 +1,6 @@
 /**
- * The main window: a view switcher over three pages (tasks is real, the others still placeholders),
- * wrapped by the sources overview. Content is built once; the
+ * The main window: a view switcher over three pages (tasks and the board are real, the calendar is
+ * still a placeholder), wrapped by the sources overview. Content is built once; the
  * breakpoint ladder only changes the container around it (ADR 0012) — the switcher sits in a bar
  * at the bottom while compact and in the header from medium up.
  */
@@ -25,7 +25,9 @@ import {
   type ViewName,
 } from './constants.ts';
 import type { GuiSettings } from './settings.ts';
+import type { BoardModel } from './board-model.ts';
 import type { TasksModel } from './model.ts';
+import { createBoardView, type BoardView } from './views/board.ts';
 import { createOverview, type Overview } from './views/overview.ts';
 import { createTasksView, type TasksView } from './views/tasks.ts';
 import Template, { type Children, GTypeName, InternalChildren } from './window.blp';
@@ -40,6 +42,7 @@ function placeholder(title: string, description: string, icon: string): Adw.Stat
 /** What the window needs once its services are up; they start after the window is on screen. */
 export interface WindowServices {
   model: TasksModel;
+  board: BoardModel;
   settings: GuiSettings;
   service: SyncService;
   problems: readonly string[];
@@ -54,6 +57,7 @@ export class MainWindow extends Adw.ApplicationWindow {
   private sizeClass: SizeClass = 'medium';
   private readonly toasts = new Adw.ToastOverlay();
   private readonly tasks: TasksView;
+  private readonly board: BoardView;
   private readonly overview: Overview;
   private model: TasksModel | null = null;
   private settings: GuiSettings | null = null;
@@ -86,18 +90,22 @@ export class MainWindow extends Adw.ApplicationWindow {
       },
     };
 
-    this.tasks = createTasksView((message) => this.toasts.add_toast(new Adw.Toast({ title: message })));
+    const toast = (message: string): void => this.toasts.add_toast(new Adw.Toast({ title: message }));
+    this.tasks = createTasksView(toast);
+    this.board = createBoardView(toast);
 
+    const pageWidget = (name: ViewName): Gtk.Widget => {
+      if (name === 'tasks') return this.tasks.widget;
+      if (name === 'board') return this.board.widget;
+      return placeholder(views[name].title, views[name].description, views[name].icon);
+    };
     const shell = createSwitcherShell(this, {
       narrowWidth: COMPACT_MAX_SP,
       pages: VIEW_NAMES.map((name) => ({
         name,
         title: views[name].title,
         icon: views[name].icon,
-        widget:
-          name === 'tasks'
-            ? this.tasks.widget
-            : placeholder(views[name].title, views[name].description, views[name].icon),
+        widget: pageWidget(name),
       })),
     });
     this.stack = shell.stack;
@@ -155,19 +163,21 @@ export class MainWindow extends Adw.ApplicationWindow {
     this.sizeClass = next;
     this.overview.setSizeClass(next);
     this.tasks.setSizeClass(next);
+    this.board.setSizeClass(next);
   }
 
   /**
    * Called when the config is read and the sync service built, and again after every rebuild the
    * preferences ask for: the previous model's subscription ends and its service has been stopped.
    */
-  attach({ model, settings, service, problems }: WindowServices): void {
+  attach({ model, board, settings, service, problems }: WindowServices): void {
     this.unsubscribe?.();
     this.model = model;
     this.settings = settings;
     this.service = service;
     this.hidden = settings.hidden();
     this.tasks.setModel(model, this.hidden);
+    this.board.setModel(board);
     this.unsubscribe = model.subscribe(() => {
       this.overview.setSources(model.calendars(), this.hidden);
       this.overview.setBanner(this.tasks.syncProblems());
@@ -185,9 +195,15 @@ export class MainWindow extends Adw.ApplicationWindow {
     if (problems.length > 0) this.toasts.add_toast(new Adw.Toast({ title: problems.join(' · ') }));
   }
 
-  /** A start-up failure (unreadable config …): say so where the tasks would be. */
+  /** A start-up failure (unreadable config …): say so where the tasks and the cards would be. */
   showError(message: string): void {
     this.tasks.setError(message);
+    this.board.setError(message);
+  }
+
+  /** `REMINDER_APP_CARD=1`: the board's first card detail, so a screenshot shows the pane. */
+  openFirstCard(): boolean {
+    return this.board.openFirstCard();
   }
 
   private setSourceVisible(target: string, visible: boolean): void {

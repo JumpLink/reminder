@@ -16,6 +16,7 @@ export { KanbanBoard } from './kanban-board.ts';
 export { ColorCheck } from './color-check.ts';
 export { DueChip } from './due-chip.ts';
 export { dueState, SOON_DAYS, type DueState } from './due-state.ts';
+export { FilterChip } from './filter-chip.ts';
 export { priorityLevel, priorityMarks, type PriorityLevel } from './priority-marks.ts';
 export type { SizeClass } from './size-class.ts';
 export { duplicateNameIds, type NamedSource } from './source-names.ts';
