@@ -463,7 +463,7 @@ msgstr "Feld „{field}“ in Liste {id} hat für diesen Zweck den falschen Typ"
 msgid "list {id} has no choice field to use as its columns"
 msgstr "Liste {id} hat kein Auswahlfeld, das als Spalten dienen kann"
 
-#: src/core/board-sources.ts:119
+#: src/core/board-sources.ts:149
 msgid "this build has no board support for \"{type}\""
 msgstr "Dieser Build unterstützt keine Boards vom Typ „{type}“"
 
@@ -491,31 +491,31 @@ msgstr "{path} ist kein gültiges JSON: {message}"
 msgid "{path}: {message}"
 msgstr "{path}: {message}"
 
-#: src/core/context.ts:79
+#: src/core/context.ts:87
 msgid "no secret stored for \"{ref}\""
 msgstr "Für \"{ref}\" ist kein Geheimnis gespeichert"
 
-#: src/core/context.ts:82
+#: src/core/context.ts:90
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr "Geheimnis \"{ref}\" lässt sich nicht lesen: {reason}"
 
-#: src/core/context.ts:115
+#: src/core/context.ts:123
 msgid "account \"{account}\": {message}"
 msgstr "Konto „{account}“: {message}"
 
-#: src/core/context.ts:130
+#: src/core/context.ts:138
 msgid "backend \"caldav\" needs a caldav section"
 msgstr "Das Backend „caldav“ braucht einen caldav-Abschnitt"
 
-#: src/core/context.ts:135
+#: src/core/context.ts:143
 msgid "the passwordSecret has not been resolved yet"
 msgstr "Das passwordSecret wurde noch nicht aufgelöst"
 
-#: src/core/context.ts:139
+#: src/core/context.ts:147
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
 
-#: src/core/demo/index.ts:31
+#: src/core/demo/index.ts:34
 msgid "Demo mode — invented data, nothing is saved."
 msgstr "Demomodus – erfundene Daten, nichts wird gespeichert."
 
@@ -741,20 +741,63 @@ msgstr "Eine Erinnerung als erledigt markieren"
 msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
-#: src/frontends/gui/main.ts:57
-msgid "No calendar backend could be set up."
-msgstr "Es konnte kein Kalender-Backend eingerichtet werden."
+#: src/frontends/gui/board-view-model.ts:97
+msgid "Backlog"
+msgstr "Backlog"
 
-#: src/frontends/gui/main.ts:109
-msgid "Calendar events and reminders from your existing calendars."
-msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
+#: src/frontends/gui/board-view-model.ts:99
+msgid "To do"
+msgstr "Zu tun"
 
-#: src/frontends/gui/model.ts:139 src/frontends/gui/view-model.ts:103
+#: src/frontends/gui/board-view-model.ts:101
+#: src/frontends/gui/views/tasks.ts:39
+msgid "In progress"
+msgstr "In Bearbeitung"
+
+#: src/frontends/gui/board-view-model.ts:103
+msgid "Done"
+msgstr "Fertig"
+
+#: src/frontends/gui/board-view-model.ts:105
+msgid "Unsorted"
+msgstr "Unsortiert"
+
+#: src/frontends/gui/board-view-model.ts:153
+#: src/frontends/gui/board-view-model.ts:200 src/frontends/gui/model.ts:139
+#: src/frontends/gui/view-model.ts:103
 #: src/frontends/gui/views/preferences/controller.ts:102
 #: src/frontends/gui/views/preferences/controller.ts:140
 #: src/frontends/gui/views/tasks.ts:55 src/frontends/gui/views/tasks.ts:129
 msgid "Untitled"
 msgstr "Ohne Titel"
+
+#: src/frontends/gui/board-view-model.ts:292
+msgid "Assigned to me"
+msgstr "Mir zugewiesen"
+
+#: src/frontends/gui/board-view-model.ts:294
+msgid "I am watching"
+msgstr "Von mir beobachtet"
+
+#: src/frontends/gui/board-view-model.ts:296
+msgid "Everyone"
+msgstr "Alle"
+
+#: src/frontends/gui/board-view-model.ts:310
+msgid "Without done"
+msgstr "Ohne Fertige"
+
+#: src/frontends/gui/board-view-model.ts:356
+msgid "Some boards are missing — {sources}"
+msgstr "Einige Boards fehlen — {sources}"
+
+#: src/frontends/gui/main.ts:66
+msgid "No calendar backend could be set up."
+msgstr "Es konnte kein Kalender-Backend eingerichtet werden."
+
+#: src/frontends/gui/main.ts:126
+msgid "Calendar events and reminders from your existing calendars."
+msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
 
 #: src/frontends/gui/view-model.ts:57
 msgid "Calendars"
@@ -784,29 +827,104 @@ msgstr "Später"
 msgid "No date"
 msgstr "Ohne Datum"
 
-#: src/frontends/gui/view-model.ts:115
+#: src/frontends/gui/view-model.ts:116
 msgid "sign-in rejected"
 msgstr "Anmeldung abgelehnt"
 
-#: src/frontends/gui/view-model.ts:117
+#: src/frontends/gui/view-model.ts:118
 msgid "no access"
 msgstr "kein Zugriff"
 
-#: src/frontends/gui/view-model.ts:119
+#: src/frontends/gui/view-model.ts:120
 msgid "rate limited"
 msgstr "Anfragen begrenzt"
 
-#: src/frontends/gui/view-model.ts:121
+#: src/frontends/gui/view-model.ts:122
 msgid "cannot be read"
 msgstr "nicht lesbar"
 
-#: src/frontends/gui/view-model.ts:123
+#: src/frontends/gui/view-model.ts:124
 msgid "could not be updated"
 msgstr "konnte nicht aktualisiert werden"
 
-#: src/frontends/gui/view-model.ts:139
+#: src/frontends/gui/view-model.ts:140
 msgid "Not up to date — {sources}"
 msgstr "Nicht aktuell — {sources}"
+
+#: src/frontends/gui/views/board.ts:72
+msgid "Could not open the card: {message}"
+msgstr "Die Karte konnte nicht geöffnet werden: {message}"
+
+#: src/frontends/gui/views/board.ts:86 src/frontends/gui/views/board.ts:169
+#: src/frontends/gui/views/board.ts:295 src/frontends/gui/window.ts:87
+msgid "Board"
+msgstr "Board"
+
+#: src/frontends/gui/views/board.ts:88
+msgid "Lane"
+msgstr "Spalte"
+
+#: src/frontends/gui/views/board.ts:90
+msgid "Column"
+msgstr "Spalte in der Quelle"
+
+#: src/frontends/gui/views/board.ts:92 src/frontends/gui/views/tasks.ts:73
+msgid "Due"
+msgstr "Fällig"
+
+#: src/frontends/gui/views/board.ts:93
+msgid "Assigned to"
+msgstr "Zugewiesen an"
+
+#: src/frontends/gui/views/board.ts:94
+msgid "Labels"
+msgstr "Labels"
+
+#: src/frontends/gui/views/board.ts:100
+msgid "Open in original"
+msgstr "Im Original öffnen"
+
+#: src/frontends/gui/views/board.ts:108
+msgid "This source has no page of its own."
+msgstr "Diese Quelle hat keine eigene Seite."
+
+#: src/frontends/gui/views/board.ts:136
+msgid "Cards"
+msgstr "Karten"
+
+#: src/frontends/gui/views/board.ts:140
+msgid "Show done"
+msgstr "Fertige anzeigen"
+
+#: src/frontends/gui/views/board.ts:141
+msgid "The last {days} days"
+msgstr "Die letzten {days} Tage"
+
+#: src/frontends/gui/views/board.ts:155
+msgid "Filter"
+msgstr "Filter"
+
+#: src/frontends/gui/views/board.ts:170
+msgid "Your cards will appear here."
+msgstr "Ihre Karten erscheinen hier."
+
+#: src/frontends/gui/views/board.ts:182
+msgid "Loading boards…"
+msgstr "Boards werden geladen …"
+
+#: src/frontends/gui/views/board.ts:295 src/frontends/gui/views/board.ts:329
+msgid "Cannot load the board"
+msgstr "Das Board konnte nicht geladen werden"
+
+#: src/frontends/gui/views/board.ts:300
+msgid "Connect an account with task lists or boards to see cards here."
+msgstr ""
+"Verbinden Sie ein Konto mit Aufgabenlisten oder Boards, damit hier Karten "
+"erscheinen."
+
+#: src/frontends/gui/views/board.ts:301
+msgid "No card matches the filters."
+msgstr "Keine Karte passt zu den Filtern."
 
 #: src/frontends/gui/views/overview.ts:60
 #: src/frontends/gui/views/overview.ts:75
@@ -850,7 +968,7 @@ msgid "Add CalDAV account"
 msgstr "CalDAV-Konto hinzufügen"
 
 #: src/frontends/gui/views/preferences/account-detail.ts:19
-#: src/frontends/gui/window.ts:73
+#: src/frontends/gui/window.ts:77
 msgid "Calendar"
 msgstr "Kalender"
 
@@ -1056,7 +1174,7 @@ msgid "Saturday"
 msgstr "Samstag"
 
 #: src/frontends/gui/views/preferences/general.ts:51
-#: src/frontends/gui/window.ts:223
+#: src/frontends/gui/window.ts:239
 msgid "General"
 msgstr "Allgemein"
 
@@ -1080,10 +1198,6 @@ msgstr "Erster Tag der Woche"
 msgid "Open"
 msgstr "Offen"
 
-#: src/frontends/gui/views/tasks.ts:39
-msgid "In progress"
-msgstr "In Bearbeitung"
-
 #: src/frontends/gui/views/tasks.ts:40
 msgid "Completed"
 msgstr "Erledigt"
@@ -1100,21 +1214,17 @@ msgstr "Unbekannt"
 msgid "List"
 msgstr "Liste"
 
-#: src/frontends/gui/views/tasks.ts:73
-msgid "Due"
-msgstr "Fällig"
-
 #: src/frontends/gui/views/tasks.ts:75
 msgid "Status"
 msgstr "Status"
 
 #: src/frontends/gui/views/tasks.ts:94 src/frontends/gui/views/tasks.ts:182
-#: src/frontends/gui/window.ts:78
+#: src/frontends/gui/window.ts:82
 msgid "Tasks"
 msgstr "Aufgaben"
 
 #: src/frontends/gui/views/tasks.ts:95 src/frontends/gui/views/tasks.ts:184
-#: src/frontends/gui/window.ts:79
+#: src/frontends/gui/window.ts:83
 msgid "Your reminders will appear here."
 msgstr "Deine Erinnerungen erscheinen hier."
 
@@ -1142,39 +1252,35 @@ msgstr "Alle Listen sind ausgeblendet."
 msgid "Cannot load tasks"
 msgstr "Aufgaben konnten nicht geladen werden"
 
-#: src/frontends/gui/window.ts:74
+#: src/frontends/gui/window.ts:78
 msgid "Events from your calendars will appear here."
 msgstr "Termine aus Ihren Kalendern erscheinen hier."
 
-#: src/frontends/gui/window.ts:83
-msgid "Board"
-msgstr "Board"
-
-#: src/frontends/gui/window.ts:84
+#: src/frontends/gui/window.ts:88
 msgid "Your reminders as cards will appear here."
 msgstr "Ihre Erinnerungen als Karten erscheinen hier."
 
-#: src/frontends/gui/window.ts:122 src/frontends/gui/window.ts:228
+#: src/frontends/gui/window.ts:130 src/frontends/gui/window.ts:244
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/frontends/gui/window.ts:123 src/frontends/gui/window.ts:229
+#: src/frontends/gui/window.ts:131 src/frontends/gui/window.ts:245
 msgid "Keyboard Shortcuts"
 msgstr "Tastenkürzel"
 
-#: src/frontends/gui/window.ts:124
+#: src/frontends/gui/window.ts:132
 msgid "About reminder"
 msgstr "Über reminder"
 
-#: src/frontends/gui/window.ts:125
+#: src/frontends/gui/window.ts:133
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/frontends/gui/window.ts:227
+#: src/frontends/gui/window.ts:243
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#: src/frontends/gui/window.ts:230
+#: src/frontends/gui/window.ts:246
 msgid "Quit"
 msgstr "Beenden"
 

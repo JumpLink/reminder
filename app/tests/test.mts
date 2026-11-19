@@ -28,6 +28,7 @@ import zenkit from './unit/zenkit/zenkit-source.test.ts';
 import boardOpenProject from './unit/openproject/openproject-source.test.ts';
 import boardSources from './unit/board/board-sources.test.ts';
 import boardDemoSource from './unit/board/demo-source.test.ts';
+import boardCache from './unit/core/board-cache.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
@@ -49,6 +50,8 @@ import sizeClasses from './unit/gui/size-classes.test.ts';
 import guiViewModel from './unit/gui/view-model.test.ts';
 import guiSettings from './unit/gui/settings.test.ts';
 import guiModel from './unit/gui/model.test.ts';
+import guiBoardViewModel from './unit/gui/board-view-model.test.ts';
+import guiBoardModel from './unit/gui/board-model.test.ts';
 import guiSync from './unit/gui/sync.test.ts';
 import guiDemo from './unit/gui/demo.test.ts';
 import guiPreferences from './unit/gui/preferences.test.ts';
@@ -83,6 +86,7 @@ run({
   boardOpenProject,
   boardSources,
   boardDemoSource,
+  boardCache,
   secrets,
   cacheFs,
   caldav,
@@ -100,6 +104,8 @@ run({
   guiViewModel,
   guiSettings,
   guiModel,
+  guiBoardViewModel,
+  guiBoardModel,
   guiSync,
   guiDemo,
   guiPreferences,

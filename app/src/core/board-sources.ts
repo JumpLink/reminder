@@ -22,6 +22,7 @@ import {
   type BoardSource,
   type BoardSourceType,
   type CalendarBackend,
+  type CalendarInfo,
   type ReminderConfig,
   type SourceInfo,
   type SyncSourceKind,
@@ -39,7 +40,34 @@ export interface BoardSourceDeps {
    * reports them. Null when the account could not be set up; it then contributes no board.
    */
   backend(account: AccountConfig): CalendarBackend | null;
+  /**
+   * The calendars this account was already listed with, where the caller has them. Null asks the
+   * backend itself.
+   */
+  calendars?(account: AccountConfig): readonly CalendarInfo[] | null;
   identity?: BoardIdentity;
+}
+
+/**
+ * The listing the caller already has, instead of a second request for the same answer: the vtodo
+ * source asks `listCalendars` on every board read, and the window listed them once at startup to
+ * build its sync sources (`sync-sources.ts`). The boards are then exactly the lists that one
+ * listing found — one snapshot of the account, not two.
+ */
+export function withKnownCalendars(
+  inner: CalendarBackend,
+  calendars: readonly CalendarInfo[],
+): CalendarBackend {
+  return {
+    id: inner.id,
+    async listCalendars(kind) {
+      return calendars.filter((c) => kind === undefined || c.kind === kind).map((c) => ({ ...c }));
+    },
+    listItems: (query) => inner.listItems(query),
+    getItem: (calendarUid, kind, uid) => inner.getItem(calendarUid, kind, uid),
+    createItem: (calendarUid, kind, ical) => inner.createItem(calendarUid, kind, ical),
+    updateItem: (calendarUid, kind, uid, ical, etag) => inner.updateItem(calendarUid, kind, uid, ical, etag),
+  };
 }
 
 /** A source over one account, or null when this account cannot serve one right now. */
@@ -60,7 +88,9 @@ export const BOARD_SOURCE_FACTORIES: Readonly<Partial<Record<BoardSourceType, Bo
   vtodo: (account, deps) => {
     const own = deps.backend(account);
     if (own === null) return null;
-    return createVtodoBoardSource(withoutDisabled(own, disabledIn(deps.config, account.id)), {
+    const known = deps.calendars?.(account) ?? null;
+    const base = known === null ? own : withKnownCalendars(own, known);
+    return createVtodoBoardSource(withoutDisabled(base, disabledIn(deps.config, account.id)), {
       id: account.id,
       identity: deps.identity,
     });

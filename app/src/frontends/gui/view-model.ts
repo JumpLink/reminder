@@ -109,7 +109,8 @@ export function toRowData(item: ReminderItem, list: { name: string; colour: stri
   };
 }
 
-function stateLabel(state: SyncState): string | null {
+/** What a sync state is called in a banner; null while a source is current or still trying. */
+export function stateLabel(state: SyncState): string | null {
   switch (state.kind) {
     case 'auth-rejected':
       return _('sign-in rejected');

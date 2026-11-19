@@ -11,7 +11,8 @@ export interface AccountLists {
   calendars: readonly CalendarInfo[];
 }
 
-function hostOf(config: ReminderConfig, account: string): string {
+/** The server an account's traffic goes to; `local` for EDS. The concurrency cap counts per host. */
+export function hostOf(config: ReminderConfig, account: string): string {
   const entry = config.accounts.find((a) => a.id === account);
   if (entry?.backend !== 'caldav' || !entry.caldav) return 'local';
   try {
