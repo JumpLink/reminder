@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-18 18:48+0100\n"
+"POT-Creation-Date: 2026-11-18 18:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/adaptive-pane.ts:46 src/adaptive-pane.ts:47
+msgid "Close"
+msgstr ""
 
 #: src/due-chip.ts:19
 msgid "Overdue"
@@ -31,4 +35,50 @@ msgstr ""
 
 #: src/due-chip.ts:25
 msgid "Later"
+msgstr ""
+
+#: src/swipe-row.ts:48
+msgid "Complete"
+msgstr ""
+
+#: src/swipe-row.ts:49
+msgid "Postpone"
+msgstr ""
+
+#: src/swipe-row.ts:288
+msgid "Open"
+msgstr ""
+
+#: src/task-row.ts:29
+msgid "High priority"
+msgstr ""
+
+#: src/task-row.ts:31
+msgid "Medium priority"
+msgstr ""
+
+#: src/task-row.ts:33
+msgid "Low priority"
+msgstr ""
+
+#: src/task-row.ts:61 src/task-row.ts:82 src/task-row.ts:150
+msgid "Mark as done"
+msgstr ""
+
+#: src/task-row.ts:82 src/task-row.ts:150
+msgid "Postpone to tomorrow"
+msgstr ""
+
+#: src/task-row.ts:148
+#, javascript-format
+msgid "Mark as not done: %s"
+msgstr ""
+
+#: src/task-row.ts:148
+#, javascript-format
+msgid "Mark as done: %s"
+msgstr ""
+
+#: src/task-row.ts:150
+msgid "Mark as not done"
 msgstr ""

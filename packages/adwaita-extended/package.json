@@ -7,7 +7,12 @@
   "description": "Reusable GTK4/libadwaita widgets that libadwaita itself does not ship, each with a story. Incubating in reminder; moves to gjsify unchanged. Knows nothing about the app that embeds it: never imports @reminder/* or @gjsify/pim.",
   "exports": {
     ".": "./src/index.ts",
-    "./due-state": "./src/due-state.ts"
+    "./due-state": "./src/due-state.ts",
+    "./size-class": "./src/size-class.ts",
+    "./source-names": "./src/source-names.ts",
+    "./priority-marks": "./src/priority-marks.ts",
+    "./swipe-rules": "./src/swipe-rules.ts",
+    "./adaptive-container": "./src/adaptive-container.ts"
   },
   "scripts": {
     "check": "gjsify tsc --noEmit --project tsconfig.json",

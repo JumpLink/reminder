@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-18 18:48+0100\n"
+"POT-Creation-Date: 2026-11-18 18:50+0100\n"
 "PO-Revision-Date: 2026-11-18 18:48+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/adaptive-pane.ts:46 src/adaptive-pane.ts:47
+msgid "Close"
+msgstr "Schließen"
 
 #: src/due-chip.ts:19
 msgid "Overdue"
@@ -32,3 +36,49 @@ msgstr "Bald"
 #: src/due-chip.ts:25
 msgid "Later"
 msgstr "Später"
+
+#: src/swipe-row.ts:48
+msgid "Complete"
+msgstr "Erledigen"
+
+#: src/swipe-row.ts:49
+msgid "Postpone"
+msgstr "Verschieben"
+
+#: src/swipe-row.ts:288
+msgid "Open"
+msgstr "Öffnen"
+
+#: src/task-row.ts:29
+msgid "High priority"
+msgstr "Hohe Priorität"
+
+#: src/task-row.ts:31
+msgid "Medium priority"
+msgstr "Mittlere Priorität"
+
+#: src/task-row.ts:33
+msgid "Low priority"
+msgstr "Niedrige Priorität"
+
+#: src/task-row.ts:61 src/task-row.ts:82 src/task-row.ts:150
+msgid "Mark as done"
+msgstr "Als erledigt markieren"
+
+#: src/task-row.ts:82 src/task-row.ts:150
+msgid "Postpone to tomorrow"
+msgstr "Auf morgen verschieben"
+
+#: src/task-row.ts:148
+#, javascript-format
+msgid "Mark as not done: %s"
+msgstr "Als nicht erledigt markieren: %s"
+
+#: src/task-row.ts:148
+#, javascript-format
+msgid "Mark as done: %s"
+msgstr "Als erledigt markieren: %s"
+
+#: src/task-row.ts:150
+msgid "Mark as not done"
+msgstr "Als nicht erledigt markieren"
