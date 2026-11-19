@@ -1,0 +1,22 @@
+{
+  "name": "@reminder/deck",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "Nextcloud Deck as a read-only BoardSource: boards, stacks as columns, cards with labels, assignees and due dates over the official REST API, board-level ETag change detection. Takes a plain options object; config and registry wiring live in the app.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@gjsify/http-client": "*",
+    "@reminder/core": "*"
+  }
+}

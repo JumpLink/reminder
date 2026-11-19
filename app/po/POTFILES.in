@@ -33,6 +33,13 @@
 ../packages/core/src/types.ts
 ../packages/core/src/update.ts
 ../packages/core/src/visibility.ts
+../packages/deck/src/deck-source.ts
+../packages/deck/src/index.ts
+../packages/http/src/client.ts
+../packages/http/src/errors.ts
+../packages/http/src/index.ts
+../packages/http/src/limiter.ts
+../packages/http/src/paginate.ts
 ../packages/pim/src/backend.ts
 ../packages/pim/src/caldav/backend.ts
 ../packages/pim/src/caldav/delta.ts

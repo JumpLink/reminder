@@ -32,6 +32,7 @@ import caldavDelta from './unit/caldav/delta.test.ts';
 import eds from './unit/eds/optional.test.ts';
 
 import httpClient from './unit/http/http-client.test.ts';
+import deck from './unit/deck/deck-source.test.ts';
 
 import dueState from './unit/widgets/due-state.test.ts';
 import sourceNames from './unit/widgets/source-names.test.ts';
@@ -80,6 +81,7 @@ run({
   caldavDelta,
   eds,
   httpClient,
+  deck,
   dueState,
   sourceNames,
   priorityMarks,
