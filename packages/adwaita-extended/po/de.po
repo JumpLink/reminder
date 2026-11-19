@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-19 17:18+0100\n"
+"POT-Creation-Date: 2026-11-19 17:11+0100\n"
 "PO-Revision-Date: 2026-11-18 18:48+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -20,6 +20,26 @@ msgstr ""
 #: src/adaptive-pane.ts:46 src/adaptive-pane.ts:47
 msgid "Close"
 msgstr "Schließen"
+
+#: src/board-card.ts:66 src/board-card.ts:134
+msgid "Read-only"
+msgstr "Schreibgeschützt"
+
+#: src/board-card.ts:133
+#, javascript-format
+msgid "Assigned to %s"
+msgstr "Zugewiesen an %s"
+
+#: src/board-column.ts:17
+#, javascript-format
+msgid "%d card"
+msgid_plural "%d cards"
+msgstr[0] "%d Karte"
+msgstr[1] "%d Karten"
+
+#: src/board-column.ts:37
+msgid "No cards"
+msgstr "Keine Karten"
 
 #: src/due-chip.ts:19
 msgid "Overdue"

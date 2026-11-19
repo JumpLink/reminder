@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-19 17:18+0100\n"
+"POT-Creation-Date: 2026-11-19 17:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,9 +16,30 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: src/adaptive-pane.ts:46 src/adaptive-pane.ts:47
 msgid "Close"
+msgstr ""
+
+#: src/board-card.ts:66 src/board-card.ts:134
+msgid "Read-only"
+msgstr ""
+
+#: src/board-card.ts:133
+#, javascript-format
+msgid "Assigned to %s"
+msgstr ""
+
+#: src/board-column.ts:17
+#, javascript-format
+msgid "%d card"
+msgid_plural "%d cards"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/board-column.ts:37
+msgid "No cards"
 msgstr ""
 
 #: src/due-chip.ts:19

@@ -5,6 +5,12 @@ import Gtk from '@girs/gtk-4.0';
 const CSS = `
 .gjsify-source-dot { border-radius: 50%; min-width: 8px; min-height: 8px; }
 .gjsify-source-dot.large { min-width: 14px; min-height: 14px; }
+.gjsify-board-column { background-color: alpha(currentColor, 0.05); border-radius: 12px; }
+.gjsify-board-card { padding: 0; }
+.gjsify-board-bar { min-width: 4px; border-radius: 6px 0 0 6px; }
+.gjsify-board-label { padding: 0 6px; border-radius: 99px; background-color: alpha(currentColor, 0.1); }
+.gjsify-board-avatar:not(:first-child) { margin-left: -6px; }
+.gjsify-board-avatar { border: 2px solid @card_bg_color; border-radius: 50%; }
 .gjsify-swipe-content { background-color: @view_bg_color; }
 .gjsify-swipe-backdrop.primary { background-color: @success_bg_color; color: @success_fg_color; }
 .gjsify-swipe-backdrop.secondary { background-color: @warning_bg_color; color: @warning_fg_color; }
