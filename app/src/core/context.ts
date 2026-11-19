@@ -14,6 +14,7 @@ import {
   chainSecretStores,
   ConfigError,
   createEnvSecretStore,
+  errorMessage,
   createMemoryCacheStore,
   createMultiBackend,
   fmt,
@@ -41,6 +42,8 @@ export interface Context {
   cache(): CacheStore;
   /** Environment first, then the Secret Service (docs/adr/0011), created on first use. */
   secrets(): SecretStore;
+  /** One account's own backend, when the context supplies them (demo mode, tests). */
+  accountBackend?(account: AccountConfig): CalendarBackend | undefined;
 }
 
 /** The file-system cache under `$XDG_CACHE_HOME/<cacheDirName>`. */
@@ -82,10 +85,32 @@ export async function resolveSecretPasswords(
 }
 
 /**
+ * Like `resolveSecretPasswords`, but one unreadable secret costs only its own account: the GUI
+ * shows the accounts that work. The CLI keeps the all-or-nothing version (docs/adr/0005).
+ */
+export async function resolveSecretPasswordsPerAccount(
+  config: ReminderConfig,
+  store: SecretStore,
+): Promise<{ passwords: Map<string, string>; failures: Map<string, string> }> {
+  const passwords = new Map<string, string>();
+  const failures = new Map<string, string>();
+  const named = config.accounts.length > 1;
+  for (const account of config.accounts) {
+    try {
+      const found = await resolveSecretPasswords({ ...config, accounts: [account] }, store);
+      for (const [id, value] of found) passwords.set(id, value);
+    } catch (err) {
+      failures.set(account.id, about(errorMessage(err), account, named));
+    }
+  }
+  return { passwords, failures };
+}
+
+/**
  * Name the account in a message only when there is more than one — the same rule as the target
  * prefix: it appears where there is something to tell apart.
  */
-function about(message: string, account: AccountConfig, named: boolean): string {
+export function about(message: string, account: AccountConfig, named: boolean): string {
   return named ? fmt(_('account "{account}": {message}'), { account: account.id, message }) : message;
 }
 

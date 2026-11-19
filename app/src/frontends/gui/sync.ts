@@ -6,20 +6,24 @@
 
 import { createCaldavDeltaReader } from '@gjsify/pim/caldav';
 import {
+  BackendUnavailableError,
   createCollectionSyncFetch,
+  createMultiBackend,
   createSyncService,
   encodeCollectionBody,
   errorMessage,
   withoutDisabled,
+  type BackendAccount,
   type CalendarBackend,
+  type CalendarInfo,
   type SyncFetch,
   type SyncService,
 } from '@reminder/core';
 
 import {
+  about,
   createAccountBackend,
-  createBackend,
-  resolveSecretPasswords,
+  resolveSecretPasswordsPerAccount,
   type Context,
 } from '../../core/context.ts';
 import { buildSyncSources, type AccountLists } from './sync-sources.ts';
@@ -35,6 +39,46 @@ export interface GuiSync {
   problems: string[];
 }
 
+/** Stands in for an account that could not be set up: no lists, and every write says why. */
+function unavailableBackend(reason: string): CalendarBackend {
+  const refuse = async (): Promise<never> => {
+    throw new BackendUnavailableError(reason);
+  };
+  return {
+    id: 'unavailable',
+    listCalendars: async () => [],
+    listItems: async () => [],
+    getItem: refuse,
+    createItem: refuse,
+    updateItem: refuse,
+  };
+}
+
+/**
+ * Hands out the listing made while setting the account up to the first caller, so the window does
+ * not ask the server for its calendars twice at start. Later calls are real.
+ */
+function primed(backend: CalendarBackend, initial: CalendarInfo[]): CalendarBackend {
+  let first: CalendarInfo[] | null = initial;
+  return {
+    ...backend,
+    id: backend.id,
+    async listCalendars(kind) {
+      if (first) {
+        const all = first;
+        first = null;
+        return kind ? all.filter((c) => c.kind === kind) : all;
+      }
+      return backend.listCalendars(kind);
+    },
+    listItems: (query) => backend.listItems(query),
+    getItem: (calendarUid, kind, uid) => backend.getItem(calendarUid, kind, uid),
+    createItem: (calendarUid, kind, ical) => backend.createItem(calendarUid, kind, ical),
+    updateItem: (calendarUid, kind, uid, ical, etag) =>
+      backend.updateItem(calendarUid, kind, uid, ical, etag),
+  };
+}
+
 export async function createGuiSync(
   context: Context,
   env: Record<string, string | undefined> = process.env,
@@ -42,31 +86,50 @@ export async function createGuiSync(
   const config = context.config();
   const problems: string[] = [];
   let passwords: ReadonlyMap<string, string> = new Map();
+  let failures: ReadonlyMap<string, string> = new Map();
   try {
-    passwords = await resolveSecretPasswords(config, context.secrets());
+    const resolved = await resolveSecretPasswordsPerAccount(config, context.secrets());
+    passwords = resolved.passwords;
+    failures = resolved.failures;
   } catch (err) {
     problems.push(errorMessage(err));
   }
 
-  let backend: CalendarBackend | null = null;
-  try {
-    backend = withoutDisabled(createBackend(config, env, passwords), config.disabled);
-  } catch (err) {
-    problems.push(errorMessage(err));
-  }
-
+  // One broken account does not take the others down (the CLI still fails whole, ADR 0005).
   const named = config.accounts.length > 1;
   const backends = new Map<string, CalendarBackend>();
   const lists: AccountLists[] = [];
+  const accounts: BackendAccount[] = [];
   for (const account of config.accounts) {
+    // Setup errors already name the account; a listing error does not yet.
+    let phase: 'setup' | 'listing' = 'setup';
     try {
-      const own = createAccountBackend(account, env, named, passwords);
-      backends.set(account.id, own);
-      lists.push({ account: account.id, calendars: await own.listCalendars('reminder') });
+      const failure = failures.get(account.id);
+      if (failure !== undefined) throw new Error(failure);
+      const own = context.accountBackend?.(account) ?? createAccountBackend(account, env, named, passwords);
+      phase = 'listing';
+      const calendars = await own.listCalendars();
+      const ready = primed(own, calendars);
+      backends.set(account.id, ready);
+      accounts.push({ id: account.id, backend: ready });
+      lists.push({ account: account.id, calendars });
     } catch (err) {
-      problems.push(errorMessage(err));
+      const raw = errorMessage(err);
+      const message = phase === 'listing' ? about(raw, account, named) : raw;
+      problems.push(message);
+      accounts.push({ id: account.id, backend: unavailableBackend(message) });
     }
   }
+
+  // With several accounts the multiplexer stays over ALL of them, so uids keep their prefix; a
+  // broken one is an empty stand-in rather than a hole.
+  const backend: CalendarBackend | null =
+    backends.size === 0
+      ? null
+      : withoutDisabled(
+          accounts.length > 1 ? createMultiBackend(accounts) : accounts[0].backend,
+          config.disabled,
+        );
 
   const cache = context.cache();
   const readers = new Map<string, ReturnType<typeof createCaldavDeltaReader>>();

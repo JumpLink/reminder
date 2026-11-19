@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 07:01+0100\n"
+"POT-Creation-Date: 2026-11-19 07:13+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -411,27 +411,27 @@ msgstr "{path} ist kein gültiges JSON: {message}"
 msgid "{path}: {message}"
 msgstr "{path}: {message}"
 
-#: src/core/context.ts:75
+#: src/core/context.ts:78
 msgid "no secret stored for \"{ref}\""
 msgstr "Für \"{ref}\" ist kein Geheimnis gespeichert"
 
-#: src/core/context.ts:78
+#: src/core/context.ts:81
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr "Geheimnis \"{ref}\" lässt sich nicht lesen: {reason}"
 
-#: src/core/context.ts:89
+#: src/core/context.ts:114
 msgid "account \"{account}\": {message}"
 msgstr "Konto „{account}“: {message}"
 
-#: src/core/context.ts:104
+#: src/core/context.ts:129
 msgid "backend \"caldav\" needs a caldav section"
 msgstr "Das Backend „caldav“ braucht einen caldav-Abschnitt"
 
-#: src/core/context.ts:109
+#: src/core/context.ts:134
 msgid "the passwordSecret has not been resolved yet"
 msgstr "Das passwordSecret wurde noch nicht aufgelöst"
 
-#: src/core/context.ts:113
+#: src/core/context.ts:138
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
 
@@ -665,8 +665,8 @@ msgstr "Es konnte kein Kalender-Backend eingerichtet werden."
 msgid "Calendar events and reminders from your existing calendars."
 msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
 
-#: src/frontends/gui/model.ts:136 src/frontends/gui/view-model.ts:96
-#: src/frontends/gui/views/tasks.ts:54 src/frontends/gui/views/tasks.ts:121
+#: src/frontends/gui/model.ts:139 src/frontends/gui/view-model.ts:103
+#: src/frontends/gui/views/tasks.ts:55 src/frontends/gui/views/tasks.ts:129
 msgid "Untitled"
 msgstr "Ohne Titel"
 
@@ -678,47 +678,47 @@ msgstr "Kalender"
 msgid "Task lists"
 msgstr "Aufgabenlisten"
 
-#: src/frontends/gui/view-model.ts:74
+#: src/frontends/gui/view-model.ts:81
 msgid "Overdue"
 msgstr "Überfällig"
 
-#: src/frontends/gui/view-model.ts:76
+#: src/frontends/gui/view-model.ts:83
 msgid "Today"
 msgstr "Heute"
 
-#: src/frontends/gui/view-model.ts:78
+#: src/frontends/gui/view-model.ts:85
 msgid "Upcoming"
 msgstr "Demnächst"
 
-#: src/frontends/gui/view-model.ts:80
+#: src/frontends/gui/view-model.ts:87
 msgid "Later"
 msgstr "Später"
 
-#: src/frontends/gui/view-model.ts:82
+#: src/frontends/gui/view-model.ts:89
 msgid "No date"
 msgstr "Ohne Datum"
 
-#: src/frontends/gui/view-model.ts:108
+#: src/frontends/gui/view-model.ts:115
 msgid "sign-in rejected"
 msgstr "Anmeldung abgelehnt"
 
-#: src/frontends/gui/view-model.ts:110
+#: src/frontends/gui/view-model.ts:117
 msgid "no access"
 msgstr "kein Zugriff"
 
-#: src/frontends/gui/view-model.ts:112
+#: src/frontends/gui/view-model.ts:119
 msgid "rate limited"
 msgstr "Anfragen begrenzt"
 
-#: src/frontends/gui/view-model.ts:114
+#: src/frontends/gui/view-model.ts:121
 msgid "cannot be read"
 msgstr "nicht lesbar"
 
-#: src/frontends/gui/view-model.ts:116
+#: src/frontends/gui/view-model.ts:123
 msgid "could not be updated"
 msgstr "konnte nicht aktualisiert werden"
 
-#: src/frontends/gui/view-model.ts:132
+#: src/frontends/gui/view-model.ts:139
 msgid "Not up to date — {sources}"
 msgstr "Nicht aktuell — {sources}"
 
@@ -747,49 +747,49 @@ msgstr "Abgebrochen"
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: src/frontends/gui/views/tasks.ts:60
+#: src/frontends/gui/views/tasks.ts:66
 msgid "List"
 msgstr "Liste"
 
-#: src/frontends/gui/views/tasks.ts:66
+#: src/frontends/gui/views/tasks.ts:73
 msgid "Due"
 msgstr "Fällig"
 
-#: src/frontends/gui/views/tasks.ts:68
+#: src/frontends/gui/views/tasks.ts:75
 msgid "Status"
 msgstr "Status"
 
-#: src/frontends/gui/views/tasks.ts:87 src/frontends/gui/views/tasks.ts:177
+#: src/frontends/gui/views/tasks.ts:94 src/frontends/gui/views/tasks.ts:182
 #: src/frontends/gui/window.ts:71
 msgid "Tasks"
 msgstr "Aufgaben"
 
-#: src/frontends/gui/views/tasks.ts:88 src/frontends/gui/views/tasks.ts:179
+#: src/frontends/gui/views/tasks.ts:95 src/frontends/gui/views/tasks.ts:184
 #: src/frontends/gui/window.ts:72
 msgid "Your reminders will appear here."
 msgstr "Deine Erinnerungen erscheinen hier."
 
-#: src/frontends/gui/views/tasks.ts:113
+#: src/frontends/gui/views/tasks.ts:120
 msgid "This task was changed elsewhere. Reloading it."
 msgstr "Diese Aufgabe wurde anderswo geändert. Sie wird neu geladen."
 
-#: src/frontends/gui/views/tasks.ts:114
+#: src/frontends/gui/views/tasks.ts:121
 msgid "Changing this list is not allowed."
 msgstr "Diese Liste darf nicht geändert werden."
 
-#: src/frontends/gui/views/tasks.ts:115
+#: src/frontends/gui/views/tasks.ts:123
 msgid "Could not save: {message}"
 msgstr "Speichern fehlgeschlagen: {message}"
 
-#: src/frontends/gui/views/tasks.ts:169
+#: src/frontends/gui/views/tasks.ts:174
 msgid "Completed ({count})"
 msgstr "Erledigt ({count})"
 
-#: src/frontends/gui/views/tasks.ts:179
+#: src/frontends/gui/views/tasks.ts:184
 msgid "Every list is hidden."
 msgstr "Alle Listen sind ausgeblendet."
 
-#: src/frontends/gui/views/tasks.ts:199
+#: src/frontends/gui/views/tasks.ts:204
 msgid "Cannot load tasks"
 msgstr "Aufgaben konnten nicht geladen werden"
 
