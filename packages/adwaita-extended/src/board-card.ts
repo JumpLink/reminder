@@ -45,13 +45,13 @@ export class BoardCard extends Gtk.Button {
 
   private cardId = '';
   private isReadOnly = false;
-  private readonly bar = new Gtk.Box({ vexpand: true });
+  private readonly bar = new Gtk.Box();
   private readonly title = new Gtk.Label({ xalign: 0, wrap: true, lines: 3, ellipsize: ELLIPSIZE_END });
   private readonly badge = new SourceBadge();
   private readonly labels = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 4 });
   private readonly chip = new DueChip();
   private readonly lock = new Gtk.Image({ iconName: 'changes-prevent-symbolic', pixelSize: 12 });
-  private readonly avatars = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: -6, halign: Gtk.Align.END, hexpand: true });
+  private readonly avatars = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0, halign: Gtk.Align.END, hexpand: true });
   private readonly tint: Tint;
 
   constructor() {

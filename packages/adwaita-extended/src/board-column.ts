@@ -33,12 +33,12 @@ export class BoardColumn extends Gtk.Box {
   private heading = '';
   private readonly titleLabel = new Gtk.Label({ xalign: 0, hexpand: true, ellipsize: ELLIPSIZE_END, singleLineMode: true });
   private readonly count = new Gtk.Label({ valign: Gtk.Align.CENTER });
-  private readonly list = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 8 });
+  private readonly list = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 8, valign: Gtk.Align.START });
   private readonly empty = new Gtk.Label({ label: _('No cards'), vexpand: false });
   private cardWidgets: BoardCard[] = [];
 
   constructor() {
-    super({ orientation: Gtk.Orientation.VERTICAL, spacing: 0, vexpand: true });
+    super({ orientation: Gtk.Orientation.VERTICAL, spacing: 0, vexpand: true, hexpand: true });
     ensureStyles();
     this.add_css_class('gjsify-board-column');
     this.titleLabel.add_css_class('heading');
