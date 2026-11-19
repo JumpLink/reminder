@@ -209,6 +209,26 @@ export default async () => {
       });
     });
 
+    await it('pages by page number when the offset counts pages', async () => {
+      await withServer(async (rest) => {
+        rest.on('/api/pages', (req, res) => {
+          const q = new URLSearchParams(req.query);
+          const page = Number(q.get('offset'));
+          const size = Number(q.get('pageSize'));
+          const all = [1, 2, 3, 4, 5];
+          json(res, 200, { items: all.slice((page - 1) * size, page * size) });
+        });
+        const items = (body: unknown) => (body as { items: number[] }).items;
+        const got = await paginateAll<number>(basic(rest), 'pages', {
+          style: 'offset',
+          offsetUnit: 'pages',
+          pageSize: 2,
+          items,
+        });
+        expect(got.join()).toBe('1,2,3,4,5');
+      });
+    });
+
     await it('limits concurrent requests per host', async () => {
       await withServer(async (rest) => {
         let active = 0;

@@ -24,8 +24,8 @@ const cards = await paginateAll<Card>(client, 'cards', { style: 'offset', pageSi
   `UnauthorizedError` (a `BackendAuthError`), `ForbiddenError`, `NotFoundError`,
   `RateLimitedError` (`retryAfterMs` from `Retry-After`), `ServerError`, `TimeoutError`,
   `NetworkError`, `ResponseFormatError`. `@reminder/core`'s `classifyFetchError` reads them as is.
-- `paginate` / `paginateAll`: `Link: rel="next"` (never leaves the origin) and offset/pageSize,
-  with a page cap.
+- `paginate` / `paginateAll`: `Link: rel="next"` (never leaves the origin) and offset/pageSize
+  (`offsetUnit: 'pages'` when the offset is a page number, as in OpenProject), with a page cap.
 - `HostLimiter`: per-host concurrency (default 2) and optional minimum interval.
 - Credentials never appear in messages, `toJSON`, or URLs; a request off the base origin is refused.
 

@@ -29,6 +29,11 @@ export interface OffsetPagination<T> extends PageOptions<T> {
   readonly offsetParam?: string;
   /** Default `pageSize`. */
   readonly limitParam?: string;
+  /**
+   * What the offset parameter counts. `items` (default): elements skipped, starting at 0.
+   * `pages`: a page number starting at 1 — OpenProject's `offset` works this way.
+   */
+  readonly offsetUnit?: 'items' | 'pages';
 }
 
 export interface LinkRef {
@@ -82,7 +87,8 @@ export async function* paginate<T>(
 
   const offsetParam = options.offsetParam ?? 'offset';
   const limitParam = options.limitParam ?? 'pageSize';
-  let offset = 0;
+  const byPage = options.offsetUnit === 'pages';
+  let offset = byPage ? 1 : 0;
   for (let page = 0; ; page += 1) {
     if (page >= maxPages) throw new ResponseFormatError(`more than ${maxPages} pages`, { url: client.origin });
     const query = { ...options.query, [limitParam]: options.pageSize, [offsetParam]: offset };
@@ -91,7 +97,7 @@ export async function* paginate<T>(
     const batch = items(result.data);
     if (batch.length > 0) yield batch;
     if (batch.length < options.pageSize) return;
-    offset += batch.length;
+    offset += byPage ? 1 : batch.length;
   }
 }
 
