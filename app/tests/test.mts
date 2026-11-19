@@ -25,6 +25,10 @@ import caldavDelta from './unit/caldav/delta.test.ts';
 import eds from './unit/eds/optional.test.ts';
 
 import dueState from './unit/widgets/due-state.test.ts';
+import sourceNames from './unit/widgets/source-names.test.ts';
+import priorityMarks from './unit/widgets/priority-marks.test.ts';
+import swipeRules from './unit/widgets/swipe-rules.test.ts';
+import adaptiveContainer from './unit/widgets/adaptive-container.test.ts';
 
 import sizeClasses from './unit/gui/size-classes.test.ts';
 
@@ -53,6 +57,10 @@ run({
   caldavDelta,
   eds,
   dueState,
+  sourceNames,
+  priorityMarks,
+  swipeRules,
+  adaptiveContainer,
   sizeClasses,
   mcpTools,
   i18n,
