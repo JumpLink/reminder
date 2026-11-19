@@ -249,6 +249,8 @@ export default async () => {
       expect(classifyFetchError(new BackendError('x', 'http', 429)).kind).toBe('rate-limited');
       expect(classifyFetchError(new SyncHttpError('x', 503, 5000)).retryAfterMs).toBe(5000);
       expect(classifyFetchError(new SyncHttpError('x', 503, 5000)).kind).toBe('rate-limited');
+      const shaped = Object.assign(new BackendError('x', 'http', 429), { retryAfterMs: 4000 });
+      expect(classifyFetchError(shaped).retryAfterMs).toBe(4000);
       expect(classifyFetchError(new BackendError('x', 'http', 503)).kind).toBe('stale');
       expect(classifyFetchError(new BackendError('timeout')).kind).toBe('stale');
       expect(classifyFetchError(new Error('boom')).kind).toBe('stale');
