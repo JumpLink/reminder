@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 07:13+0100\n"
+"POT-Creation-Date: 2026-11-19 07:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,28 +380,32 @@ msgstr ""
 msgid "{path}: {message}"
 msgstr ""
 
-#: src/core/context.ts:78
+#: src/core/context.ts:79
 msgid "no secret stored for \"{ref}\""
 msgstr ""
 
-#: src/core/context.ts:81
+#: src/core/context.ts:82
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr ""
 
-#: src/core/context.ts:114
+#: src/core/context.ts:115
 msgid "account \"{account}\": {message}"
 msgstr ""
 
-#: src/core/context.ts:129
+#: src/core/context.ts:130
 msgid "backend \"caldav\" needs a caldav section"
 msgstr ""
 
-#: src/core/context.ts:134
+#: src/core/context.ts:135
 msgid "the passwordSecret has not been resolved yet"
 msgstr ""
 
-#: src/core/context.ts:138
+#: src/core/context.ts:139
 msgid "export the CalDAV password as {name}"
+msgstr ""
+
+#: src/core/demo/index.ts:31
+msgid "Demo mode — invented data, nothing is saved."
 msgstr ""
 
 #. TRANSLATORS: Not shown. The language code of THIS catalogue ("de" in de.po); it selects the
@@ -618,11 +622,11 @@ msgstr ""
 msgid "Mark a done reminder as open again"
 msgstr ""
 
-#: src/frontends/gui/main.ts:38
+#: src/frontends/gui/main.ts:39
 msgid "No calendar backend could be set up."
 msgstr ""
 
-#: src/frontends/gui/main.ts:62
+#: src/frontends/gui/main.ts:68
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
@@ -721,12 +725,12 @@ msgid "Status"
 msgstr ""
 
 #: src/frontends/gui/views/tasks.ts:94 src/frontends/gui/views/tasks.ts:182
-#: src/frontends/gui/window.ts:71
+#: src/frontends/gui/window.ts:73
 msgid "Tasks"
 msgstr ""
 
 #: src/frontends/gui/views/tasks.ts:95 src/frontends/gui/views/tasks.ts:184
-#: src/frontends/gui/window.ts:72
+#: src/frontends/gui/window.ts:74
 msgid "Your reminders will appear here."
 msgstr ""
 
@@ -754,46 +758,50 @@ msgstr ""
 msgid "Cannot load tasks"
 msgstr ""
 
-#: src/frontends/gui/window.ts:66
+#: src/frontends/gui/window.ts:68
 msgid "Calendar"
 msgstr ""
 
-#: src/frontends/gui/window.ts:67
+#: src/frontends/gui/window.ts:69
 msgid "Events from your calendars will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:76
+#: src/frontends/gui/window.ts:78
 msgid "Board"
 msgstr ""
 
-#: src/frontends/gui/window.ts:77
+#: src/frontends/gui/window.ts:79
 msgid "Your reminders as cards will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:112 src/frontends/gui/window.ts:205
+#: src/frontends/gui/window.ts:117 src/frontends/gui/window.ts:210
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/frontends/gui/window.ts:113
+#: src/frontends/gui/window.ts:118
 msgid "About reminder"
 msgstr ""
 
-#: src/frontends/gui/window.ts:114
+#: src/frontends/gui/window.ts:119
 msgid "Main Menu"
 msgstr ""
 
-#: src/frontends/gui/window.ts:200
+#: src/frontends/gui/window.ts:205
 msgid "General"
 msgstr ""
 
-#: src/frontends/gui/window.ts:204
+#: src/frontends/gui/window.ts:209
 msgid "Refresh"
 msgstr ""
 
-#: src/frontends/gui/window.ts:206
+#: src/frontends/gui/window.ts:211
 msgid "Quit"
 msgstr ""
 
 #: src/index.ts:44
 msgid "Give a command — `reminder --help` lists them."
+msgstr ""
+
+#: src/index.ts:49
+msgid "Use invented data: no network, no configuration, nothing saved"
 msgstr ""

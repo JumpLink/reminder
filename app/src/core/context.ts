@@ -33,6 +33,7 @@ import { createEdsBackend } from '@gjsify/pim/eds';
 import { createLibsecretStore } from '@reminder/secrets-libsecret';
 
 import { loadConfig } from './config.ts';
+import { createDemoContext, demoActive } from './demo/index.ts';
 import { IDENTITY } from './identity.ts';
 
 export interface Context {
@@ -174,6 +175,7 @@ export function createBackend(
 }
 
 export function createContext(): Context {
+  if (demoActive()) return createDemoContext();
   let config: ReminderConfig | null = null;
   let backend: CalendarBackend | null = null;
   let cache: CacheStore | null = null;

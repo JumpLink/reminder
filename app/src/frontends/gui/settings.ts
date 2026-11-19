@@ -62,3 +62,16 @@ export function createGuiSettings(path: string = settingsPath()): GuiSettings {
     },
   };
 }
+
+/** Demo mode: the choices hold for this run only and no file is read or written. */
+export function createMemorySettings(): GuiSettings {
+  const hidden = new Set<string>();
+  return {
+    hidden: () => new Set(hidden),
+    setHidden(target, value) {
+      if (value) hidden.add(target);
+      else hidden.delete(target);
+      return new Set(hidden);
+    },
+  };
+}

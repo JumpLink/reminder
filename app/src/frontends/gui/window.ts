@@ -13,6 +13,8 @@ import { createSwitcherShell } from '@gjsify/adwaita-app';
 
 import { _, type SyncService } from '@reminder/core';
 
+import { demoNotice } from '../../core/demo/index.ts';
+
 import {
   APP_NAME,
   BREAKPOINT_CONDITIONS,
@@ -57,7 +59,7 @@ export class MainWindow extends Adw.ApplicationWindow {
   private settings: GuiSettings | null = null;
   private hidden: ReadonlySet<string> = new Set();
 
-  constructor(app: Adw.Application, hooks: { view?: string; size?: [number, number] } = {}) {
+  constructor(app: Adw.Application, hooks: { view?: string; size?: [number, number]; demo?: boolean } = {}) {
     super({ application: app, title: APP_NAME });
     if (hooks.size) this.set_default_size(hooks.size[0], hooks.size[1]);
 
@@ -94,6 +96,9 @@ export class MainWindow extends Adw.ApplicationWindow {
       })),
     });
     this.stack = shell.stack;
+    if (hooks.demo) {
+      shell.toolbarView.add_top_bar(new Adw.Banner({ title: demoNotice(), revealed: true }));
+    }
     this.toasts.set_child(shell.widget);
     this.overview = createOverview(this.toasts, (target, visible) => this.setSourceVisible(target, visible));
     this._host.set_child(this.overview.widget);

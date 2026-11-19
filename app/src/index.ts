@@ -43,6 +43,14 @@ const parseArgs = () =>
     .command(guiCommand)
     .demandCommand(1, _('Give a command — `reminder --help` lists them.'))
     // An unmatched command would leave the GJS main loop running forever.
+    .option('demo', {
+      type: 'boolean',
+      default: false,
+      describe: _('Use invented data: no network, no configuration, nothing saved'),
+    })
+    .middleware((argv) => {
+      if (argv.demo) process.env.REMINDER_DEMO = '1';
+    })
     .strictCommands()
     .scriptName(IDENTITY.binaryName)
     // Pin the locale to the catalogue's language: yargs otherwise translates its own chrome from

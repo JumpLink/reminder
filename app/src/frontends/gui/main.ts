@@ -13,10 +13,11 @@ import { AdwaitaApp, readAppDevHooks, runApplication } from '@gjsify/adwaita-app
 import { _, errorMessage } from '@reminder/core';
 
 import { createContext } from '../../core/context.ts';
+import { demoActive } from '../../core/demo/index.ts';
 
 import { APP_ID, APP_NAME, APP_VERSION, DEV_HOOK_PREFIX, SIZE_HOOK } from './constants.ts';
 import { createTasksModel } from './model.ts';
-import { createGuiSettings } from './settings.ts';
+import { createGuiSettings, createMemorySettings } from './settings.ts';
 import { createGuiSync } from './sync.ts';
 import { MainWindow } from './window.ts';
 
@@ -39,7 +40,12 @@ async function startServices(window: MainWindow): Promise<void> {
       return;
     }
     const model = createTasksModel({ config, backend: sync.backend, service: sync.service });
-    window.attach({ model, settings: createGuiSettings(), service: sync.service, problems: sync.problems });
+    window.attach({
+      model,
+      settings: demoActive() ? createMemorySettings() : createGuiSettings(),
+      service: sync.service,
+      problems: sync.problems,
+    });
     await model.load();
     await sync.service.start();
   } catch (err) {
@@ -62,7 +68,7 @@ export async function runGui(): Promise<number> {
       comments: _('Calendar events and reminders from your existing calendars.'),
     },
     createWindow: (app) => {
-      const window = new MainWindow(app, { view: hooks.view, size: readSize() });
+      const window = new MainWindow(app, { view: hooks.view, size: readSize(), demo: demoActive() });
       void startServices(window);
       return window;
     },
