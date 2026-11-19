@@ -10,9 +10,14 @@ import Gtk from '@girs/gtk-4.0';
 import system from 'system';
 import { AdwaitaApp, readAppDevHooks, runApplication } from '@gjsify/adwaita-app';
 
-import { _ } from '@reminder/core';
+import { _, errorMessage } from '@reminder/core';
+
+import { createContext } from '../../core/context.ts';
 
 import { APP_ID, APP_NAME, APP_VERSION, DEV_HOOK_PREFIX, SIZE_HOOK } from './constants.ts';
+import { createTasksModel } from './model.ts';
+import { createGuiSettings } from './settings.ts';
+import { createGuiSync } from './sync.ts';
 import { MainWindow } from './window.ts';
 
 // Pin GTK 4 before libadwaita pulls it in; keep the import referenced.
@@ -21,6 +26,25 @@ void Gtk;
 function readSize(): [number, number] | undefined {
   const [w, h] = (process.env[SIZE_HOOK] ?? '').split(/\s+/).map(Number);
   return w > 0 && h > 0 ? [w, h] : undefined;
+}
+
+/** Config, secrets, sync and model — after the window exists, so a slow server never delays it. */
+async function startServices(window: MainWindow): Promise<void> {
+  try {
+    const context = createContext();
+    const config = context.config();
+    const sync = await createGuiSync(context);
+    if (sync.backend === null) {
+      window.showError(sync.problems.join('\n') || _('No calendar backend could be set up.'));
+      return;
+    }
+    const model = createTasksModel({ config, backend: sync.backend, service: sync.service });
+    window.attach({ model, settings: createGuiSettings(), service: sync.service, problems: sync.problems });
+    await model.load();
+    await sync.service.start();
+  } catch (err) {
+    window.showError(errorMessage(err));
+  }
 }
 
 export async function runGui(): Promise<number> {
@@ -37,7 +61,11 @@ export async function runGui(): Promise<number> {
       license: 'AGPL-3.0-or-later',
       comments: _('Calendar events and reminders from your existing calendars.'),
     },
-    createWindow: (app) => new MainWindow(app, { view: hooks.view, size: readSize() }),
+    createWindow: (app) => {
+      const window = new MainWindow(app, { view: hooks.view, size: readSize() });
+      void startServices(window);
+      return window;
+    },
   });
   // `runAdwaitaApp` forwards `gui` (the yargs subcommand) as an argument, which GApplication
   // reads as a file to open and refuses; only the program name goes in.

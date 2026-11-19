@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 21:11+0100\n"
+"POT-Creation-Date: 2026-11-19 07:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -307,7 +307,7 @@ msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr ""
 
 #: ../packages/pim/src/caldav/backend.ts:87
-#: ../packages/pim/src/caldav/delta.ts:131
+#: ../packages/pim/src/caldav/delta.ts:134
 msgid "no calendar \"{uid}\""
 msgstr ""
 
@@ -343,11 +343,11 @@ msgstr ""
 msgid "{label}: the server rejected the credentials (401)"
 msgstr ""
 
-#: ../packages/pim/src/caldav/errors.ts:18
+#: ../packages/pim/src/caldav/errors.ts:19
 msgid "{label}: {method} failed with {status}"
 msgstr ""
 
-#: ../packages/pim/src/caldav/errors.ts:23
+#: ../packages/pim/src/caldav/errors.ts:24
 msgid "{label}: {message}"
 msgstr ""
 
@@ -619,50 +619,178 @@ msgid "Mark a done reminder as open again"
 msgstr ""
 
 #: src/frontends/gui/main.ts:38
+msgid "No calendar backend could be set up."
+msgstr ""
+
+#: src/frontends/gui/main.ts:62
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
-#: src/frontends/gui/window.ts:51
-msgid "Calendar"
+#: src/frontends/gui/model.ts:136 src/frontends/gui/view-model.ts:96
+#: src/frontends/gui/views/tasks.ts:54 src/frontends/gui/views/tasks.ts:121
+msgid "Untitled"
 msgstr ""
 
-#: src/frontends/gui/window.ts:52
-msgid "Events from your calendars will appear here."
+#: src/frontends/gui/view-model.ts:57
+msgid "Calendars"
 msgstr ""
 
-#: src/frontends/gui/window.ts:56
+#: src/frontends/gui/view-model.ts:58
+msgid "Task lists"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:74
+msgid "Overdue"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:76
+msgid "Today"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:78
+msgid "Upcoming"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:80
+msgid "Later"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:82
+msgid "No date"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:108
+msgid "sign-in rejected"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:110
+msgid "no access"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:112
+msgid "rate limited"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:114
+msgid "cannot be read"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:116
+msgid "could not be updated"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:132
+msgid "Not up to date — {sources}"
+msgstr ""
+
+#: src/frontends/gui/views/overview.ts:60
+#: src/frontends/gui/views/overview.ts:75
+msgid "Sources"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:38
+msgid "Open"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:39
+msgid "In progress"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:40
+msgid "Completed"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:41
+msgid "Cancelled"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:42
+msgid "Unknown"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:60
+msgid "List"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:66
+msgid "Due"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:68
+msgid "Status"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:87 src/frontends/gui/views/tasks.ts:177
+#: src/frontends/gui/window.ts:71
 msgid "Tasks"
 msgstr ""
 
-#: src/frontends/gui/window.ts:57
+#: src/frontends/gui/views/tasks.ts:88 src/frontends/gui/views/tasks.ts:179
+#: src/frontends/gui/window.ts:72
 msgid "Your reminders will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:61
+#: src/frontends/gui/views/tasks.ts:113
+msgid "This task was changed elsewhere. Reloading it."
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:114
+msgid "Changing this list is not allowed."
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:115
+msgid "Could not save: {message}"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:169
+msgid "Completed ({count})"
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:179
+msgid "Every list is hidden."
+msgstr ""
+
+#: src/frontends/gui/views/tasks.ts:199
+msgid "Cannot load tasks"
+msgstr ""
+
+#: src/frontends/gui/window.ts:66
+msgid "Calendar"
+msgstr ""
+
+#: src/frontends/gui/window.ts:67
+msgid "Events from your calendars will appear here."
+msgstr ""
+
+#: src/frontends/gui/window.ts:76
 msgid "Board"
 msgstr ""
 
-#: src/frontends/gui/window.ts:62
+#: src/frontends/gui/window.ts:77
 msgid "Your reminders as cards will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:89 src/frontends/gui/window.ts:147
+#: src/frontends/gui/window.ts:112 src/frontends/gui/window.ts:205
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/frontends/gui/window.ts:90
+#: src/frontends/gui/window.ts:113
 msgid "About reminder"
 msgstr ""
 
-#: src/frontends/gui/window.ts:91
+#: src/frontends/gui/window.ts:114
 msgid "Main Menu"
 msgstr ""
 
-#: src/frontends/gui/window.ts:143
+#: src/frontends/gui/window.ts:200
 msgid "General"
 msgstr ""
 
-#: src/frontends/gui/window.ts:148
+#: src/frontends/gui/window.ts:204
+msgid "Refresh"
+msgstr ""
+
+#: src/frontends/gui/window.ts:206
 msgid "Quit"
 msgstr ""
 
