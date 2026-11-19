@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-19 17:11+0100\n"
+"POT-Creation-Date: 2026-11-19 19:57+0100\n"
 "PO-Revision-Date: 2026-11-18 18:48+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -56,6 +56,11 @@ msgstr "Bald"
 #: src/due-chip.ts:25
 msgid "Later"
 msgstr "Später"
+
+#: src/filter-chip.ts:48
+#, javascript-format
+msgid "Remove filter %s"
+msgstr "Filter %s entfernen"
 
 #: src/swipe-row.ts:49
 msgid "Complete"
