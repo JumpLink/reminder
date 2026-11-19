@@ -117,9 +117,5 @@ export async function runGui(): Promise<number> {
   // `runAdwaitaApp` forwards `gui` (the yargs subcommand) as an argument, which GApplication
   // reads as a file to open and refuses; only the program name goes in.
   const done = runApplication(app, [system.programInvocationName]);
-  // Run inside the MainLoop that src/index.ts already iterates, `runAsync` registers the app but
-  // never emits `activate` (measured: `startup` fires, no window). Activate it by hand once.
-  // gjsify gap: report upstream, drop this when `runAdwaitaApp` activates under a running loop.
-  setTimeout(() => app.activate(), 0);
   return done;
 }

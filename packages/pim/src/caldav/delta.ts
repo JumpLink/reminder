@@ -10,7 +10,7 @@
  * one that does not parse is no marker, and the read is a full one.
  */
 
-import { DavClient, DavError, basicAuth, type Collection, type DavObject, type FetchLike } from '@gjsify/dav';
+import { DavClient, DavSyncTokenError, basicAuth, type Collection, type DavObject, type FetchLike } from '@gjsify/dav';
 
 import { BackendError } from '../errors.ts';
 import { _, fmt } from '../i18n.ts';
@@ -20,8 +20,6 @@ import { davError } from './errors.ts';
 const COMPONENT: Record<ItemKind, string> = { event: 'VEVENT', reminder: 'VTODO' };
 /** Multiget URLs per request, to keep request bodies bounded on large calendars. */
 const MULTIGET_CHUNK = 50;
-/** RFC 6578 §3.2: a token the server no longer knows is answered with 403 or 409 (some send 507). */
-const TOKEN_REJECTED = new Set([403, 409, 507]);
 
 export interface CaldavDeltaOptions {
   /** Server root or any URL the user knows; RFC 6764 discovery finds the calendar home once. */
@@ -102,12 +100,11 @@ export function createCaldavDeltaReader(options: CaldavDeltaOptions): CaldavDelt
     items: CollectionItem[],
     now: Marker,
   ): Promise<CollectionDelta> {
-    // gjsify gap: @gjsify/dav gives no typed "token rejected" error; the status is all there is.
     let result;
     try {
       result = await dav.sync(c.url, before.syncToken);
     } catch (err) {
-      if (err instanceof DavError && TOKEN_REJECTED.has(err.status)) return full(c, kind, now);
+      if (err instanceof DavSyncTokenError) return full(c, kind, now);
       throw err;
     }
     const gone = new Set(result.deleted);

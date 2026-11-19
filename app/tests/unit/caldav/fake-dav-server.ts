@@ -24,6 +24,8 @@ export interface FakeDav {
   remove(path: string): void;
   /** From now on every sync token the server handed out is answered with 403 valid-sync-token. */
   expireTokens(): void;
+  /** From now on every authenticated request is answered with this status and Retry-After header. */
+  throttle(status: number, retryAfter: string): void;
   close(): Promise<void>;
 }
 
@@ -59,6 +61,7 @@ export async function startFakeDav(options: {
   // Collection state: one counter, a change log, and the ctag / sync token derived from it.
   let rev = 0;
   let tokensExpired = false;
+  let throttled: { status: number; retryAfter: string } | null = null;
   const log: { rev: number; path: string; deleted: boolean }[] = [];
   const touch = (path: string, deleted: boolean) => log.push({ rev: ++rev, path, deleted });
   const versionProps = () =>
@@ -86,6 +89,7 @@ export async function startFakeDav(options: {
       });
       if (req.headers.authorization !== expected)
         return send(res, 401, '', { 'WWW-Authenticate': 'Basic realm="x"' });
+      if (throttled) return send(res, throttled.status, '', { 'Retry-After': throttled.retryAfter });
 
       if (method === 'PROPFIND') {
         if (path === '/.well-known/caldav')
@@ -199,6 +203,9 @@ export async function startFakeDav(options: {
     },
     expireTokens() {
       tokensExpired = true;
+    },
+    throttle(status, retryAfter) {
+      throttled = { status, retryAfter };
     },
     close: () => new Promise<void>((resolve) => server.close(() => resolve())),
   };

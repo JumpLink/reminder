@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@gjsify/unit';
 import {
   BackendError,
+  BackendHttpError,
   classifyFetchError,
   createCollectionSyncFetch,
   createMemoryCacheStore,
@@ -166,6 +167,49 @@ export default async () => {
         expect((err as BackendError).domain).toBe('http');
         expect((err as BackendError).code).toBe(401);
         expect(classifyFetchError(err).kind).toBe('auth-rejected');
+      });
+    });
+
+    await it('carries the server Retry-After into a rate-limited outcome', async () => {
+      await withServer('token', async (dav) => {
+        dav.throttle(429, '7');
+        let err: unknown = null;
+        try {
+          await reader(dav).read(events(dav), 'event', null);
+        } catch (e) {
+          err = e;
+        }
+        expect(err instanceof BackendHttpError).toBe(true);
+        expect((err as BackendHttpError).code).toBe(429);
+        expect((err as BackendHttpError).retryAfterMs).toBe(7000);
+        const outcome = classifyFetchError(err);
+        expect(outcome.kind).toBe('rate-limited');
+        expect(outcome.retryAfterMs).toBe(7000);
+      });
+    });
+
+    await it('classifies a 503 with Retry-After as rate-limited, and one without as stale', async () => {
+      await withServer('token', async (dav) => {
+        dav.throttle(503, '3');
+        let err: unknown = null;
+        try {
+          await reader(dav).read(events(dav), 'event', null);
+        } catch (e) {
+          err = e;
+        }
+        expect(classifyFetchError(err).kind).toBe('rate-limited');
+        expect(classifyFetchError(err).retryAfterMs).toBe(3000);
+      });
+      await withServer('token', async (dav) => {
+        dav.throttle(503, '');
+        let err: unknown = null;
+        try {
+          await reader(dav).read(events(dav), 'event', null);
+        } catch (e) {
+          err = e;
+        }
+        expect((err as BackendHttpError).retryAfterMs).toBe(undefined);
+        expect(classifyFetchError(err).kind).toBe('stale');
       });
     });
 

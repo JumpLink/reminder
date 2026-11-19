@@ -25,6 +25,16 @@ export class BackendError extends PimError {
   }
 }
 
+/** An HTTP answer that is not success; `retryAfterMs` is the server's Retry-After (429, 503) when it sent one. */
+export class BackendHttpError extends BackendError {
+  readonly retryAfterMs: number | undefined;
+
+  constructor(message: string, status: number, retryAfterMs?: number) {
+    super(message, 'http', status);
+    this.retryAfterMs = retryAfterMs;
+  }
+}
+
 /** The server rejected the credentials (HTTP 401). Retrying with the same credentials cannot help. */
 export class BackendAuthError extends BackendError {}
 

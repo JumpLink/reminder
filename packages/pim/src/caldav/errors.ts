@@ -2,7 +2,7 @@
 
 import { DavError } from '@gjsify/dav';
 
-import { BackendAuthError, BackendError, errorMessage } from '../errors.ts';
+import { BackendAuthError, BackendError, BackendHttpError, errorMessage } from '../errors.ts';
 import { _, fmt } from '../i18n.ts';
 
 /** Classify a failure; 401 is an auth error, everything else a BackendError naming the call. */
@@ -14,11 +14,10 @@ export function davError(label: string, err: unknown): Error {
       'http',
       401,
     );
-    // gjsify gap: DavError carries no Retry-After, so a 429/503 reaches the sync service without a wait.
-    return new BackendError(
+    return new BackendHttpError(
       fmt(_('{label}: {method} failed with {status}'), { label, method: err.method, status: err.status }),
-      'http',
       err.status,
+      err.retryAfterMs ?? undefined,
     );
   }
   return new BackendError(fmt(_('{label}: {message}'), { label, message: errorMessage(err) }));
