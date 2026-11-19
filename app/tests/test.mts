@@ -17,6 +17,7 @@ import priorities from './unit/core/priorities.test.ts';
 import cache from './unit/core/cache.test.ts';
 import sync from './unit/core/sync.test.ts';
 import visibility from './unit/core/visibility.test.ts';
+import agenda from './unit/core/agenda.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
@@ -51,6 +52,7 @@ run({
   cache,
   sync,
   visibility,
+  agenda,
   secrets,
   cacheFs,
   caldav,
