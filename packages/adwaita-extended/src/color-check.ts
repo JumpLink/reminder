@@ -22,6 +22,7 @@ export class ColorCheck extends Gtk.CheckButton {
     this.setAccessibleLabel(label);
     this.tint = new Tint(
       this,
+      'check',
       (cls, c) =>
         `checkbutton.${cls} check { border-color: ${c}; color: white; }` +
         `checkbutton.${cls} check:checked { background-color: ${c}; border-color: ${c}; }`,

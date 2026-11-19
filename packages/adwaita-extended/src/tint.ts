@@ -1,9 +1,7 @@
-import Adw from '@girs/adw-1';
 import Gdk from '@girs/gdk-4.0';
 import Gtk from '@girs/gtk-4.0';
 
 const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
-let counter = 0;
 
 /** Only plain hex reaches the CSS text: a source colour is data from a server, not trusted markup. */
 export function isHexColour(value: string): boolean {
@@ -11,54 +9,58 @@ export function isHexColour(value: string): boolean {
 }
 
 /**
- * Paints one widget in an arbitrary colour through its own CSS provider. `rules(cls, colour)` returns
- * the CSS for the widget's unique class; on a dark theme the colour is lifted toward white so a deep
- * source colour stays visible. The provider lives on the display only while the widget is realized.
+ * One provider per (kind, colour), shared by every widget in that colour and never removed: a list
+ * of hundreds of rows uses a handful of source colours, while a provider per row would make the
+ * display restyle once per row. Keyed by class name, which already encodes both.
+ */
+const loaded = new Set<string>();
+
+function load(cls: string, css: string): boolean {
+  if (loaded.has(cls)) return true;
+  const display = Gdk.Display.get_default();
+  if (!display) return false;
+  const provider = new Gtk.CssProvider();
+  provider.load_from_string(css);
+  Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+  loaded.add(cls);
+  return true;
+}
+
+/**
+ * Paints a widget in an arbitrary colour by giving it a class shared by all widgets of the same
+ * `kind` and colour. `rules(cls, colour)` returns the CSS for that class; the dark-theme variant
+ * lifts the colour toward white so a deep source colour stays visible, through a media query, so
+ * no widget has to follow the style manager.
  */
 export class Tint {
-  private readonly provider = new Gtk.CssProvider();
-  private readonly cls = `gjsify-tint-${++counter}`;
   private readonly widget: Gtk.Widget;
+  private readonly kind: string;
   private readonly rules: (cls: string, colour: string) => string;
-  private colour: string | null = null;
-  private attached = false;
+  private cls: string | null = null;
+  private pending: { cls: string; css: string } | null = null;
 
-  constructor(widget: Gtk.Widget, rules: (cls: string, colour: string) => string) {
+  constructor(widget: Gtk.Widget, kind: string, rules: (cls: string, colour: string) => string) {
     this.widget = widget;
+    this.kind = kind;
     this.rules = rules;
-    widget.add_css_class(this.cls);
-    widget.connect('realize', () => this.attach());
-    widget.connect('unrealize', () => this.detach());
-    Adw.StyleManager.get_default().connect('notify::dark', () => this.render());
+    // Without a display yet (built before the application starts), load on first realize.
+    widget.connect('realize', () => {
+      if (this.pending && load(this.pending.cls, this.pending.css)) this.pending = null;
+    });
   }
 
   set(colour: string | null): void {
-    this.colour = colour !== null && isHexColour(colour) ? colour.trim() : null;
-    this.render();
-  }
-
-  private render(): void {
-    if (this.colour === null) {
-      this.provider.load_from_string('');
-      return;
-    }
-    const dark = Adw.StyleManager.get_default().dark;
-    const colour = dark ? `mix(${this.colour}, white, 0.3)` : this.colour;
-    this.provider.load_from_string(this.rules(this.cls, colour));
-  }
-
-  private attach(): void {
-    if (this.attached) return;
-    const display = Gdk.Display.get_default();
-    if (!display) return;
-    Gtk.StyleContext.add_provider_for_display(display, this.provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-    this.attached = true;
-  }
-
-  private detach(): void {
-    if (!this.attached) return;
-    const display = Gdk.Display.get_default();
-    if (display) Gtk.StyleContext.remove_provider_for_display(display, this.provider);
-    this.attached = false;
+    if (this.cls) this.widget.remove_css_class(this.cls);
+    this.cls = null;
+    this.pending = null;
+    if (colour === null || !isHexColour(colour)) return;
+    const hex = colour.trim().toLowerCase();
+    const cls = `gjsify-tint-${this.kind}-${hex.slice(1)}`;
+    const css =
+      this.rules(cls, hex) +
+      `@media (prefers-color-scheme: dark) { ${this.rules(cls, `color-mix(in srgb, ${hex} 70%, white)`)} }`;
+    if (!load(cls, css)) this.pending = { cls, css };
+    this.widget.add_css_class(cls);
+    this.cls = cls;
   }
 }

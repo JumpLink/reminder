@@ -17,7 +17,7 @@ export class SourceDot extends Gtk.Box {
     ensureStyles();
     this.add_css_class('gjsify-source-dot');
     if (large) this.add_css_class('large');
-    this.tint = new Tint(this, (cls, c) => `.${cls} { background-color: ${c}; }`);
+    this.tint = new Tint(this, 'dot', (cls, c) => `.${cls} { background-color: ${c}; }`);
   }
 
   setColour(colour: string | null): void {

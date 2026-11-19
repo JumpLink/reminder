@@ -1,6 +1,7 @@
 import Adw from '@girs/adw-1';
 import Gdk from '@girs/gdk-4.0';
 import Gio from '@girs/gio-2.0';
+import GLib from '@girs/glib-2.0';
 import GObject from '@girs/gobject-2.0';
 import Gtk from '@girs/gtk-4.0';
 
@@ -289,8 +290,14 @@ export class SwipeRow extends Adw.Bin {
     const popover = new Gtk.PopoverMenu({ menuModel: menu, hasArrow: false });
     popover.set_parent(this);
     popover.set_pointing_to(new Gdk.Rectangle({ x: Math.round(x), y: Math.round(y), width: 1, height: 1 }));
-    // A popover left parented would make this widget finalize with a child.
-    popover.connect('closed', () => popover.unparent());
+    // A popover left parented would make this widget finalize with a child. GTK emits `closed`
+    // before the clicked item's action runs, and the action is found through the parent: unparent later.
+    popover.connect('closed', () =>
+      GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        popover.unparent();
+        return GLib.SOURCE_REMOVE;
+      }),
+    );
     popover.popup();
   }
 
