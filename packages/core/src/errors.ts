@@ -7,6 +7,7 @@ import { _, fmt } from './i18n.ts';
 export {
   BackendAuthError,
   BackendError,
+  BackendHttpError,
   BackendUnavailableError,
   ConflictError,
   errorMessage,

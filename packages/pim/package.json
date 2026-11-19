@@ -22,7 +22,7 @@
     "@girs/ecal-2.0": "5.4.0",
     "@girs/edataserver-1.2": "5.4.0",
     "@girs/icalglib-3.0": "5.4.0",
-    "@gjsify/dav": "0.64.48",
-    "@gjsify/node-gi": "0.64.48"
+    "@gjsify/dav": "0.64.49",
+    "@gjsify/node-gi": "0.64.49"
   }
 }

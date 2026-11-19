@@ -3,7 +3,7 @@
  * `BackendError` carries `domain: 'http'` and the status in `code`.
  */
 
-import { BackendError, BackendUnavailableError, ReminderError, errorMessage } from '../errors.ts';
+import { BackendError, BackendHttpError, BackendUnavailableError, ReminderError, errorMessage } from '../errors.ts';
 
 /** An HTTP answer that is not success, with the server's Retry-After when it sent one. */
 export class SyncHttpError extends BackendError {
@@ -33,7 +33,8 @@ export function classifyFetchError(err: unknown): FailureOutcome {
   if (err instanceof BackendUnavailableError) return { kind: 'stale' };
   if (err instanceof BackendError) {
     const status = err.domain === 'http' ? err.code : undefined;
-    const retryAfterMs = err instanceof SyncHttpError ? err.retryAfterMs : undefined;
+    const retryAfterMs =
+      err instanceof SyncHttpError || err instanceof BackendHttpError ? err.retryAfterMs : undefined;
     if (status === 401) return { kind: 'auth-rejected' };
     if (status === 403) return { kind: 'no-access', reason: errorMessage(err) };
     if (status === 429 || (status === 503 && retryAfterMs !== undefined)) {
