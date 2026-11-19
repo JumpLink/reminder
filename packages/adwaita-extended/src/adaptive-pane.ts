@@ -23,6 +23,9 @@ const INSPECTOR_WIDTH = 360;
 const SHEET_HEIGHT_SHARE = 0.7;
 const SHEET_MIN_HEIGHT = 320;
 
+/** Room above the sheet's header, so the drag handle is not drawn across the title. */
+const SHEET_HANDLE_SPACE = 14;
+
 export class AdaptivePane extends Adw.Bin {
   static {
     GObject.registerClass({ GTypeName: 'GjsifyAdwAdaptivePane', Signals: { closed: {} } }, AdaptivePane);
@@ -107,6 +110,7 @@ export class AdaptivePane extends Adw.Bin {
     switch (target) {
       case 'inspector':
         this.shell.set_size_request(INSPECTOR_WIDTH, -1);
+        this.shell.set_margin_top(0);
         this.row.append(this.divider);
         this.row.append(this.shell);
         break;
@@ -114,11 +118,13 @@ export class AdaptivePane extends Adw.Bin {
         // A bottom sheet is as tall as its sheet asks to be, and a scrolling detail asks for
         // almost nothing — without a height the sheet opens as a sliver showing only its header.
         this.shell.set_size_request(-1, this.sheetHeight());
+        this.shell.set_margin_top(SHEET_HANDLE_SPACE);
         this.sheet.set_sheet(this.shell);
         this.sheet.set_open(true);
         break;
       case 'dialog': {
         this.shell.set_size_request(-1, -1);
+        this.shell.set_margin_top(0);
         const dialog = new Adw.Dialog({ contentWidth: 480, contentHeight: 520 });
         dialog.set_child(this.shell);
         dialog.connect('closed', () => {
