@@ -43,6 +43,8 @@ reminder todos --all --calendar <uid>
 reminder update <uid> --summary 'Call back' --due 2026-11-03 --priority 2
 reminder complete <uid>                   # done: STATUS, PERCENT-COMPLETE and COMPLETED
 reminder reopen <uid>                     # open again
+reminder board list                       # boards of every enabled source (read-only)
+reminder board cards <board> [--all] [--include-done] [--json]
 reminder priorities                       # ranked priorities with open steps (needs priorities.list)
 reminder config                           # where the config file is, and whether it parses
 reminder mcp                              # MCP server over stdio
@@ -61,8 +63,9 @@ Every command takes `--json`. Times print in their own shape: `2026-10-12` is al
 }
 ```
 
-Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list` are read-only and always
-served. `events_create`, `reminders_create` and `reminders_update` appear only when the config grants
+Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list`, `boards_list`, `cards_list`
+are read-only and always served (the board tools cap their answers and report `omitted`; hidden-in-the-window
+sources are served, disabled ones are not). `events_create`, `reminders_create` and `reminders_update` appear only when the config grants
 `calendar.create`, `reminder.create` respectively `reminder.update` for a calendar; each call must
 target a granted uid exactly. The gate drops any tool that neither declares itself read-only nor
 declares a granted capability, so a forgotten annotation is a missing tool, not an open one.

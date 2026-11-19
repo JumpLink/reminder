@@ -14,6 +14,7 @@ import { applyGrantGate, serveStdio } from '@gjsify/mcp';
 import { createContext, type Context } from '../../core/context.ts';
 import { IDENTITY } from '../../core/identity.ts';
 import { VERSION } from '../../core/runtime.ts';
+import { registerBoardTools } from './tools/board.ts';
 import { registerReadTools } from './tools/read.ts';
 import { registerWriteTools } from './tools/write.ts';
 
@@ -25,6 +26,7 @@ export function registerTools(server: McpServer, context: Context): void {
   // slip past it. It fails CLOSED: an unannotated tool goes missing instead of being reachable.
   applyGrantGate(server, context.config().grants);
   registerReadTools(server, context);
+  registerBoardTools(server, context);
   registerWriteTools(server, context);
 }
 
