@@ -13,6 +13,7 @@ record that links back; the old one stays.
 | [0006](0006-visibility-in-two-levels.md) | Visibility in two levels: disabled (config, all frontends) and hidden (GUI only) | accepted |
 | [0007](0007-boardsource-as-a-second-port.md) | `BoardSource` as a second port: a normalised card, read-only first | accepted |
 | [0008](0008-board-columns-and-mine.md) | Four columns, default rules per source type, and what "mine" means | accepted |
+| [0009](0009-recurrence-and-time-zones.md) | Recurrence through a proven library (ical.js), read-only, in its own package; zones resolve VTIMEZONE → `Intl` → floating | accepted |
 | [0010](0010-cache-and-synchronisation.md) | Cache and synchronisation: raw responses with a version marker, derived and deletable | accepted |
 | [0011](0011-credentials-through-a-secret-store-port.md) | Credentials through a `SecretStore` port: the config holds a reference | accepted |
 | [0012](0012-one-interaction-concept-three-size-classes.md) | One interaction concept, three size classes | accepted |

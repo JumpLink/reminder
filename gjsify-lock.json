@@ -30,7 +30,8 @@
     "@gjsify/stories@0.64.49",
     "@gjsify/storybook@0.64.49",
     "@gjsify/dav@0.64.49",
-    "@gjsify/node-gi@0.64.49"
+    "@gjsify/node-gi@0.64.49",
+    "ical.js@^2.2.1"
   ],
   "packages": {
     "node_modules/@babel/code-frame": {
@@ -4863,6 +4864,11 @@
       "version": "8.0.1",
       "resolved": "https://registry.npmjs.org/human-signals/-/human-signals-8.0.1.tgz",
       "integrity": "sha512-eKCa6bwnJhvxj14kZk5NCPc6Hb6BdsU9DZcOnmQKSnO1VKrfV0zCvtttPZUsBvjmNDn8rpcJfpwSYnHBjc95MQ=="
+    },
+    "node_modules/ical.js": {
+      "version": "2.2.1",
+      "resolved": "https://registry.npmjs.org/ical.js/-/ical.js-2.2.1.tgz",
+      "integrity": "sha512-yK/UlPbEs316igb/tjRgbFA8ZV75rCsBJp/hWOatpyaPNlgw0dGDmU+FoicOcwX4xXkeXOkYiOmCqNPFpNPkQg=="
     },
     "node_modules/iconv-lite": {
       "version": "0.7.3",

@@ -82,6 +82,7 @@
     "@gjsify/mcp": "0.64.49",
     "@gjsify/node-globals": "0.64.49",
     "@gjsify/pim": "*",
+    "@gjsify/recurrence": "*",
     "@gjsify/rolldown-native": "0.64.49",
     "@gjsify/runtime": "0.64.49",
     "@gjsify/unit": "0.64.49",

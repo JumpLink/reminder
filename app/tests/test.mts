@@ -40,6 +40,7 @@ import eds from './unit/eds/optional.test.ts';
 
 import httpClient from './unit/http/http-client.test.ts';
 import deck from './unit/deck/deck-source.test.ts';
+import recurrence from './unit/recurrence/expand.test.ts';
 
 import dueState from './unit/widgets/due-state.test.ts';
 import sourceNames from './unit/widgets/source-names.test.ts';
@@ -101,6 +102,7 @@ run({
   eds,
   httpClient,
   deck,
+  recurrence,
   dueState,
   sourceNames,
   priorityMarks,
