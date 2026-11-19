@@ -93,6 +93,20 @@ export async function resolveSecretPasswords(
   return passwords;
 }
 
+/** The credential of every ENABLED external board source; an unreadable one is simply absent. */
+export async function resolveExternalSecrets(
+  config: ReminderConfig,
+  store: SecretStore,
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  for (const source of config.boardSources) {
+    if (!source.enabled) continue;
+    const found = await store.lookup(parseSecretRef(source.secret));
+    if (found.status === 'found' && found.value) out.set(source.id, found.value);
+  }
+  return out;
+}
+
 /**
  * Like `resolveSecretPasswords`, but one unreadable secret costs only its own account: the GUI
  * shows the accounts that work. The CLI keeps the all-or-nothing version (docs/adr/0005).

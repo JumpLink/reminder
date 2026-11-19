@@ -27,6 +27,7 @@ import boardConfig from './unit/board/config.test.ts';
 import zenkit from './unit/zenkit/zenkit-source.test.ts';
 import boardOpenProject from './unit/openproject/openproject-source.test.ts';
 import boardSources from './unit/board/board-sources.test.ts';
+import boardExternalSources from './unit/board/external-sources.test.ts';
 import boardDemoSource from './unit/board/demo-source.test.ts';
 import boardRead from './unit/board/board-read.test.ts';
 import boardCache from './unit/core/board-cache.test.ts';
@@ -86,6 +87,7 @@ run({
   zenkit,
   boardOpenProject,
   boardSources,
+  boardExternalSources,
   boardDemoSource,
   boardRead,
   boardCache,

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 21:42+0100\n"
+"POT-Creation-Date: 2026-11-19 22:01+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -61,6 +61,7 @@ msgid "{where} must be one of {known}"
 msgstr "{where} muss eines von {known} sein"
 
 #: ../packages/core/src/board/config.ts:61
+#: ../packages/core/src/board/sources-config.ts:68
 msgid "{where} must be an object"
 msgstr "{where} muss ein Objekt sein"
 
@@ -80,58 +81,136 @@ msgstr ""
 msgid "boards: unknown key \"{key}\""
 msgstr "boards: Unbekannter Schlüssel „{key}“"
 
+#: ../packages/core/src/board/sources-config.ts:76
+msgid "{where}.{key} must be a non-empty string"
+msgstr "{where}.{key} muss ein nicht leerer String sein"
+
+#: ../packages/core/src/board/sources-config.ts:86
+#: ../packages/core/src/board/sources-config.ts:89
+msgid "{where}.url must be an http(s) URL"
+msgstr "{where}.url muss eine http(s)-URL sein"
+
+#: ../packages/core/src/board/sources-config.ts:91
+msgid "{where}.url must use https unless the server is on this machine"
+msgstr ""
+"{where}.url muss https verwenden, außer der Server läuft auf diesem Rechner"
+
+#: ../packages/core/src/board/sources-config.ts:93
+msgid "{where}.url must not contain credentials"
+msgstr "{where}.url darf keine Zugangsdaten enthalten"
+
+#: ../packages/core/src/board/sources-config.ts:102
+msgid "{where}.lists.{list}: unknown key \"{key}\""
+msgstr "{where}.lists.{list}: Unbekannter Schlüssel „{key}“"
+
+#: ../packages/core/src/board/sources-config.ts:109
+msgid "{where}.lists.{list}.{key} must be a field name"
+msgstr "{where}.lists.{list}.{key} muss ein Feldname sein"
+
+#: ../packages/core/src/board/sources-config.ts:123
+msgid ""
+"{where}.{key} must not be in the file — store it in the keyring and name it "
+"with \"secret\""
+msgstr ""
+"{where}.{key} darf nicht in der Datei stehen — im Schlüsselbund speichern "
+"und mit „secret“ benennen"
+
+#: ../packages/core/src/board/sources-config.ts:134
+msgid ""
+"{where}: id must be lowercase letters, digits, \"-\" and \"_\", and not "
+"\"http\" or \"https\""
+msgstr ""
+"{where}: Die id darf nur Kleinbuchstaben, Ziffern, „-“ und „_“ enthalten und "
+"nicht „http“ oder „https“ sein"
+
+#: ../packages/core/src/board/sources-config.ts:140
+msgid "{where}: type {type} is not supported (known: {known})"
+msgstr "{where}: Der Typ {type} wird nicht unterstützt (bekannt: {known})"
+
+#: ../packages/core/src/board/sources-config.ts:149
+msgid "{where}.url is required"
+msgstr "{where}.url ist erforderlich"
+
+#: ../packages/core/src/board/sources-config.ts:152
+msgid "{where}.username is required for deck"
+msgstr "{where}.username ist für Deck erforderlich"
+
+#: ../packages/core/src/board/sources-config.ts:154
+msgid "{where}.username is only used by deck"
+msgstr "{where}.username wird nur von Deck verwendet"
+
+#: ../packages/core/src/board/sources-config.ts:158
+msgid "{where}.enabled must be true or false"
+msgstr "{where}.enabled muss true oder false sein"
+
+#: ../packages/core/src/board/sources-config.ts:162
+msgid "{where}.boards must be a list of board ids"
+msgstr "{where}.boards muss eine Liste von Board-IDs sein"
+
+#: ../packages/core/src/board/sources-config.ts:166
+msgid "{where}.lists is only used by zenkit"
+msgstr "{where}.lists wird nur von Zenkit verwendet"
+
+#: ../packages/core/src/board/sources-config.ts:186
+msgid "boardSources must be a list"
+msgstr "boardSources muss eine Liste sein"
+
+#: ../packages/core/src/board/sources-config.ts:191
+msgid "boardSources[{index}]: id \"{id}\" is used twice"
+msgstr "boardSources[{index}]: id „{id}“ wird zweimal verwendet"
+
 #: ../packages/core/src/board/types.ts:150
 msgid "no board {id} in this source"
 msgstr "Diese Quelle kennt kein Board {id}"
 
-#: ../packages/core/src/config.ts:134
+#: ../packages/core/src/config.ts:143
 msgid "backend {backend} is not supported (known: {known})"
 msgstr "Das Backend {backend} wird nicht unterstützt (bekannt: {known})"
 
-#: ../packages/core/src/config.ts:135
+#: ../packages/core/src/config.ts:144
 msgid "accounts[{index}]: backend {backend} is not supported (known: {known})"
 msgstr ""
 "accounts[{index}]: Das Backend {backend} wird nicht unterstützt (bekannt: "
 "{known})"
 
-#: ../packages/core/src/config.ts:148
+#: ../packages/core/src/config.ts:157
 msgid "priorities must be an object"
 msgstr "priorities muss ein Objekt sein"
 
-#: ../packages/core/src/config.ts:152
+#: ../packages/core/src/config.ts:161
 msgid "priorities.list must be a non-empty task list uid"
 msgstr "priorities.list muss eine nicht leere Aufgabenlisten-UID sein"
 
-#: ../packages/core/src/config.ts:160
+#: ../packages/core/src/config.ts:169
 msgid "backend \"caldav\" needs a caldav object with url and username"
 msgstr "Das Backend „caldav“ braucht ein caldav-Objekt mit url und username"
 
-#: ../packages/core/src/config.ts:165
+#: ../packages/core/src/config.ts:174
 msgid "caldav.{key} must be a non-empty string"
 msgstr "caldav.{key} muss ein nicht leerer String sein"
 
-#: ../packages/core/src/config.ts:169
+#: ../packages/core/src/config.ts:178
 msgid "caldav.url is required"
 msgstr "caldav.url ist erforderlich"
 
-#: ../packages/core/src/config.ts:174 ../packages/core/src/config.ts:177
+#: ../packages/core/src/config.ts:183 ../packages/core/src/config.ts:186
 msgid "caldav.url must be an http(s) URL"
 msgstr "caldav.url muss eine http(s)-URL sein"
 
-#: ../packages/core/src/config.ts:180
+#: ../packages/core/src/config.ts:189
 msgid "caldav.url must use https unless the server is on this machine"
 msgstr ""
 "caldav.url muss https verwenden, außer der Server läuft auf diesem Rechner"
 
-#: ../packages/core/src/config.ts:184
+#: ../packages/core/src/config.ts:193
 msgid "caldav.auth {auth} is not supported (known: {known})"
 msgstr "caldav.auth {auth} wird nicht unterstützt (bekannt: {known})"
 
-#: ../packages/core/src/config.ts:190
+#: ../packages/core/src/config.ts:199
 msgid "caldav.username is required for basic auth"
 msgstr "caldav.username ist für Basic-Authentifizierung erforderlich"
 
-#: ../packages/core/src/config.ts:192
+#: ../packages/core/src/config.ts:201
 msgid ""
 "caldav.password must not be in the file — set passwordEnv and export the "
 "variable"
@@ -139,27 +218,27 @@ msgstr ""
 "caldav.password darf nicht in der Datei stehen — setze passwordEnv und "
 "exportiere die Variable"
 
-#: ../packages/core/src/config.ts:195
+#: ../packages/core/src/config.ts:204
 msgid "caldav: set passwordEnv or passwordSecret, not both"
 msgstr "caldav: Entweder passwordEnv oder passwordSecret angeben, nicht beides"
 
-#: ../packages/core/src/config.ts:209
+#: ../packages/core/src/config.ts:218
 msgid "accounts must be a list with at least one account"
 msgstr "accounts muss eine Liste mit mindestens einem Konto sein"
 
-#: ../packages/core/src/config.ts:213
+#: ../packages/core/src/config.ts:222
 msgid "accounts[{index}] must be an object"
 msgstr "accounts[{index}] muss ein Objekt sein"
 
-#: ../packages/core/src/config.ts:216
+#: ../packages/core/src/config.ts:225
 msgid "accounts[{index}]: id \"{id}\" is used twice"
 msgstr "accounts[{index}]: id „{id}“ wird zweimal verwendet"
 
-#: ../packages/core/src/config.ts:240
+#: ../packages/core/src/config.ts:249
 msgid "config must be a JSON object"
 msgstr "Die Konfiguration muss ein JSON-Objekt sein"
 
-#: ../packages/core/src/config.ts:260
+#: ../packages/core/src/config.ts:269
 msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 "Eine Datei mit accounts darf zusätzlich kein {key} auf oberster Ebene haben"
@@ -463,21 +542,30 @@ msgstr "Feld „{field}“ in Liste {id} hat für diesen Zweck den falschen Typ"
 msgid "list {id} has no choice field to use as its columns"
 msgstr "Liste {id} hat kein Auswahlfeld, das als Spalten dienen kann"
 
-#: src/core/board-read.ts:96
+#: src/core/board-read.ts:103
 msgid "boards cannot be read: {problems}"
 msgstr "Boards lassen sich nicht lesen: {problems}"
 
-#: src/core/board-read.ts:126
+#: src/core/board-read.ts:133
 msgid "no board \"{board}\" — list the boards first"
 msgstr "Kein Board „{board}“ — liste zuerst die Boards auf"
 
-#: src/core/board-read.ts:130
+#: src/core/board-read.ts:137
 msgid "several sources have a board \"{board}\" — name the source ({sources})"
-msgstr "Mehrere Quellen haben ein Board „{board}“ — nenne die Quelle ({sources})"
+msgstr ""
+"Mehrere Quellen haben ein Board „{board}“ — nenne die Quelle ({sources})"
 
-#: src/core/board-sources.ts:149
+#: src/core/board-sources.ts:224
 msgid "this build has no board support for \"{type}\""
 msgstr "Dieser Build unterstützt keine Boards vom Typ „{type}“"
+
+#: src/core/board-sources.ts:242
+msgid "source \"{id}\": no credential — store it as {ref}"
+msgstr "Quelle „{id}“: Keine Zugangsdaten — als {ref} speichern"
+
+#: src/core/board-sources.ts:250
+msgid "source \"{id}\": {message}"
+msgstr "Quelle „{id}“: {message}"
 
 #: src/core/config-write.ts:112
 msgid "account \"{id}\" already exists"
@@ -511,19 +599,19 @@ msgstr "Für \"{ref}\" ist kein Geheimnis gespeichert"
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr "Geheimnis \"{ref}\" lässt sich nicht lesen: {reason}"
 
-#: src/core/context.ts:123
+#: src/core/context.ts:137
 msgid "account \"{account}\": {message}"
 msgstr "Konto „{account}“: {message}"
 
-#: src/core/context.ts:138
+#: src/core/context.ts:152
 msgid "backend \"caldav\" needs a caldav section"
 msgstr "Das Backend „caldav“ braucht einen caldav-Abschnitt"
 
-#: src/core/context.ts:143
+#: src/core/context.ts:157
 msgid "the passwordSecret has not been resolved yet"
 msgstr "Das passwordSecret wurde noch nicht aufgelöst"
 
-#: src/core/context.ts:147
+#: src/core/context.ts:161
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
 
@@ -545,59 +633,60 @@ msgstr "Die eingerichteten Konten auflisten"
 msgid "{calendars} calendars · {lists} task lists"
 msgstr "{calendars} Kalender · {lists} Aufgabenlisten"
 
-#: src/frontends/cli/board.ts:18
-msgid "List the boards of every enabled source"
-msgstr "Boards jeder aktiven Quelle auflisten"
-
-#: src/frontends/cli/board.ts:23
-msgid "Max boards (default {default}, max {max})"
-msgstr "Höchstzahl Boards (Standard {default}, Maximum {max})"
-
-#: src/frontends/cli/board.ts:36
-msgid "No boards."
-msgstr "Keine Boards."
-
-#: src/frontends/cli/board.ts:49
-msgid "List the cards of one board (id from `reminder board list`)"
-msgstr "Karten eines Boards auflisten (ID aus `reminder board list`)"
-
-#: src/frontends/cli/board.ts:52
-msgid "Board id"
-msgstr "Board-ID"
-
-#: src/frontends/cli/board.ts:53
-msgid "Source id, when two sources share a board id"
-msgstr "Quellen-ID, wenn zwei Quellen dieselbe Board-ID haben"
-
-#: src/frontends/cli/board.ts:57
-msgid "Whose cards: assigned, watching or all (default: the configuration)"
-msgstr "Wessen Karten: assigned, watching oder all (Standard: die Konfiguration)"
-
-#: src/frontends/cli/board.ts:59
-msgid "Same as --mine all"
-msgstr "Wie --mine all"
-
-#: src/frontends/cli/board.ts:63
-msgid "Include cards in the done lane"
-msgstr "Karten in der Spalte „Erledigt“ einbeziehen"
-
-#: src/frontends/cli/board.ts:67
-msgid "Max cards (default {default}, max {max})"
-msgstr "Höchstzahl Karten (Standard {default}, Maximum {max})"
-
-#: src/frontends/cli/board.ts:89
-msgid "No cards."
-msgstr "Keine Karten."
-
-#: src/frontends/cli/board.ts:92
+#: src/frontends/cli/board.ts:22
 msgid "due {time}"
 msgstr "fällig {time}"
 
-#: src/frontends/cli/board.ts:104
+#: src/frontends/cli/board.ts:28
+msgid "List the boards of every enabled source"
+msgstr "Boards jeder aktiven Quelle auflisten"
+
+#: src/frontends/cli/board.ts:33
+msgid "Max boards (default {default}, max {max})"
+msgstr "Höchstzahl Boards (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/board.ts:46
+msgid "No boards."
+msgstr "Keine Boards."
+
+#: src/frontends/cli/board.ts:57
+msgid "List the cards of one board (id from `reminder board list`)"
+msgstr "Karten eines Boards auflisten (ID aus `reminder board list`)"
+
+#: src/frontends/cli/board.ts:60
+msgid "Board id"
+msgstr "Board-ID"
+
+#: src/frontends/cli/board.ts:61
+msgid "Source id, when two sources share a board id"
+msgstr "Quellen-ID, wenn zwei Quellen dieselbe Board-ID haben"
+
+#: src/frontends/cli/board.ts:65
+msgid "Whose cards: assigned, watching or all (default: the configuration)"
+msgstr ""
+"Wessen Karten: assigned, watching oder all (Standard: die Konfiguration)"
+
+#: src/frontends/cli/board.ts:67
+msgid "Same as --mine all"
+msgstr "Wie --mine all"
+
+#: src/frontends/cli/board.ts:71
+msgid "Include cards in the done lane"
+msgstr "Karten in der Spalte „Erledigt“ einbeziehen"
+
+#: src/frontends/cli/board.ts:75
+msgid "Max cards (default {default}, max {max})"
+msgstr "Höchstzahl Karten (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/board.ts:97
+msgid "No cards."
+msgstr "Keine Karten."
+
+#: src/frontends/cli/board.ts:108
 msgid "Read boards and their cards (read-only)"
 msgstr "Boards und ihre Karten lesen (nur lesend)"
 
-#: src/frontends/cli/board.ts:109
+#: src/frontends/cli/board.ts:113
 msgid "Give a board command — `reminder board --help` lists them."
 msgstr "Gib einen Board-Befehl an — `reminder board --help` listet sie auf."
 
