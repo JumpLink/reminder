@@ -23,6 +23,7 @@ import board from './unit/board/board.test.ts';
 import boardRules from './unit/board/rules.test.ts';
 import boardMine from './unit/board/mine.test.ts';
 import boardVtodo from './unit/board/vtodo-source.test.ts';
+import boardConfig from './unit/board/config.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
@@ -72,6 +73,7 @@ run({
   boardRules,
   boardMine,
   boardVtodo,
+  boardConfig,
   secrets,
   cacheFs,
   caldav,

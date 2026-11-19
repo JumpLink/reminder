@@ -1,6 +1,7 @@
 ../packages/cache-fs/src/index.ts
 ../packages/core/src/accounts.ts
 ../packages/core/src/agenda.ts
+../packages/core/src/board/config.ts
 ../packages/core/src/board/contract.ts
 ../packages/core/src/board/index.ts
 ../packages/core/src/board/mine.ts
