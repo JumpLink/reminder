@@ -27,6 +27,7 @@ import boardConfig from './unit/board/config.test.ts';
 import zenkit from './unit/zenkit/zenkit-source.test.ts';
 import boardOpenProject from './unit/openproject/openproject-source.test.ts';
 import boardSources from './unit/board/board-sources.test.ts';
+import boardExternalSources from './unit/board/external-sources.test.ts';
 import boardDemoSource from './unit/board/demo-source.test.ts';
 import boardRead from './unit/board/board-read.test.ts';
 import boardCache from './unit/core/board-cache.test.ts';
@@ -56,6 +57,7 @@ import guiBoardModel from './unit/gui/board-model.test.ts';
 import guiSync from './unit/gui/sync.test.ts';
 import guiDemo from './unit/gui/demo.test.ts';
 import guiPreferences from './unit/gui/preferences.test.ts';
+import guiPreferencesBoard from './unit/gui/preferences-board.test.ts';
 
 import mcpTools from './unit/mcp/tools.test.ts';
 
@@ -86,6 +88,7 @@ run({
   zenkit,
   boardOpenProject,
   boardSources,
+  boardExternalSources,
   boardDemoSource,
   boardRead,
   boardCache,
@@ -111,6 +114,7 @@ run({
   guiSync,
   guiDemo,
   guiPreferences,
+  guiPreferencesBoard,
   mcpTools,
   i18n,
 });

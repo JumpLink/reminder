@@ -72,6 +72,8 @@ function setup() {
       { account: 'work', calendars: [list('l2', 'Chores')] },
     ],
     failures: () => new Map([['work', 'offline']]),
+    boards: () => [],
+    boardProblems: () => [],
     rebuild: async () => {
       rebuilds++;
     },

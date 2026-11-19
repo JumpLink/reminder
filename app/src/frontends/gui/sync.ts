@@ -25,6 +25,7 @@ import { createBoardSources } from '../../core/board-sources.ts';
 import {
   about,
   createAccountBackend,
+  resolveExternalSecrets,
   resolveSecretPasswordsPerAccount,
   type Context,
 } from '../../core/context.ts';
@@ -177,9 +178,13 @@ export async function createGuiSync(
 
   // The boards of the configured accounts, plus whatever the context adds on its own (demo mode).
   // A source whose account is broken gets a null backend and contributes no board.
+  const externalSecrets = await resolveExternalSecrets(config, context.secrets()).catch(
+    () => new Map<string, string>(),
+  );
   const boardSet = createBoardSources(
     {
       config,
+      externalSecrets,
       backend: (account) => backends.get(account.id) ?? null,
       // Every account was listed above; a board source asking again would double that listing.
       calendars: (account) => lists.find((entry) => entry.account === account.id)?.calendars ?? null,

@@ -76,6 +76,7 @@ function createServices(window: MainWindow) {
       service: sync.service,
       config: context.config(),
       problems: sync.boardProblems,
+      hidden: settings.hidden(),
     });
     window.attach({ model, board, settings, service: sync.service, problems: sync.problems });
     await model.load();
@@ -89,6 +90,8 @@ function createServices(window: MainWindow) {
     cache: () => (context ?? createContext()).cache(),
     lists: () => current?.lists ?? [],
     failures: () => current?.failures ?? new Map(),
+    boards: () => current?.boards ?? [],
+    boardProblems: () => current?.boardProblems ?? [],
     rebuild: start,
   };
   window.onPreferences = () => presentPreferences(window, env, demo);

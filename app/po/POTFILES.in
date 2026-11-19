@@ -6,6 +6,7 @@
 ../packages/core/src/board/index.ts
 ../packages/core/src/board/mine.ts
 ../packages/core/src/board/rules.ts
+../packages/core/src/board/sources-config.ts
 ../packages/core/src/board/types.ts
 ../packages/core/src/board/vtodo-source.ts
 ../packages/core/src/cache.ts
@@ -105,6 +106,9 @@ src/frontends/gui/views/preferences/account-add.ts
 src/frontends/gui/views/preferences/account-detail.ts
 src/frontends/gui/views/preferences/accounts.ts
 src/frontends/gui/views/preferences/agent-access.ts
+src/frontends/gui/views/preferences/board-controller.ts
+src/frontends/gui/views/preferences/board-source-form.ts
+src/frontends/gui/views/preferences/board.ts
 src/frontends/gui/views/preferences/controller.ts
 src/frontends/gui/views/preferences/general.ts
 src/frontends/gui/views/preferences/index.ts

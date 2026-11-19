@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 21:42+0100\n"
+"POT-Creation-Date: 2026-11-19 22:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,6 +54,7 @@ msgid "{where} must be one of {known}"
 msgstr ""
 
 #: ../packages/core/src/board/config.ts:61
+#: ../packages/core/src/board/sources-config.ts:68
 msgid "{where} must be an object"
 msgstr ""
 
@@ -71,81 +72,154 @@ msgstr ""
 msgid "boards: unknown key \"{key}\""
 msgstr ""
 
+#: ../packages/core/src/board/sources-config.ts:76
+msgid "{where}.{key} must be a non-empty string"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:86
+#: ../packages/core/src/board/sources-config.ts:89
+msgid "{where}.url must be an http(s) URL"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:91
+msgid "{where}.url must use https unless the server is on this machine"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:93
+msgid "{where}.url must not contain credentials"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:102
+msgid "{where}.lists.{list}: unknown key \"{key}\""
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:109
+msgid "{where}.lists.{list}.{key} must be a field name"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:123
+msgid ""
+"{where}.{key} must not be in the file — store it in the keyring and name it "
+"with \"secret\""
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:134
+msgid ""
+"{where}: id must be lowercase letters, digits, \"-\" and \"_\", and not "
+"\"http\" or \"https\""
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:140
+msgid "{where}: type {type} is not supported (known: {known})"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:149
+msgid "{where}.url is required"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:152
+msgid "{where}.username is required for deck"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:154
+msgid "{where}.username is only used by deck"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:158
+msgid "{where}.enabled must be true or false"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:162
+msgid "{where}.boards must be a list of board ids"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:166
+msgid "{where}.lists is only used by zenkit"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:186
+msgid "boardSources must be a list"
+msgstr ""
+
+#: ../packages/core/src/board/sources-config.ts:191
+msgid "boardSources[{index}]: id \"{id}\" is used twice"
+msgstr ""
+
 #: ../packages/core/src/board/types.ts:150
 msgid "no board {id} in this source"
 msgstr ""
 
-#: ../packages/core/src/config.ts:134
+#: ../packages/core/src/config.ts:143
 msgid "backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:135
+#: ../packages/core/src/config.ts:144
 msgid "accounts[{index}]: backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:148
+#: ../packages/core/src/config.ts:157
 msgid "priorities must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:152
+#: ../packages/core/src/config.ts:161
 msgid "priorities.list must be a non-empty task list uid"
 msgstr ""
 
-#: ../packages/core/src/config.ts:160
+#: ../packages/core/src/config.ts:169
 msgid "backend \"caldav\" needs a caldav object with url and username"
 msgstr ""
 
-#: ../packages/core/src/config.ts:165
+#: ../packages/core/src/config.ts:174
 msgid "caldav.{key} must be a non-empty string"
 msgstr ""
 
-#: ../packages/core/src/config.ts:169
+#: ../packages/core/src/config.ts:178
 msgid "caldav.url is required"
 msgstr ""
 
-#: ../packages/core/src/config.ts:174 ../packages/core/src/config.ts:177
+#: ../packages/core/src/config.ts:183 ../packages/core/src/config.ts:186
 msgid "caldav.url must be an http(s) URL"
 msgstr ""
 
-#: ../packages/core/src/config.ts:180
+#: ../packages/core/src/config.ts:189
 msgid "caldav.url must use https unless the server is on this machine"
 msgstr ""
 
-#: ../packages/core/src/config.ts:184
+#: ../packages/core/src/config.ts:193
 msgid "caldav.auth {auth} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:190
+#: ../packages/core/src/config.ts:199
 msgid "caldav.username is required for basic auth"
 msgstr ""
 
-#: ../packages/core/src/config.ts:192
+#: ../packages/core/src/config.ts:201
 msgid ""
 "caldav.password must not be in the file — set passwordEnv and export the "
 "variable"
 msgstr ""
 
-#: ../packages/core/src/config.ts:195
+#: ../packages/core/src/config.ts:204
 msgid "caldav: set passwordEnv or passwordSecret, not both"
 msgstr ""
 
-#: ../packages/core/src/config.ts:209
+#: ../packages/core/src/config.ts:218
 msgid "accounts must be a list with at least one account"
 msgstr ""
 
-#: ../packages/core/src/config.ts:213
+#: ../packages/core/src/config.ts:222
 msgid "accounts[{index}] must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:216
+#: ../packages/core/src/config.ts:225
 msgid "accounts[{index}]: id \"{id}\" is used twice"
 msgstr ""
 
-#: ../packages/core/src/config.ts:240
+#: ../packages/core/src/config.ts:249
 msgid "config must be a JSON object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:260
+#: ../packages/core/src/config.ts:269
 msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 
@@ -430,32 +504,48 @@ msgstr ""
 msgid "list {id} has no choice field to use as its columns"
 msgstr ""
 
-#: src/core/board-read.ts:96
+#: src/core/board-read.ts:103
 msgid "boards cannot be read: {problems}"
 msgstr ""
 
-#: src/core/board-read.ts:126
+#: src/core/board-read.ts:133
 msgid "no board \"{board}\" — list the boards first"
 msgstr ""
 
-#: src/core/board-read.ts:130
+#: src/core/board-read.ts:137
 msgid "several sources have a board \"{board}\" — name the source ({sources})"
 msgstr ""
 
-#: src/core/board-sources.ts:149
+#: src/core/board-sources.ts:224
 msgid "this build has no board support for \"{type}\""
 msgstr ""
 
-#: src/core/config-write.ts:112
+#: src/core/board-sources.ts:242
+msgid "source \"{id}\": no credential — store it as {ref}"
+msgstr ""
+
+#: src/core/board-sources.ts:250
+msgid "source \"{id}\": {message}"
+msgstr ""
+
+#: src/core/config-write.ts:116
 msgid "account \"{id}\" already exists"
 msgstr ""
 
-#: src/core/config-write.ts:133
+#: src/core/config-write.ts:137
 msgid "no account \"{id}\""
 msgstr ""
 
-#: src/core/config-write.ts:134
+#: src/core/config-write.ts:138
 msgid "a configuration needs at least one account"
+msgstr ""
+
+#: src/core/config-write.ts:264
+msgid "\"{id}\" is already in use"
+msgstr ""
+
+#: src/core/config-write.ts:275
+msgid "no board source \"{id}\""
 msgstr ""
 
 #: src/core/config.ts:38
@@ -478,19 +568,19 @@ msgstr ""
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr ""
 
-#: src/core/context.ts:123
+#: src/core/context.ts:137
 msgid "account \"{account}\": {message}"
 msgstr ""
 
-#: src/core/context.ts:138
+#: src/core/context.ts:152
 msgid "backend \"caldav\" needs a caldav section"
 msgstr ""
 
-#: src/core/context.ts:143
+#: src/core/context.ts:157
 msgid "the passwordSecret has not been resolved yet"
 msgstr ""
 
-#: src/core/context.ts:147
+#: src/core/context.ts:161
 msgid "export the CalDAV password as {name}"
 msgstr ""
 
@@ -512,59 +602,59 @@ msgstr ""
 msgid "{calendars} calendars · {lists} task lists"
 msgstr ""
 
-#: src/frontends/cli/board.ts:18
-msgid "List the boards of every enabled source"
-msgstr ""
-
-#: src/frontends/cli/board.ts:23
-msgid "Max boards (default {default}, max {max})"
-msgstr ""
-
-#: src/frontends/cli/board.ts:36
-msgid "No boards."
-msgstr ""
-
-#: src/frontends/cli/board.ts:49
-msgid "List the cards of one board (id from `reminder board list`)"
-msgstr ""
-
-#: src/frontends/cli/board.ts:52
-msgid "Board id"
-msgstr ""
-
-#: src/frontends/cli/board.ts:53
-msgid "Source id, when two sources share a board id"
-msgstr ""
-
-#: src/frontends/cli/board.ts:57
-msgid "Whose cards: assigned, watching or all (default: the configuration)"
-msgstr ""
-
-#: src/frontends/cli/board.ts:59
-msgid "Same as --mine all"
-msgstr ""
-
-#: src/frontends/cli/board.ts:63
-msgid "Include cards in the done lane"
-msgstr ""
-
-#: src/frontends/cli/board.ts:67
-msgid "Max cards (default {default}, max {max})"
-msgstr ""
-
-#: src/frontends/cli/board.ts:89
-msgid "No cards."
-msgstr ""
-
-#: src/frontends/cli/board.ts:92
+#: src/frontends/cli/board.ts:22
 msgid "due {time}"
 msgstr ""
 
-#: src/frontends/cli/board.ts:104
+#: src/frontends/cli/board.ts:28
+msgid "List the boards of every enabled source"
+msgstr ""
+
+#: src/frontends/cli/board.ts:33
+msgid "Max boards (default {default}, max {max})"
+msgstr ""
+
+#: src/frontends/cli/board.ts:46
+msgid "No boards."
+msgstr ""
+
+#: src/frontends/cli/board.ts:57
+msgid "List the cards of one board (id from `reminder board list`)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:60
+msgid "Board id"
+msgstr ""
+
+#: src/frontends/cli/board.ts:61
+msgid "Source id, when two sources share a board id"
+msgstr ""
+
+#: src/frontends/cli/board.ts:65
+msgid "Whose cards: assigned, watching or all (default: the configuration)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:67
+msgid "Same as --mine all"
+msgstr ""
+
+#: src/frontends/cli/board.ts:71
+msgid "Include cards in the done lane"
+msgstr ""
+
+#: src/frontends/cli/board.ts:75
+msgid "Max cards (default {default}, max {max})"
+msgstr ""
+
+#: src/frontends/cli/board.ts:97
+msgid "No cards."
+msgstr ""
+
+#: src/frontends/cli/board.ts:108
 msgid "Read boards and their cards (read-only)"
 msgstr ""
 
-#: src/frontends/cli/board.ts:109
+#: src/frontends/cli/board.ts:113
 msgid "Give a board command — `reminder board --help` lists them."
 msgstr ""
 
@@ -769,6 +859,7 @@ msgid "Mark a done reminder as open again"
 msgstr ""
 
 #: src/frontends/gui/board-view-model.ts:97
+#: src/frontends/gui/views/preferences/board-controller.ts:129
 msgid "Backlog"
 msgstr ""
 
@@ -777,11 +868,13 @@ msgid "To do"
 msgstr ""
 
 #: src/frontends/gui/board-view-model.ts:101
+#: src/frontends/gui/views/preferences/board-controller.ts:133
 #: src/frontends/gui/views/tasks.ts:39
 msgid "In progress"
 msgstr ""
 
 #: src/frontends/gui/board-view-model.ts:103
+#: src/frontends/gui/views/preferences/board-controller.ts:135
 msgid "Done"
 msgstr ""
 
@@ -792,13 +885,14 @@ msgstr ""
 #: src/frontends/gui/board-view-model.ts:153
 #: src/frontends/gui/board-view-model.ts:200 src/frontends/gui/model.ts:139
 #: src/frontends/gui/view-model.ts:103
-#: src/frontends/gui/views/preferences/controller.ts:102
-#: src/frontends/gui/views/preferences/controller.ts:140
+#: src/frontends/gui/views/preferences/controller.ts:108
+#: src/frontends/gui/views/preferences/controller.ts:146
 #: src/frontends/gui/views/tasks.ts:55 src/frontends/gui/views/tasks.ts:129
 msgid "Untitled"
 msgstr ""
 
 #: src/frontends/gui/board-view-model.ts:292
+#: src/frontends/gui/views/preferences/board-controller.ts:144
 msgid "Assigned to me"
 msgstr ""
 
@@ -822,7 +916,7 @@ msgstr ""
 msgid "No calendar backend could be set up."
 msgstr ""
 
-#: src/frontends/gui/main.ts:126
+#: src/frontends/gui/main.ts:129
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
@@ -831,6 +925,7 @@ msgid "Calendars"
 msgstr ""
 
 #: src/frontends/gui/view-model.ts:58
+#: src/frontends/gui/views/preferences/board-controller.ts:80
 msgid "Task lists"
 msgstr ""
 
@@ -883,7 +978,9 @@ msgid "Could not open the card: {message}"
 msgstr ""
 
 #: src/frontends/gui/views/board.ts:86 src/frontends/gui/views/board.ts:169
-#: src/frontends/gui/views/board.ts:295 src/frontends/gui/window.ts:87
+#: src/frontends/gui/views/board.ts:295
+#: src/frontends/gui/views/preferences/board.ts:31
+#: src/frontends/gui/window.ts:87
 msgid "Board"
 msgstr ""
 
@@ -916,6 +1013,7 @@ msgid "This source has no page of its own."
 msgstr ""
 
 #: src/frontends/gui/views/board.ts:136
+#: src/frontends/gui/views/preferences/board.ts:35
 msgid "Cards"
 msgstr ""
 
@@ -953,6 +1051,7 @@ msgstr ""
 
 #: src/frontends/gui/views/overview.ts:60
 #: src/frontends/gui/views/overview.ts:75
+#: src/frontends/gui/views/preferences/board.ts:38
 msgid "Sources"
 msgstr ""
 
@@ -962,14 +1061,18 @@ msgid ""
 msgstr ""
 
 #: src/frontends/gui/views/preferences/account-add.ts:16
+#: src/frontends/gui/views/preferences/board-source-form.ts:33
 msgid "Name (optional)"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/account-add.ts:17
+#: src/frontends/gui/views/preferences/board-source-form.ts:34
+#: src/frontends/gui/views/preferences/board-source-form.ts:45
 msgid "Server address"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/account-add.ts:18
+#: src/frontends/gui/views/preferences/board-source-form.ts:35
 msgid "User name"
 msgstr ""
 
@@ -1061,6 +1164,7 @@ msgid "Open an account to choose which calendars and task lists are kept."
 msgstr ""
 
 #: src/frontends/gui/views/preferences/accounts.ts:36
+#: src/frontends/gui/views/preferences/board.ts:66
 msgid "Not available in demo mode"
 msgstr ""
 
@@ -1082,6 +1186,7 @@ msgstr ""
 
 #: src/frontends/gui/views/preferences/accounts.ts:85
 #: src/frontends/gui/views/preferences/agent-access.ts:112
+#: src/frontends/gui/views/preferences/board.ts:192
 msgid "The configuration cannot be read"
 msgstr ""
 
@@ -1128,39 +1233,183 @@ msgstr ""
 msgid "Revoke"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:73
-msgid "System calendars"
+#: src/frontends/gui/views/preferences/board-controller.ts:64
+#: src/frontends/gui/views/preferences/board-source-form.ts:18
+msgid "Nextcloud Deck"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:113
-msgid "Create events"
+#: src/frontends/gui/views/preferences/board-controller.ts:64
+#: src/frontends/gui/views/preferences/board-source-form.ts:18
+msgid "OpenProject"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:115
-msgid "Create reminders"
+#: src/frontends/gui/views/preferences/board-controller.ts:64
+#: src/frontends/gui/views/preferences/board-source-form.ts:18
+msgid "Zenkit"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:117
-msgid "Change reminders"
+#: src/frontends/gui/views/preferences/board-controller.ts:131
+msgid "Todo"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:217
-msgid "The address must start with https://"
+#: src/frontends/gui/views/preferences/board-controller.ts:137
+msgid "Ignore column"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:219
-msgid "Enter the server address, e.g. https://dav.example.org/"
+#: src/frontends/gui/views/preferences/board-controller.ts:139
+msgid "Not placed"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:221
+#: src/frontends/gui/views/preferences/board-controller.ts:144
+msgid "Watching"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-controller.ts:144
+msgid "All cards"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-controller.ts:204
+msgid "Enter the server address, e.g. https://cloud.example.org/"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-controller.ts:212
+#: src/frontends/gui/views/preferences/controller.ts:227
 msgid "Enter the user name."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:222
+#: src/frontends/gui/views/preferences/board-controller.ts:214
+msgid "Enter the app password."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-controller.ts:214
+msgid "Enter the access token."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-controller.ts:278
+msgid "This source no longer exists."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:26
+msgid ""
+"The password or token is kept in your desktop keyring, not in the "
+"configuration file."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:29
+msgid "Type"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:37
+msgid "New password or token (empty keeps the stored one)"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:37
+msgid "App password or token"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:45
+msgid "Server address (optional)"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:52
+msgid "Save"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:52
+msgid "Add source"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:63
+#: src/frontends/gui/views/preferences/board.ts:65
+msgid "Add board source"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:96
+msgid "Source added"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:96
+msgid "Source saved"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:101
+msgid "Remove source"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board-source-form.ts:104
+msgid "Source removed"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:36
+msgid "Which cards a board shows. A source can choose differently below."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:54
+msgid "Same as everywhere"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:56
+#: src/frontends/gui/views/preferences/board.ts:134
+msgid "Show cards that are"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:66
+msgid "Nextcloud Deck, OpenProject or Zenkit"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:101
+msgid "Default"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:127
+msgid "Show on the board"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:145
+msgid "Enabled"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:146
+msgid "Off: the source is not contacted and nothing of it is kept."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:156
+msgid "Edit address and credential"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/board.ts:178
+msgid "No board sources yet"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:79
+msgid "System calendars"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:119
+msgid "Create events"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:121
+msgid "Create reminders"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:123
+msgid "Change reminders"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:223
+msgid "The address must start with https://"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:225
+msgid "Enter the server address, e.g. https://dav.example.org/"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:228
 msgid "Enter the password."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:290
+#: src/frontends/gui/views/preferences/controller.ts:296
 msgid "The account is removed, but cleaning up failed: {message}"
 msgstr ""
 

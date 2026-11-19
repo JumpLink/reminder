@@ -11,9 +11,13 @@
  * that is a filter the GUI paints with, and the core never sees it (ADR 0006 §3).
  */
 
+import { createDeckBoardSource } from '@reminder/deck';
+import { apiKeyAuth, createOpenProjectSource } from '@reminder/openproject';
+import { createZenkitBoardSource } from '@reminder/zenkit';
 import {
   cacheKeyOfTarget,
   createVtodoBoardSource,
+  errorMessage,
   fmt,
   withoutDisabled,
   _,
@@ -23,6 +27,8 @@ import {
   type BoardSourceType,
   type CalendarBackend,
   type CalendarInfo,
+  type ExternalSourceConfig,
+  type ExternalSourceType,
   type ReminderConfig,
   type SourceInfo,
   type SyncSourceKind,
@@ -46,6 +52,13 @@ export interface BoardSourceDeps {
    */
   calendars?(account: AccountConfig): readonly CalendarInfo[] | null;
   identity?: BoardIdentity;
+  /**
+   * The resolved credential of each external source, by source id. A source whose secret could not
+   * be read is absent and becomes a problem line, never a request without credentials.
+   */
+  externalSecrets?: ReadonlyMap<string, string>;
+  /** Injected for tests; the adapters default to the global fetch. */
+  fetch?: typeof fetch;
 }
 
 /**
@@ -96,6 +109,68 @@ export const BOARD_SOURCE_FACTORIES: Readonly<Partial<Record<BoardSourceType, Bo
     });
   },
 };
+
+/** A source over one external (Deck, OpenProject, Zenkit) entry; throws `ConfigError` when it cannot. */
+export type ExternalSourceFactory = (
+  source: ExternalSourceConfig,
+  secret: string,
+  deps: Pick<BoardSourceDeps, 'fetch'>,
+) => BoardSource;
+
+/** Only the allowlisted boards (ids) are offered; absent = all. Zenkit does this itself (`onlyLists`). */
+export function onlyBoards(inner: BoardSource, allowed: readonly string[] | undefined): BoardSource {
+  if (allowed === undefined) return inner;
+  return {
+    describe: () => inner.describe(),
+    whoAmI: () => inner.whoAmI(),
+    async listBoards() {
+      return (await inner.listBoards()).filter((board) => allowed.includes(board.id));
+    },
+    listColumns: (board) => inner.listColumns(board),
+    listCards: (board, query, since) => inner.listCards(board, query, since),
+  };
+}
+
+export const EXTERNAL_SOURCE_FACTORIES: Readonly<Record<ExternalSourceType, ExternalSourceFactory>> = {
+  deck: (source, secret, deps) =>
+    onlyBoards(
+      createDeckBoardSource({
+        id: source.id,
+        baseUrl: source.url ?? '',
+        auth: { type: 'app-password', username: source.username ?? '', password: secret },
+        fetch: deps.fetch,
+      }),
+      source.boards,
+    ),
+  openproject: (source, secret, deps) =>
+    onlyBoards(
+      createOpenProjectSource({
+        id: source.id,
+        baseUrl: source.url ?? '',
+        auth: apiKeyAuth(secret),
+        fetch: deps.fetch,
+      }),
+      source.boards,
+    ),
+  zenkit: (source, secret, deps) =>
+    createZenkitBoardSource({
+      id: source.id,
+      apiKey: secret,
+      ...(source.url !== undefined ? { baseUrl: source.url } : {}),
+      ...(source.lists ? { lists: source.lists } : {}),
+      ...(source.boards ? { onlyLists: source.boards } : {}),
+      ...(deps.fetch ? { http: { fetch: deps.fetch } } : {}),
+    }),
+};
+
+/** The server a source lives on, for the per-host cap. */
+export function externalHost(source: ExternalSourceConfig): string {
+  try {
+    return new URL(source.url ?? 'https://zenkit.com').host;
+  } catch {
+    return source.id;
+  }
+}
 
 /**
  * The disabled targets of one account, spelled the way that account's own backend spells its uids:
@@ -157,6 +232,23 @@ export function createBoardSources(
       kind: account.backend,
       host: options.host?.(account) ?? 'local',
     });
+  }
+  for (const external of deps.config.boardSources) {
+    // Disabled (ADR 0006) means never constructed: no object, no request, no cache.
+    if (!external.enabled) continue;
+    const secret = deps.externalSecrets?.get(external.id);
+    if (!secret) {
+      problems.push(
+        fmt(_('source "{id}": no credential — store it as {ref}'), { id: external.id, ref: external.secret }),
+      );
+      continue;
+    }
+    try {
+      const source = EXTERNAL_SOURCE_FACTORIES[external.type](external, secret, deps);
+      sources.push({ source, info: source.describe(), kind: external.type, host: externalHost(external) });
+    } catch (err) {
+      problems.push(fmt(_('source "{id}": {message}'), { id: external.id, message: errorMessage(err) }));
+    }
   }
   return { sources, problems };
 }
