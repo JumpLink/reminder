@@ -24,7 +24,9 @@ export type HttpAuth =
   | { readonly type: 'basic'; readonly username: string; readonly password: string }
   /** Nextcloud-style app password: Basic on the wire, kept apart so config can say what it holds. */
   | { readonly type: 'app-password'; readonly username: string; readonly password: string }
-  | { readonly type: 'bearer'; readonly token: string };
+  | { readonly type: 'bearer'; readonly token: string }
+  /** A key in a header of its own (Zenkit's `Zenkit-API-Key`); scrubbed from errors like any secret. */
+  | { readonly type: 'header'; readonly name: string; readonly value: string };
 
 export type QueryValue = string | number | boolean | undefined;
 
@@ -82,7 +84,7 @@ function toBase64(text: string): string {
 
 export class HttpClient {
   readonly baseUrl: string;
-  readonly #authorization: string | undefined;
+  readonly #authHeader: readonly [name: string, value: string] | undefined;
   /** Everything that must never appear in an error message. */
   readonly #secrets: string[] = [];
   readonly #headers: Record<string, string>;
@@ -102,11 +104,14 @@ export class HttpClient {
 
     const auth = options.auth;
     if (auth?.type === 'bearer') {
-      this.#authorization = `Bearer ${auth.token}`;
+      this.#authHeader = ['Authorization', `Bearer ${auth.token}`];
       this.#secrets.push(auth.token);
+    } else if (auth?.type === 'header') {
+      this.#authHeader = [auth.name, auth.value];
+      this.#secrets.push(auth.value);
     } else if (auth) {
       const pair = toBase64(`${auth.username}:${auth.password}`);
-      this.#authorization = `Basic ${pair}`;
+      this.#authHeader = ['Authorization', `Basic ${pair}`];
       this.#secrets.push(auth.password, pair);
     }
     this.#headers = { ...options.headers };
@@ -138,6 +143,23 @@ export class HttpClient {
   }
 
   async getJson<T>(path: string, options: GetJsonOptions = {}): Promise<JsonResult<T>> {
+    return this.#requestJson<T>('GET', path, undefined, options);
+  }
+
+  /**
+   * A JSON body in, JSON out. For query-style POSTs (Zenkit's entry filter); there is no ETag
+   * revalidation on it, so `unchanged` never comes back.
+   */
+  async postJson<T>(path: string, body: unknown, options: GetJsonOptions = {}): Promise<JsonResult<T>> {
+    return this.#requestJson<T>('POST', path, JSON.stringify(body), options);
+  }
+
+  async #requestJson<T>(
+    method: string,
+    path: string,
+    body: string | undefined,
+    options: GetJsonOptions,
+  ): Promise<JsonResult<T>> {
     const url = this.resolve(path, options.query);
     const where = `${url.origin}${url.pathname}`;
     const headers: Record<string, string> = {
@@ -147,16 +169,17 @@ export class HttpClient {
       ...this.#headers,
       ...options.headers,
     };
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
     if (options.etag) headers['If-None-Match'] = options.etag;
-    if (this.#authorization) headers.Authorization = this.#authorization;
+    if (this.#authHeader) headers[this.#authHeader[0]] = this.#authHeader[1];
 
-    const reply = await this.#limiter.run(url.host, () => this.#exchange('GET', url, where, headers, options));
+    const reply = await this.#limiter.run(url.host, () => this.#exchange(method, url, where, headers, options, body));
 
     if (reply.status === 304) return { status: 'unchanged', etag: reply.headers.get('etag') ?? options.etag };
-    if (reply.status < 200 || reply.status > 299) throw this.#failure(reply, where);
+    if (reply.status < 200 || reply.status > 299) throw this.#failure(method, reply, where);
 
     if (reply.text.trim() === '') {
-      throw new ResponseFormatError(`GET ${where} answered HTTP ${reply.status} with an empty body`, {
+      throw new ResponseFormatError(`${method} ${where} answered HTTP ${reply.status} with an empty body`, {
         status: reply.status,
         url: where,
       });
@@ -169,7 +192,7 @@ export class HttpClient {
         headers: reply.headers,
       };
     } catch {
-      throw new ResponseFormatError(`GET ${where} answered HTTP ${reply.status} with a body that is not JSON`, {
+      throw new ResponseFormatError(`${method} ${where} answered HTTP ${reply.status} with a body that is not JSON`, {
         status: reply.status,
         url: where,
       });
@@ -182,6 +205,7 @@ export class HttpClient {
     where: string,
     headers: Record<string, string>,
     options: GetJsonOptions,
+    body?: string,
   ): Promise<Reply> {
     const timeoutMs = options.timeoutMs ?? this.#timeoutMs;
     const controller = new AbortController();
@@ -196,7 +220,7 @@ export class HttpClient {
     if (signal?.aborted) controller.abort();
 
     try {
-      const res = await this.#fetch(url.href, { method, headers, signal: controller.signal });
+      const res = await this.#fetch(url.href, { method, headers, body, signal: controller.signal });
       // The body is read under the same timer: a server that stalls mid-body is a timeout too.
       const text = res.status === 304 ? '' : await res.text();
       return { status: res.status, headers: res.headers, text };
@@ -213,10 +237,10 @@ export class HttpClient {
     }
   }
 
-  #failure(reply: Reply, where: string): HttpError | UnauthorizedError {
+  #failure(method: string, reply: Reply, where: string): HttpError | UnauthorizedError {
     const status = reply.status;
     const retryAfterMs = parseRetryAfter(reply.headers.get('retry-after'));
-    const message = `GET ${where} answered HTTP ${status}`;
+    const message = `${method} ${where} answered HTTP ${status}`;
     const details = retryAfterMs === undefined ? { status, url: where } : { status, url: where, retryAfterMs };
     if (status === 401) return new UnauthorizedError(message, details);
     if (status === 403) return new ForbiddenError(message, details);

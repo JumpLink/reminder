@@ -18,8 +18,8 @@ const result = await client.getJson<Board[]>('boards', { etag }); // ok | unchan
 const cards = await paginateAll<Card>(client, 'cards', { style: 'offset', pageSize: 50 });
 ```
 
-- `HttpClient`: base URL, auth, per-request `timeoutMs` (AbortController), `getJson` with
-  `If-None-Match`; a 304 returns `{ status: 'unchanged' }`.
+- `HttpClient`: base URL, auth (basic, app-password, bearer, or a named header), per-request `timeoutMs` (AbortController), `getJson` with
+  `If-None-Match`; a 304 returns `{ status: 'unchanged' }`.  `postJson` sends a JSON body (query-style POSTs; no ETag).
 - Errors extend `@gjsify/pim`'s `BackendError` (`domain: 'http'`, status in `code`):
   `UnauthorizedError` (a `BackendAuthError`), `ForbiddenError`, `NotFoundError`,
   `RateLimitedError` (`retryAfterMs` from `Retry-After`), `ServerError`, `TimeoutError`,
