@@ -49,6 +49,10 @@ msgid ""
 "(accounts: {accounts})"
 msgstr ""
 
+#: ../packages/core/src/board/types.ts:149
+msgid "no board {id} in this source"
+msgstr ""
+
 #: ../packages/core/src/config.ts:120
 msgid "backend {backend} is not supported (known: {known})"
 msgstr ""

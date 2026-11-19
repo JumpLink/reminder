@@ -27,3 +27,4 @@ export * from './secrets.ts';
 export * from './i18n.ts';
 export * from './sync/index.ts';
 export * from './agenda.ts';
+export * from './board/index.ts';

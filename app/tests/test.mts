@@ -19,6 +19,7 @@ import cache from './unit/core/cache.test.ts';
 import sync from './unit/core/sync.test.ts';
 import visibility from './unit/core/visibility.test.ts';
 import agenda from './unit/core/agenda.test.ts';
+import board from './unit/board/board.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
@@ -64,6 +65,7 @@ run({
   sync,
   visibility,
   agenda,
+  board,
   secrets,
   cacheFs,
   caldav,
