@@ -10,6 +10,8 @@ export interface RecordedRequest {
   path: string;
   query: string;
   headers: IncomingMessage['headers'];
+  /** The request body as text; empty for a GET. */
+  body: string;
 }
 
 export type Handler = (req: RecordedRequest, res: ServerResponse) => void;
@@ -29,17 +31,28 @@ export async function startFakeRest(): Promise<FakeRest> {
 
   const server: Server = createServer((req, res) => {
     const [path, query = ''] = (req.url ?? '/').split('?');
-    const recorded: RecordedRequest = { method: req.method ?? 'GET', path, query, headers: req.headers };
+    const recorded: RecordedRequest = {
+      method: req.method ?? 'GET',
+      path,
+      query,
+      headers: req.headers,
+      body: '',
+    };
     requests.push(recorded);
     pending.add(res);
     res.on('close', () => pending.delete(res));
-    const handler = handlers.get(path);
-    if (!handler) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end('{}');
-      return;
-    }
-    handler(recorded, res);
+    const chunks: Buffer[] = [];
+    req.on('data', (chunk: Buffer) => chunks.push(chunk));
+    req.on('end', () => {
+      recorded.body = Buffer.concat(chunks).toString('utf8');
+      const handler = handlers.get(path);
+      if (!handler) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end('{}');
+        return;
+      }
+      handler(recorded, res);
+    });
   });
 
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', () => resolve()));

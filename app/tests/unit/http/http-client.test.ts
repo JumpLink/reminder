@@ -65,6 +65,31 @@ export default async () => {
       });
     });
 
+    await it('posts a JSON body, sends a header key, and keeps the key out of errors', async () => {
+      await withServer(async (rest) => {
+        rest.on('/api/query', (req, res) => json(res, 200, { echo: JSON.parse(req.body) }));
+        rest.on('/api/denied', (_req, res) => json(res, 429, {}, { 'Retry-After': '3' }));
+        const client = new HttpClient({
+          baseUrl: rest.url,
+          auth: { type: 'header', name: 'X-Api-Key', value: TOKEN },
+          limiter: new HostLimiter(),
+        });
+        const result = await client.postJson<{ echo: { limit: number } }>('query', { limit: 5 });
+        expect(result.status === 'ok' && result.data.echo.limit).toBe(5);
+        expect(rest.requests[0].method).toBe('POST');
+        expect(rest.requests[0].headers['x-api-key']).toBe(TOKEN);
+        expect(rest.requests[0].headers['content-type']).toBe('application/json');
+        expect(rest.requests[0].headers.authorization).toBe(undefined);
+
+        const err = await rejection(client.postJson('denied', {}));
+        expect(err instanceof RateLimitedError).toBe(true);
+        expect((err as RateLimitedError).retryAfterMs).toBe(3000);
+        expect(err.message.startsWith('POST ')).toBe(true);
+        expect(err.message.includes(TOKEN)).toBe(false);
+        expect(JSON.stringify(client).includes(TOKEN)).toBe(false);
+      });
+    });
+
     await it('answers a 304 to If-None-Match as unchanged', async () => {
       await withServer(async (rest) => {
         rest.on('/api/boards', (req, res) => {

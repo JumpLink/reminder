@@ -58,6 +58,8 @@
 ../packages/secrets-libsecret/src/libs.gjs.ts
 ../packages/secrets-libsecret/src/optional.ts
 ../packages/secrets-libsecret/src/store.gjs.ts
+../packages/zenkit/src/index.ts
+../packages/zenkit/src/source.ts
 src/core/config-write.ts
 src/core/config.ts
 src/core/context.ts
