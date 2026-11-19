@@ -1,0 +1,22 @@
+{
+  "name": "@reminder/openproject",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "Read-only OpenProject (API v3) driver for the @reminder/core BoardSource port: projects as boards, statuses as columns, work packages as cards.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@gjsify/http-client": "*",
+    "@reminder/core": "*"
+  }
+}

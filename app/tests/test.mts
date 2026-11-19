@@ -25,6 +25,7 @@ import boardMine from './unit/board/mine.test.ts';
 import boardVtodo from './unit/board/vtodo-source.test.ts';
 import boardConfig from './unit/board/config.test.ts';
 import zenkit from './unit/zenkit/zenkit-source.test.ts';
+import boardOpenProject from './unit/openproject/openproject-source.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
 
@@ -77,6 +78,7 @@ run({
   boardVtodo,
   boardConfig,
   zenkit,
+  boardOpenProject,
   secrets,
   cacheFs,
   caldav,

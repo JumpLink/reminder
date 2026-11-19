@@ -40,6 +40,8 @@
 ../packages/http/src/index.ts
 ../packages/http/src/limiter.ts
 ../packages/http/src/paginate.ts
+../packages/openproject/src/index.ts
+../packages/openproject/src/openproject-source.ts
 ../packages/pim/src/backend.ts
 ../packages/pim/src/caldav/backend.ts
 ../packages/pim/src/caldav/delta.ts
