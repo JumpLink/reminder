@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 21:15+0100\n"
+"POT-Creation-Date: 2026-11-19 21:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -430,6 +430,18 @@ msgstr ""
 msgid "list {id} has no choice field to use as its columns"
 msgstr ""
 
+#: src/core/board-read.ts:96
+msgid "boards cannot be read: {problems}"
+msgstr ""
+
+#: src/core/board-read.ts:126
+msgid "no board \"{board}\" — list the boards first"
+msgstr ""
+
+#: src/core/board-read.ts:130
+msgid "several sources have a board \"{board}\" — name the source ({sources})"
+msgstr ""
+
 #: src/core/board-sources.ts:149
 msgid "this build has no board support for \"{type}\""
 msgstr ""
@@ -498,6 +510,62 @@ msgstr ""
 
 #: src/frontends/cli/accounts.ts:63
 msgid "{calendars} calendars · {lists} task lists"
+msgstr ""
+
+#: src/frontends/cli/board.ts:18
+msgid "List the boards of every enabled source"
+msgstr ""
+
+#: src/frontends/cli/board.ts:23
+msgid "Max boards (default {default}, max {max})"
+msgstr ""
+
+#: src/frontends/cli/board.ts:36
+msgid "No boards."
+msgstr ""
+
+#: src/frontends/cli/board.ts:49
+msgid "List the cards of one board (id from `reminder board list`)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:52
+msgid "Board id"
+msgstr ""
+
+#: src/frontends/cli/board.ts:53
+msgid "Source id, when two sources share a board id"
+msgstr ""
+
+#: src/frontends/cli/board.ts:57
+msgid "Whose cards: assigned, watching or all (default: the configuration)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:59
+msgid "Same as --mine all"
+msgstr ""
+
+#: src/frontends/cli/board.ts:63
+msgid "Include cards in the done lane"
+msgstr ""
+
+#: src/frontends/cli/board.ts:67
+msgid "Max cards (default {default}, max {max})"
+msgstr ""
+
+#: src/frontends/cli/board.ts:89
+msgid "No cards."
+msgstr ""
+
+#: src/frontends/cli/board.ts:92
+msgid "due {time}"
+msgstr ""
+
+#: src/frontends/cli/board.ts:104
+msgid "Read boards and their cards (read-only)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:109
+msgid "Give a board command — `reminder board --help` lists them."
 msgstr ""
 
 #: src/frontends/cli/calendars.ts:15
@@ -1232,10 +1300,10 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: src/index.ts:44
+#: src/index.ts:46
 msgid "Give a command — `reminder --help` lists them."
 msgstr ""
 
-#: src/index.ts:49
+#: src/index.ts:51
 msgid "Use invented data: no network, no configuration, nothing saved"
 msgstr ""

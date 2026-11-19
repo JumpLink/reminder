@@ -10,6 +10,7 @@ import { IDENTITY } from './core/identity.ts';
 import { VERSION } from './core/runtime.ts';
 import {
   accountsCommand,
+  boardCommand,
   calendarsCommand,
   completeCommand,
   configCommand,
@@ -34,6 +35,7 @@ const parseArgs = () =>
     .command(calendarsCommand)
     .command(eventsCommand)
     .command(todosCommand)
+    .command(boardCommand)
     .command(prioritiesCommand)
     .command(updateCommand)
     .command(completeCommand)

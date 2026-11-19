@@ -28,6 +28,7 @@ import zenkit from './unit/zenkit/zenkit-source.test.ts';
 import boardOpenProject from './unit/openproject/openproject-source.test.ts';
 import boardSources from './unit/board/board-sources.test.ts';
 import boardDemoSource from './unit/board/demo-source.test.ts';
+import boardRead from './unit/board/board-read.test.ts';
 import boardCache from './unit/core/board-cache.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
@@ -86,6 +87,7 @@ run({
   boardOpenProject,
   boardSources,
   boardDemoSource,
+  boardRead,
   boardCache,
   secrets,
   cacheFs,

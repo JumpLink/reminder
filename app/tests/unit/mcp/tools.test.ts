@@ -7,13 +7,21 @@ import {
 } from '@reminder/core';
 
 import { staticContext } from '../../../src/core/context.ts';
+import { createDemoContext } from '../../../src/core/demo/index.ts';
 import { registerTools } from '../../../src/frontends/mcp/server.ts';
 import { calendar, createFakeBackend, vevent, vtodo } from '../fake-backend.ts';
 import { createRecorder } from './recorder.ts';
 
 // The catalogue is the client contract. Adding a tool here is a decision (ADR 0001 §4), not a
 // side effect of a refactor.
-const READ_ONLY_TOOLS = ['calendars_list', 'events_list', 'priorities_list', 'reminders_list'];
+const READ_ONLY_TOOLS = [
+  'boards_list',
+  'calendars_list',
+  'cards_list',
+  'events_list',
+  'priorities_list',
+  'reminders_list',
+];
 const WRITE_TOOLS = ['events_create', 'reminders_create', 'reminders_update'];
 
 function withGrants(...grants: ReminderConfig['grants']): ReminderConfig {
@@ -343,6 +351,59 @@ export default async () => {
       const res = await failing.call('calendars_list');
       expect(res.isError).toBe(true);
       expect(res.content[0].text).toContain('typelib not available');
+    });
+  });
+
+  await describe('MCP board tools', async () => {
+    const demo = () => {
+      const rec = createRecorder();
+      registerTools(rec.server, createDemoContext(new Date(2026, 10, 18, 9, 0)));
+      return rec;
+    };
+
+    await it('boards_list answers the demo boards, capped with an omitted count', async () => {
+      const all = JSON.parse((await demo().call('boards_list')).content[0].text);
+      expect(all.boards.some((b: { id: string }) => b.id === 'relaunch')).toBe(true);
+      expect(all.omitted).toBe(0);
+      const one = JSON.parse((await demo().call('boards_list', { limit: 1 })).content[0].text);
+      expect(one.boards.length).toBe(1);
+      expect(one.omitted).toBe(all.boards.length - 1);
+    });
+
+    await it('cards_list returns lanes without descriptions and reports what the cap cut', async () => {
+      const res = await demo().call('cards_list', { board: 'relaunch', mine: 'all', limit: 2 });
+      const payload = JSON.parse(res.content[0].text);
+      expect(payload.cards.length).toBe(2);
+      expect(payload.omitted > 0).toBe(true);
+      expect(Object.keys(payload.cards[0]).sort().join(',')).toBe('assignees,column,due,id,lane,title,url');
+    });
+
+    await it('cards_list refuses an unknown board with an error result', async () => {
+      const res = await demo().call('cards_list', { board: 'nope' });
+      expect(res.isError).toBe(true);
+      expect(res.content[0].text).toContain('nope');
+    });
+
+    await it('serves a hidden-but-enabled list to agents and never a disabled one', async () => {
+      const lists = createFakeBackend([calendar('shown', 'reminder'), calendar('off', 'reminder')], {
+        shown: [vtodo('a', ['SUMMARY:Reply'])],
+        off: [vtodo('b', ['SUMMARY:Secret'])],
+      });
+      const enabled = createRecorder();
+      registerTools(enabled.server, staticContext(lists, emptyConfig()));
+      const both = JSON.parse((await enabled.call('boards_list')).content[0].text);
+      expect(
+        both.boards
+          .map((b: { id: string }) => b.id)
+          .sort()
+          .join(','),
+      ).toBe('off,shown');
+
+      const disabled = createRecorder();
+      registerTools(disabled.server, staticContext(lists, { ...emptyConfig(), disabled: ['off'] }));
+      const left = JSON.parse((await disabled.call('boards_list')).content[0].text);
+      expect(left.boards.map((b: { id: string }) => b.id).join(',')).toBe('shown');
+      expect((await disabled.call('cards_list', { board: 'off' })).isError).toBe(true);
     });
   });
 };

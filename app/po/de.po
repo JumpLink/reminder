@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 21:15+0100\n"
+"POT-Creation-Date: 2026-11-19 21:42+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -463,6 +463,18 @@ msgstr "Feld „{field}“ in Liste {id} hat für diesen Zweck den falschen Typ"
 msgid "list {id} has no choice field to use as its columns"
 msgstr "Liste {id} hat kein Auswahlfeld, das als Spalten dienen kann"
 
+#: src/core/board-read.ts:96
+msgid "boards cannot be read: {problems}"
+msgstr "Boards lassen sich nicht lesen: {problems}"
+
+#: src/core/board-read.ts:126
+msgid "no board \"{board}\" — list the boards first"
+msgstr "Kein Board „{board}“ — liste zuerst die Boards auf"
+
+#: src/core/board-read.ts:130
+msgid "several sources have a board \"{board}\" — name the source ({sources})"
+msgstr "Mehrere Quellen haben ein Board „{board}“ — nenne die Quelle ({sources})"
+
 #: src/core/board-sources.ts:149
 msgid "this build has no board support for \"{type}\""
 msgstr "Dieser Build unterstützt keine Boards vom Typ „{type}“"
@@ -532,6 +544,62 @@ msgstr "Die eingerichteten Konten auflisten"
 #: src/frontends/cli/accounts.ts:63
 msgid "{calendars} calendars · {lists} task lists"
 msgstr "{calendars} Kalender · {lists} Aufgabenlisten"
+
+#: src/frontends/cli/board.ts:18
+msgid "List the boards of every enabled source"
+msgstr "Boards jeder aktiven Quelle auflisten"
+
+#: src/frontends/cli/board.ts:23
+msgid "Max boards (default {default}, max {max})"
+msgstr "Höchstzahl Boards (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/board.ts:36
+msgid "No boards."
+msgstr "Keine Boards."
+
+#: src/frontends/cli/board.ts:49
+msgid "List the cards of one board (id from `reminder board list`)"
+msgstr "Karten eines Boards auflisten (ID aus `reminder board list`)"
+
+#: src/frontends/cli/board.ts:52
+msgid "Board id"
+msgstr "Board-ID"
+
+#: src/frontends/cli/board.ts:53
+msgid "Source id, when two sources share a board id"
+msgstr "Quellen-ID, wenn zwei Quellen dieselbe Board-ID haben"
+
+#: src/frontends/cli/board.ts:57
+msgid "Whose cards: assigned, watching or all (default: the configuration)"
+msgstr "Wessen Karten: assigned, watching oder all (Standard: die Konfiguration)"
+
+#: src/frontends/cli/board.ts:59
+msgid "Same as --mine all"
+msgstr "Wie --mine all"
+
+#: src/frontends/cli/board.ts:63
+msgid "Include cards in the done lane"
+msgstr "Karten in der Spalte „Erledigt“ einbeziehen"
+
+#: src/frontends/cli/board.ts:67
+msgid "Max cards (default {default}, max {max})"
+msgstr "Höchstzahl Karten (Standard {default}, Maximum {max})"
+
+#: src/frontends/cli/board.ts:89
+msgid "No cards."
+msgstr "Keine Karten."
+
+#: src/frontends/cli/board.ts:92
+msgid "due {time}"
+msgstr "fällig {time}"
+
+#: src/frontends/cli/board.ts:104
+msgid "Read boards and their cards (read-only)"
+msgstr "Boards und ihre Karten lesen (nur lesend)"
+
+#: src/frontends/cli/board.ts:109
+msgid "Give a board command — `reminder board --help` lists them."
+msgstr "Gib einen Board-Befehl an — `reminder board --help` listet sie auf."
 
 #: src/frontends/cli/calendars.ts:15
 msgid "List calendars and task lists"
@@ -1284,11 +1352,11 @@ msgstr "Aktualisieren"
 msgid "Quit"
 msgstr "Beenden"
 
-#: src/index.ts:44
+#: src/index.ts:46
 msgid "Give a command — `reminder --help` lists them."
 msgstr "Gib einen Befehl an — `reminder --help` listet sie auf."
 
-#: src/index.ts:49
+#: src/index.ts:51
 msgid "Use invented data: no network, no configuration, nothing saved"
 msgstr ""
 "Erfundene Daten nutzen: kein Netzwerk, keine Konfiguration, nichts wird "

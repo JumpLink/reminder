@@ -63,6 +63,7 @@
 ../packages/zenkit/src/index.ts
 ../packages/zenkit/src/source.ts
 src/core/board-cache.ts
+src/core/board-read.ts
 src/core/board-sources.ts
 src/core/config-write.ts
 src/core/config.ts
@@ -76,6 +77,7 @@ src/core/i18n.ts
 src/core/identity.ts
 src/core/runtime.ts
 src/frontends/cli/accounts.ts
+src/frontends/cli/board.ts
 src/frontends/cli/calendars.ts
 src/frontends/cli/config.ts
 src/frontends/cli/events.ts
@@ -112,6 +114,7 @@ src/frontends/gui/window.blp
 src/frontends/gui/window.d.blp.ts
 src/frontends/gui/window.ts
 src/frontends/mcp/server.ts
+src/frontends/mcp/tools/board.ts
 src/frontends/mcp/tools/read.ts
 src/frontends/mcp/tools/write.ts
 src/index.ts
