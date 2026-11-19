@@ -74,6 +74,7 @@
     "@gjsify/adwaita-app": "0.64.49",
     "@gjsify/adwaita-extended": "*",
     "@gjsify/cli": "0.64.49",
+    "@gjsify/http-client": "*",
     "@gjsify/mcp": "0.64.49",
     "@gjsify/node-globals": "0.64.49",
     "@gjsify/pim": "*",
