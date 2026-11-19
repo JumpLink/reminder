@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 19:12+0100\n"
+"POT-Creation-Date: 2026-11-19 21:15+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -462,6 +462,10 @@ msgstr "Feld „{field}“ in Liste {id} hat für diesen Zweck den falschen Typ"
 #: ../packages/zenkit/src/source.ts:257
 msgid "list {id} has no choice field to use as its columns"
 msgstr "Liste {id} hat kein Auswahlfeld, das als Spalten dienen kann"
+
+#: src/core/board-sources.ts:119
+msgid "this build has no board support for \"{type}\""
+msgstr "Dieser Build unterstützt keine Boards vom Typ „{type}“"
 
 #: src/core/config-write.ts:112
 msgid "account \"{id}\" already exists"

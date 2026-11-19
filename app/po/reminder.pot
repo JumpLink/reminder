@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 19:12+0100\n"
+"POT-Creation-Date: 2026-11-19 21:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -428,6 +428,10 @@ msgstr ""
 
 #: ../packages/zenkit/src/source.ts:257
 msgid "list {id} has no choice field to use as its columns"
+msgstr ""
+
+#: src/core/board-sources.ts:119
+msgid "this build has no board support for \"{type}\""
 msgstr ""
 
 #: src/core/config-write.ts:112
