@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-18 18:50+0100\n"
+"POT-Creation-Date: 2026-11-19 17:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,15 +37,15 @@ msgstr ""
 msgid "Later"
 msgstr ""
 
-#: src/swipe-row.ts:48
+#: src/swipe-row.ts:49
 msgid "Complete"
 msgstr ""
 
-#: src/swipe-row.ts:49
+#: src/swipe-row.ts:50
 msgid "Postpone"
 msgstr ""
 
-#: src/swipe-row.ts:288
+#: src/swipe-row.ts:289
 msgid "Open"
 msgstr ""
 

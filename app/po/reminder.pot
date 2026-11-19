@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 09:16+0100\n"
+"POT-Creation-Date: 2026-11-19 17:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -368,18 +368,6 @@ msgstr ""
 msgid "secret service not available: {message}"
 msgstr ""
 
-#: src/core/config.ts:38
-msgid "cannot read {path}: {message}"
-msgstr ""
-
-#: src/core/config.ts:45
-msgid "{path} is not valid JSON: {message}"
-msgstr ""
-
-#: src/core/config.ts:51
-msgid "{path}: {message}"
-msgstr ""
-
 #: src/core/config-write.ts:112
 msgid "account \"{id}\" already exists"
 msgstr ""
@@ -390,6 +378,18 @@ msgstr ""
 
 #: src/core/config-write.ts:134
 msgid "a configuration needs at least one account"
+msgstr ""
+
+#: src/core/config.ts:38
+msgid "cannot read {path}: {message}"
+msgstr ""
+
+#: src/core/config.ts:45
+msgid "{path} is not valid JSON: {message}"
+msgstr ""
+
+#: src/core/config.ts:51
+msgid "{path}: {message}"
 msgstr ""
 
 #: src/core/context.ts:79
@@ -634,11 +634,11 @@ msgstr ""
 msgid "Mark a done reminder as open again"
 msgstr ""
 
-#: src/frontends/gui/main.ts:55
+#: src/frontends/gui/main.ts:57
 msgid "No calendar backend could be set up."
 msgstr ""
 
-#: src/frontends/gui/main.ts:104
+#: src/frontends/gui/main.ts:109
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
@@ -736,7 +736,7 @@ msgid "Account added"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/account-add.ts:58
-#: src/frontends/gui/views/preferences/accounts.ts:31
+#: src/frontends/gui/views/preferences/accounts.ts:35
 msgid "Add CalDAV account"
 msgstr ""
 
@@ -801,80 +801,80 @@ msgstr ""
 msgid "The last account cannot be removed."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:20
 #: src/frontends/gui/views/preferences/accounts.ts:22
+#: src/frontends/gui/views/preferences/accounts.ts:26
 msgid "Accounts"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:23
+#: src/frontends/gui/views/preferences/accounts.ts:27
 msgid "Open an account to choose which calendars and task lists are kept."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:32
+#: src/frontends/gui/views/preferences/accounts.ts:36
 msgid "Not available in demo mode"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:32
+#: src/frontends/gui/views/preferences/accounts.ts:36
 msgid "Any server that speaks CalDAV"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:38
+#: src/frontends/gui/views/preferences/accounts.ts:42
 msgid "Add system calendars"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:38
+#: src/frontends/gui/views/preferences/accounts.ts:42
 msgid "The calendars of your desktop accounts"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:43
+#: src/frontends/gui/views/preferences/accounts.ts:47
 msgid "System calendars added"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:79
-#: src/frontends/gui/views/preferences/agent-access.ts:104
+#: src/frontends/gui/views/preferences/accounts.ts:85
+#: src/frontends/gui/views/preferences/agent-access.ts:112
 msgid "The configuration cannot be read"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:22
+#: src/frontends/gui/views/preferences/agent-access.ts:24
 msgid "Agent access"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:24
+#: src/frontends/gui/views/preferences/agent-access.ts:28
 msgid "Granted"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:25
+#: src/frontends/gui/views/preferences/agent-access.ts:29
 msgid ""
 "Agents can always read. They change something only where it is listed here."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:27
-#: src/frontends/gui/views/preferences/agent-access.ts:36
+#: src/frontends/gui/views/preferences/agent-access.ts:31
+#: src/frontends/gui/views/preferences/agent-access.ts:40
 msgid "Grant access"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:32
+#: src/frontends/gui/views/preferences/agent-access.ts:36
 msgid "May"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:35
+#: src/frontends/gui/views/preferences/agent-access.ts:39
 msgid "In"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:53
+#: src/frontends/gui/views/preferences/agent-access.ts:61
 msgid "Nothing to choose from"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:74
+#: src/frontends/gui/views/preferences/agent-access.ts:82
 msgid "Nothing is granted"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:75
+#: src/frontends/gui/views/preferences/agent-access.ts:83
 msgid "Agents cannot change anything."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:89
-#: src/frontends/gui/views/preferences/agent-access.ts:90
+#: src/frontends/gui/views/preferences/agent-access.ts:97
+#: src/frontends/gui/views/preferences/agent-access.ts:98
 msgid "Revoke"
 msgstr ""
 
@@ -939,24 +939,24 @@ msgstr ""
 msgid "Saturday"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/general.ts:49
+#: src/frontends/gui/views/preferences/general.ts:51
 #: src/frontends/gui/window.ts:223
 msgid "General"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/general.ts:50
+#: src/frontends/gui/views/preferences/general.ts:54
 msgid "Appearance"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/general.ts:51
+#: src/frontends/gui/views/preferences/general.ts:55
 msgid "Dates"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/general.ts:56
+#: src/frontends/gui/views/preferences/general.ts:60
 msgid "Color scheme"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/general.ts:60
+#: src/frontends/gui/views/preferences/general.ts:64
 msgid "First day of the week"
 msgstr ""
 
