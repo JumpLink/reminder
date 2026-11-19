@@ -20,3 +20,4 @@ export { SourceList, type SourceItem, type SourceSection } from './source-list.t
 export { commitDistance, rowMinHeight, swipeOutcome, type SwipeOutcome } from './swipe-rules.ts';
 export { SwipeRow } from './swipe-row.ts';
 export { TaskRow, type TaskRowData } from './task-row.ts';
+export { initI18n, TEXT_DOMAIN } from './i18n.ts';
