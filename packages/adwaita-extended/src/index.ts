@@ -9,6 +9,10 @@
 
 export { AdaptivePane } from './adaptive-pane.ts';
 export { containerFor, type PaneContainer } from './adaptive-container.ts';
+export { BoardCard, MAX_AVATARS, type BoardCardData } from './board-card.ts';
+export { BoardColumn, type BoardColumnData } from './board-column.ts';
+export { boardPresentation, visibleColumns, type BoardPresentation } from './board-rules.ts';
+export { KanbanBoard } from './kanban-board.ts';
 export { ColorCheck } from './color-check.ts';
 export { DueChip } from './due-chip.ts';
 export { dueState, SOON_DAYS, type DueState } from './due-state.ts';

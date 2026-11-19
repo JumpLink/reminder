@@ -1,10 +1,14 @@
 src/adaptive-container.ts
 src/adaptive-pane.ts
+src/board-card.ts
+src/board-column.ts
+src/board-rules.ts
 src/color-check.ts
 src/due-chip.ts
 src/due-state.ts
 src/i18n.ts
 src/index.ts
+src/kanban-board.ts
 src/priority-marks.ts
 src/signals.ts
 src/size-class.ts
