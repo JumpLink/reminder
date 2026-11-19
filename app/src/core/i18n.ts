@@ -35,7 +35,7 @@ function gjsGettext(): GjsGettext | null {
 }
 
 /** `GJSIFY_LOCALE_DIR` (set by `gjsify ship`), else `<bundle>/../locale` in a build tree, else the system. */
-function defaultLocaleDir(): string | undefined {
+export function defaultLocaleDir(): string | undefined {
   const fromEnv = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env
     ?.GJSIFY_LOCALE_DIR;
   if (fromEnv) return fromEnv;

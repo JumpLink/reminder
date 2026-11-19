@@ -9,12 +9,14 @@
 import Gtk from '@girs/gtk-4.0';
 import system from 'system';
 import { AdwaitaApp, readAppDevHooks, runApplication } from '@gjsify/adwaita-app';
+import { initI18n as initWidgetI18n } from '@gjsify/adwaita-extended';
 
 import { _, errorMessage } from '@reminder/core';
 
 import { configPath } from '../../core/config.ts';
 import { createConfigStore } from '../../core/config-write.ts';
 import { createContext, type Context } from '../../core/context.ts';
+import { defaultLocaleDir } from '../../core/i18n.ts';
 import { createDemoContext, demoActive, demoConfig } from '../../core/demo/index.ts';
 
 import { APP_ID, APP_NAME, APP_VERSION, DEV_HOOK_PREFIX, PREFS_HOOK, SIZE_HOOK } from './constants.ts';
@@ -91,6 +93,8 @@ async function startServices(window: MainWindow): Promise<void> {
 }
 
 export async function runGui(): Promise<number> {
+  // The widgets bind their own domain on load; point it at the catalogue the app ships beside its own.
+  initWidgetI18n(defaultLocaleDir());
   const hooks = readAppDevHooks({ prefix: DEV_HOOK_PREFIX });
   const app = new AdwaitaApp({
     applicationId: APP_ID,

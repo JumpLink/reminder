@@ -1,0 +1,57 @@
+{
+  "id": "eu.jumplink.Reminder",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "50",
+  "sdk": "org.gnome.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.node24"
+  ],
+  "command": "reminder",
+  "finish-args": [
+    "--share=ipc",
+    "--share=network",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--device=dri",
+    "--talk-name=org.freedesktop.secrets",
+    "--talk-name=org.gnome.OnlineAccounts"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/node24/bin"
+  },
+  "modules": [
+    {
+      "name": "reminder",
+      "buildsystem": "simple",
+      "build-options": {
+        "env": {
+          "XDG_CACHE_HOME": "/run/build/reminder/flatpak-gjsify-cache"
+        }
+      },
+      "build-commands": [
+        "mkdir -p /run/build/reminder/.gjsify-cli && tar -xzf gjsify-cli.tgz -C /run/build/reminder/.gjsify-cli --strip-components=1 && mkdir -p /app/bin && printf '#!/bin/sh\\nexec gjs -m /run/build/reminder/.gjsify-cli/dist/cli.gjs.mjs \"$@\"\\n' > /run/build/reminder/gjsify && chmod +x /run/build/reminder/gjsify",
+        "export PATH=/run/build/reminder:$PATH && gjsify install --immutable --focus reminder-cli && gjsify workspace reminder-cli build",
+        "install -Dm755 app/dist/reminder.gjs.mjs /app/share/eu.jumplink.Reminder/reminder.gjs.mjs",
+        "cp -r app/dist/locale /app/share/eu.jumplink.Reminder/locale",
+        "mkdir -p /app/bin && printf '#!/bin/sh\\nexec env GJSIFY_LOCALE_DIR=/app/share/eu.jumplink.Reminder/locale gjs -m /app/share/eu.jumplink.Reminder/reminder.gjs.mjs \"$@\"\\n' > /app/bin/reminder-wrapper && install -Dm755 /app/bin/reminder-wrapper /app/bin/reminder && rm /app/bin/reminder-wrapper",
+        "install -Dm644 app/data/eu.jumplink.Reminder.desktop /app/share/applications/eu.jumplink.Reminder.desktop",
+        "install -Dm644 app/data/eu.jumplink.Reminder.metainfo.xml /app/share/metainfo/eu.jumplink.Reminder.metainfo.xml",
+        "install -Dm644 app/data/icons/hicolor/scalable/apps/eu.jumplink.Reminder.svg /app/share/icons/hicolor/scalable/apps/eu.jumplink.Reminder.svg",
+        "install -Dm644 app/data/icons/hicolor/symbolic/apps/eu.jumplink.Reminder-symbolic.svg /app/share/icons/hicolor/symbolic/apps/eu.jumplink.Reminder-symbolic.svg"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "."
+        },
+        "gjsify-sources.json",
+        {
+          "type": "file",
+          "url": "https://registry.npmjs.org/@gjsify/cli/-/cli-0.64.48.tgz",
+          "sha512": "61d7beac7f50fc7ca7533ebc64a1bd30274a0f7d6ee51a3e102a920a869a9bd5d970e3091144073e95e1f03ed8d83a8a59ae81f78a8ca648a4ac428c2b654bcf",
+          "dest-filename": "gjsify-cli.tgz"
+        }
+      ]
+    }
+  ]
+}

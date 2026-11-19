@@ -45,6 +45,15 @@ compile)
         msgfmt --check --output-file="$out/$DOMAIN.mo" "po/$lang.po"
         printf 'compiled %-6s -> %s\n' "$lang" "$out/$DOMAIN.mo"
     done < po/LINGUAS
+    # The widget package has its own domain; the app ships its catalogue next to its own.
+    widgets=../packages/adwaita-extended/po
+    while read -r lang; do
+        [ -n "$lang" ] || continue
+        out="dist/locale/$lang/LC_MESSAGES"
+        mkdir -p "$out"
+        msgfmt --check --output-file="$out/gjsify-adwaita-extended.mo" "$widgets/$lang.po"
+        printf 'compiled %-6s -> %s\n' "$lang" "$out/gjsify-adwaita-extended.mo"
+    done < "$widgets/LINGUAS"
     ;;
 *)
     printf 'usage: %s <extract|compile>\n' "$0" >&2

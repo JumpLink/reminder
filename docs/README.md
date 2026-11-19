@@ -15,3 +15,4 @@
   targets written `<account-id>:<uid>`
 - [CalDAV backend](caldav.md) — config, password handling, what is supported
 - [Translation status](i18n-status.md) — how the language is chosen, what stays English, adding a string
+- [Packaging](packaging.md) — metainfo, desktop file, icons, screenshots and the Flatpak manifest
