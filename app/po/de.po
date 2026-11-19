@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 17:18+0100\n"
+"POT-Creation-Date: 2026-11-19 18:42+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -190,13 +190,13 @@ msgstr ""
 msgid "invalid date: {value}"
 msgstr "Ungültiges Datum: {value}"
 
-#: ../packages/core/src/errors.ts:28
+#: ../packages/core/src/errors.ts:29
 msgid "authentication \"{scheme}\" is not supported yet — use \"basic\""
 msgstr ""
 "Die Authentifizierung „{scheme}“ wird noch nicht unterstützt — verwende "
 "„basic“"
 
-#: ../packages/core/src/errors.ts:43
+#: ../packages/core/src/errors.ts:44
 msgid "no grant for {capability} on \"{target}\" — add {snippet} to grants"
 msgstr ""
 "Keine Freigabe für {capability} auf „{target}“ — füge {snippet} zu grants "
@@ -362,8 +362,20 @@ msgstr "disabled[{index}] muss eine nicht leere Kalender-UID sein"
 msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr "Kalender „{uid}“ ist in der Konfiguration deaktiviert"
 
+#: ../packages/deck/src/deck-source.ts:164
+msgid "Deck did not say who is signed in"
+msgstr "Deck hat nicht gesagt, wer angemeldet ist"
+
+#: ../packages/deck/src/deck-source.ts:191
+msgid "Deck did not return a list of stacks"
+msgstr "Deck hat keine Liste von Stapeln geliefert"
+
+#: ../packages/deck/src/deck-source.ts:237
+msgid "Deck did not return a list of boards"
+msgstr "Deck hat keine Liste von Boards geliefert"
+
 #: ../packages/pim/src/caldav/backend.ts:87
-#: ../packages/pim/src/caldav/delta.ts:134
+#: ../packages/pim/src/caldav/delta.ts:131
 msgid "no calendar \"{uid}\""
 msgstr "Kein Kalender „{uid}“"
 
@@ -402,11 +414,11 @@ msgstr ""
 msgid "{label}: the server rejected the credentials (401)"
 msgstr "{label}: Der Server hat die Zugangsdaten abgelehnt (401)"
 
-#: ../packages/pim/src/caldav/errors.ts:19
+#: ../packages/pim/src/caldav/errors.ts:18
 msgid "{label}: {method} failed with {status}"
 msgstr "{label}: {method} ist mit {status} fehlgeschlagen"
 
-#: ../packages/pim/src/caldav/errors.ts:24
+#: ../packages/pim/src/caldav/errors.ts:23
 msgid "{label}: {message}"
 msgstr "{label}: {message}"
 
