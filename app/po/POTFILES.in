@@ -44,8 +44,8 @@
 ../packages/secrets-libsecret/src/libs.gjs.ts
 ../packages/secrets-libsecret/src/optional.ts
 ../packages/secrets-libsecret/src/store.gjs.ts
-src/core/config.ts
 src/core/config-write.ts
+src/core/config.ts
 src/core/context.ts
 src/core/demo/fixtures.ts
 src/core/demo/index.ts
@@ -83,6 +83,7 @@ src/frontends/gui/views/preferences/general.ts
 src/frontends/gui/views/preferences/index.ts
 src/frontends/gui/views/preferences/page-context.ts
 src/frontends/gui/views/tasks.ts
+src/frontends/gui/window.blp
 src/frontends/gui/window.d.blp.ts
 src/frontends/gui/window.ts
 src/frontends/mcp/server.ts

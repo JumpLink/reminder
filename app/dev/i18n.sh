@@ -4,7 +4,7 @@
 #   dev/i18n.sh extract    refresh po/reminder.pot and merge it into every po/*.po
 #   dev/i18n.sh compile    build dist/locale/<lang>/LC_MESSAGES/reminder.mo
 #
-# Sources live in app/src and in the packages (the core and the backends raise most messages).
+# Sources live in app/src (.ts and .blp) and in the packages (the core and the backends raise most messages).
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -15,9 +15,14 @@ case "${1:-}" in
 extract)
     # Paths are relative to app/, so the #: references stay stable for every checkout.
     # adwaita-extended binds its own domain (dgettext) and ships its own catalogue.
-    find src ../packages/*/src -type f -name '*.ts' ! -path '../packages/adwaita-extended/*' | sort > po/POTFILES.in
+    { find src ../packages/*/src -type f -name '*.ts' ! -path '../packages/adwaita-extended/*'
+      find src -type f -name '*.blp'; } | LC_ALL=C sort > po/POTFILES.in
+    tmp="$(mktemp -d)"
+    trap 'rm -rf "$tmp"' EXIT
+    grep -v '\.blp$' po/POTFILES.in > "$tmp/js" || true
+    grep '\.blp$' po/POTFILES.in > "$tmp/blp" || true
     xgettext \
-        --files-from=po/POTFILES.in \
+        --files-from="$tmp/js" \
         --output="$POT" \
         --from-code=UTF-8 \
         --language=JavaScript \
@@ -26,6 +31,20 @@ extract)
         --add-comments=TRANSLATORS \
         --package-name="$DOMAIN" \
         --msgid-bugs-address='https://github.com/JumpLink/reminder/issues'
+    # Blueprint marks strings as _("…"), which xgettext reads as C; the second pass joins them in.
+    if [ -s "$tmp/blp" ]; then
+        xgettext \
+            --files-from="$tmp/blp" \
+            --output="$POT" \
+            --join-existing \
+            --from-code=UTF-8 \
+            --language=C \
+            --keyword=_ \
+            --keyword=C_:1c,2 \
+            --add-comments=TRANSLATORS \
+            --package-name="$DOMAIN" \
+            --msgid-bugs-address='https://github.com/JumpLink/reminder/issues'
+    fi
     while read -r lang; do
         [ -n "$lang" ] || continue
         if [ -f "po/$lang.po" ]; then
