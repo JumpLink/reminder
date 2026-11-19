@@ -76,6 +76,7 @@
     "@girs/secret-1": "5.4.0",
     "@gjsify/adwaita-app": "0.64.49",
     "@gjsify/adwaita-extended": "*",
+    "@gjsify/calendar-layout": "*",
     "@gjsify/cli": "0.64.49",
     "@gjsify/http-client": "*",
     "@gjsify/mcp": "0.64.49",
