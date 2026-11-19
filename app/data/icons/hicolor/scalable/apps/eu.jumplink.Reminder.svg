@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<!-- eu.jumplink.Reminder: a calendar sheet with a ticked task. Original artwork. -->
+  <defs>
+    <linearGradient id="sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e6edf5"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f8fe8"/>
+      <stop offset="1" stop-color="#2f6fcf"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="20" width="96" height="92" rx="12" fill="#000000" opacity="0.18" transform="translate(0 3)"/>
+  <rect x="16" y="20" width="96" height="92" rx="12" fill="url(#sheet)"/>
+  <path d="M16 32a12 12 0 0 1 12-12h72a12 12 0 0 1 12 12v16H16z" fill="url(#band)"/>
+  <rect x="38" y="10" width="8" height="22" rx="4" fill="#33415c"/>
+  <rect x="82" y="10" width="8" height="22" rx="4" fill="#33415c"/>
+  <circle cx="44" cy="70" r="9" fill="#2f6fcf"/>
+  <path d="M39.5 70.2l3.3 3.3 6.2-6.6" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="62" y="66" width="38" height="8" rx="4" fill="#9db4d3"/>
+  <circle cx="44" cy="94" r="9" fill="none" stroke="#9db4d3" stroke-width="3"/>
+  <rect x="62" y="90" width="28" height="8" rx="4" fill="#c4d3e6"/>
+</svg>

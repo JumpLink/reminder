@@ -1,14 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>eu.jumplink.Reminder</id>
-  <name>reminder</name>
-  <summary>Calendar events and reminders from your existing calendars</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>AGPL-3.0-or-later</project_license>
-  <launchable type="desktop-id">eu.jumplink.Reminder.desktop</launchable>
-  <url type="homepage">https://github.com/JumpLink/reminder</url>
-  <url type="bugtracker">https://github.com/JumpLink/reminder/issues</url>
+  <name>reminder</name>
+  <summary>Plan events and tasks</summary>
+  <summary xml:lang="de">Termine und Aufgaben planen</summary>
+  <developer id="eu.jumplink">
+    <name>Pascal Garber</name>
+  </developer>
   <description>
-    <p>Calendar events and reminders from your existing calendars, as a command line tool, an MCP server and a native window. This is a stub: screenshots and release notes follow with the first release.</p>
+    <p>reminder shows the events and tasks from the calendars you already use in one window, so you can plan your days without moving your data anywhere.</p>
+    <p xml:lang="de">reminder zeigt die Termine und Aufgaben aus den Kalendern, die du schon nutzt, in einem Fenster, damit du deine Tage planen kannst, ohne Daten zu verschieben.</p>
+    <p>Add and tick off tasks, see what is due, and keep working with the same calendars in other apps. It talks to CalDAV servers and to the calendars of your GNOME session.</p>
+    <p xml:lang="de">Lege Aufgaben an und hake sie ab, sieh, was fällig ist, und arbeite mit denselben Kalendern weiter in anderen Apps. Die App spricht mit CalDAV-Servern und mit den Kalendern deiner GNOME-Sitzung.</p>
+    <p>A command line tool and an MCP server for AI assistants come with it. Assistants can only read, unless you grant a specific write for a specific calendar.</p>
+    <p xml:lang="de">Ein Kommandozeilenwerkzeug und ein MCP-Server für KI-Assistenten gehören dazu. Assistenten dürfen nur lesen, solange du nicht ein bestimmtes Schreiben für einen bestimmten Kalender freigibst.</p>
   </description>
+  <url type="homepage">https://github.com/JumpLink/reminder</url>
+  <url type="vcs-browser">https://github.com/JumpLink/reminder</url>
+  <url type="bugtracker">https://github.com/JumpLink/reminder/issues</url>
+  <launchable type="desktop-id">eu.jumplink.Reminder.desktop</launchable>
+  <provides>
+    <binary>reminder</binary>
+  </provides>
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#cfe0f7</color>
+    <color type="primary" scheme_preference="dark">#1f3a63</color>
+  </branding>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+  <categories>
+    <category>Office</category>
+    <category>Calendar</category>
+  </categories>
+  <keywords>
+    <keyword>calendar</keyword>
+    <keyword>events</keyword>
+    <keyword>tasks</keyword>
+    <keyword>reminders</keyword>
+    <keyword>todo</keyword>
+    <keyword>CalDAV</keyword>
+  </keywords>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks.en.png</image>
+      <image xml:lang="de">https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks.de.png</image>
+      <caption>Your tasks from every calendar, sorted by what is due</caption>
+      <caption xml:lang="de">Deine Aufgaben aus allen Kalendern, nach Fälligkeit sortiert</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks-narrow.en.png</image>
+      <image xml:lang="de">https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks-narrow.de.png</image>
+      <caption>The same on a phone-sized screen</caption>
+      <caption xml:lang="de">Dasselbe auf einem Bildschirm in Handygröße</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.1.0" date="2026-11-19">
+      <description>
+        <p>The first release: a task list over your CalDAV and GNOME calendars, a command line tool and a read-only MCP server.</p>
+      </description>
+    </release>
+  </releases>
 </component>
