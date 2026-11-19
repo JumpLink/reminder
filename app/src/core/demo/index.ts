@@ -51,8 +51,8 @@ const noSecrets: SecretStore = {
   clear: async () => ({ status: 'unavailable', reason: 'demo mode has no secret store' }),
 };
 
-export function createDemoContext(now: Date = new Date()): Context {
-  const config = demoConfig();
+/** `config` lets the preferences carry their in-memory edits into a rebuilt context. */
+export function createDemoContext(now: Date = new Date(), config: ReminderConfig = demoConfig()): Context {
   const backends = new Map<string, CalendarBackend>(
     DEMO_ACCOUNTS.map((a) => [
       a.id,
