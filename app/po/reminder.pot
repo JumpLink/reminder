@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 19:02+0100\n"
+"POT-Creation-Date: 2026-11-19 19:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -342,6 +342,14 @@ msgstr ""
 
 #: ../packages/deck/src/deck-source.ts:237
 msgid "Deck did not return a list of boards"
+msgstr ""
+
+#: ../packages/openproject/src/openproject-source.ts:118
+msgid "OpenProject base URL \"{url}\" is not a URL"
+msgstr ""
+
+#: ../packages/openproject/src/openproject-source.ts:121
+msgid "OpenProject base URL must start with http:// or https://"
 msgstr ""
 
 #: ../packages/pim/src/caldav/backend.ts:87

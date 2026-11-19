@@ -57,6 +57,7 @@
     "@reminder/cache-fs": "*",
     "@reminder/core": "*",
     "@reminder/deck": "*",
+    "@reminder/openproject": "*",
     "@reminder/secrets-libsecret": "*",
     "@reminder/zenkit": "*",
     "yargs": "^18.1.0",
