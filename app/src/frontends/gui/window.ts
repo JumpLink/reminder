@@ -1,5 +1,6 @@
 /**
- * The main window: a view switcher over three placeholder pages. Content is built once; the
+ * The main window: a view switcher over three pages (tasks is real, the others still placeholders),
+ * wrapped by the sources overview. Content is built once; the
  * breakpoint ladder only changes the container around it (ADR 0012) — the switcher sits in a bar
  * at the bottom while compact and in the header from medium up.
  */
@@ -10,7 +11,7 @@ import GObject from '@girs/gobject-2.0';
 import Gtk from '@girs/gtk-4.0';
 import { createSwitcherShell } from '@gjsify/adwaita-app';
 
-import { _ } from '@reminder/core';
+import { _, type SyncService } from '@reminder/core';
 
 import {
   APP_NAME,
@@ -21,6 +22,10 @@ import {
   VIEW_NAMES,
   type ViewName,
 } from './constants.ts';
+import type { GuiSettings } from './settings.ts';
+import type { TasksModel } from './model.ts';
+import { createOverview, type Overview } from './views/overview.ts';
+import { createTasksView, type TasksView } from './views/tasks.ts';
 import Template, { type Children, GTypeName, InternalChildren } from './window.blp';
 
 // oxlint-disable-next-line no-unsafe-declaration-merging -- GJS installs the internal children
@@ -30,6 +35,14 @@ function placeholder(title: string, description: string, icon: string): Adw.Stat
   return new Adw.StatusPage({ title, description, iconName: icon, vexpand: true });
 }
 
+/** What the window needs once its services are up; they start after the window is on screen. */
+export interface WindowServices {
+  model: TasksModel;
+  settings: GuiSettings;
+  service: SyncService;
+  problems: readonly string[];
+}
+
 export class MainWindow extends Adw.ApplicationWindow {
   static {
     GObject.registerClass({ GTypeName, Template, InternalChildren }, this);
@@ -37,6 +50,12 @@ export class MainWindow extends Adw.ApplicationWindow {
 
   private readonly stack: Adw.ViewStack;
   private sizeClass: SizeClass = 'medium';
+  private readonly toasts = new Adw.ToastOverlay();
+  private readonly tasks: TasksView;
+  private readonly overview: Overview;
+  private model: TasksModel | null = null;
+  private settings: GuiSettings | null = null;
+  private hidden: ReadonlySet<string> = new Set();
 
   constructor(app: Adw.Application, hooks: { view?: string; size?: [number, number] } = {}) {
     super({ application: app, title: APP_NAME });
@@ -60,17 +79,25 @@ export class MainWindow extends Adw.ApplicationWindow {
       },
     };
 
+    this.tasks = createTasksView((message) => this.toasts.add_toast(new Adw.Toast({ title: message })));
+
     const shell = createSwitcherShell(this, {
       narrowWidth: COMPACT_MAX_SP,
       pages: VIEW_NAMES.map((name) => ({
         name,
         title: views[name].title,
         icon: views[name].icon,
-        widget: placeholder(views[name].title, views[name].description, views[name].icon),
+        widget:
+          name === 'tasks'
+            ? this.tasks.widget
+            : placeholder(views[name].title, views[name].description, views[name].icon),
       })),
     });
     this.stack = shell.stack;
-    this._host.set_child(shell.widget);
+    this.toasts.set_child(shell.widget);
+    this.overview = createOverview(this.toasts, (target, visible) => this.setSourceVisible(target, visible));
+    this._host.set_child(this.overview.widget);
+    shell.headerBar.pack_start(this.overview.button);
     shell.headerBar.pack_end(this.buildMenuButton());
 
     this.installSizeClasses(shell.breakpoint);
@@ -115,6 +142,39 @@ export class MainWindow extends Adw.ApplicationWindow {
     for (const sizeClass of SIZE_CLASSES) this.remove_css_class(`size-${sizeClass}`);
     this.add_css_class(`size-${next}`);
     this.sizeClass = next;
+    this.overview.setSizeClass(next);
+    this.tasks.setSizeClass(next);
+  }
+
+  /** Called once the config is read and the sync service built; until then the views are empty. */
+  attach({ model, settings, service, problems }: WindowServices): void {
+    this.model = model;
+    this.settings = settings;
+    this.hidden = settings.hidden();
+    this.tasks.setModel(model, this.hidden);
+    model.subscribe(() => {
+      this.overview.setSources(model.calendars(), this.hidden);
+      this.overview.setBanner(this.tasks.syncProblems());
+    });
+    this.connect('close-request', () => {
+      service.stop();
+      return false;
+    });
+    this.connect('notify::is-active', () => {
+      if (this.isActive) model.focus();
+    });
+    if (problems.length > 0) this.toasts.add_toast(new Adw.Toast({ title: problems.join(' · ') }));
+  }
+
+  /** A start-up failure (unreadable config …): say so where the tasks would be. */
+  showError(message: string): void {
+    this.tasks.setError(message);
+  }
+
+  private setSourceVisible(target: string, visible: boolean): void {
+    if (!this.settings) return;
+    this.hidden = this.settings.setHidden(target, !visible);
+    this.tasks.setHidden(this.hidden);
   }
 
   private installActions(views: Record<ViewName, { title: string }>): void {
@@ -125,6 +185,10 @@ export class MainWindow extends Adw.ApplicationWindow {
       this.add_action(action);
       app?.set_accels_for_action(`win.view-${name}`, [`<primary>${index + 1}`]);
     });
+    const refresh = new Gio.SimpleAction({ name: 'refresh' });
+    refresh.connect('activate', () => this.model?.refresh());
+    this.add_action(refresh);
+    app?.set_accels_for_action('win.refresh', ['<primary>r', 'F5']);
     const shortcuts = new Gio.SimpleAction({ name: 'shortcuts' });
     shortcuts.connect('activate', () => this.showShortcuts(views));
     this.add_action(shortcuts);
@@ -137,6 +201,7 @@ export class MainWindow extends Adw.ApplicationWindow {
     for (const name of VIEW_NAMES) {
       section.add(Adw.ShortcutsItem.new_from_action(views[name].title, `win.view-${name}`));
     }
+    section.add(Adw.ShortcutsItem.new_from_action(_('Refresh'), 'win.refresh'));
     section.add(Adw.ShortcutsItem.new_from_action(_('Keyboard Shortcuts'), 'win.shortcuts'));
     section.add(Adw.ShortcutsItem.new_from_action(_('Quit'), 'app.quit'));
     const dialog = new Adw.ShortcutsDialog();

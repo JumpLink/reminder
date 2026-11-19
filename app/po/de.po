@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-18 21:11+0100\n"
+"POT-Creation-Date: 2026-11-19 07:01+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -335,7 +335,7 @@ msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr "Kalender „{uid}“ ist in der Konfiguration deaktiviert"
 
 #: ../packages/pim/src/caldav/backend.ts:87
-#: ../packages/pim/src/caldav/delta.ts:131
+#: ../packages/pim/src/caldav/delta.ts:134
 msgid "no calendar \"{uid}\""
 msgstr "Kein Kalender „{uid}“"
 
@@ -374,11 +374,11 @@ msgstr ""
 msgid "{label}: the server rejected the credentials (401)"
 msgstr "{label}: Der Server hat die Zugangsdaten abgelehnt (401)"
 
-#: ../packages/pim/src/caldav/errors.ts:18
+#: ../packages/pim/src/caldav/errors.ts:19
 msgid "{label}: {method} failed with {status}"
 msgstr "{label}: {method} ist mit {status} fehlgeschlagen"
 
-#: ../packages/pim/src/caldav/errors.ts:23
+#: ../packages/pim/src/caldav/errors.ts:24
 msgid "{label}: {message}"
 msgstr "{label}: {message}"
 
@@ -658,50 +658,178 @@ msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
 #: src/frontends/gui/main.ts:38
+msgid "No calendar backend could be set up."
+msgstr "Es konnte kein Kalender-Backend eingerichtet werden."
+
+#: src/frontends/gui/main.ts:62
 msgid "Calendar events and reminders from your existing calendars."
 msgstr "Kalendertermine und Erinnerungen aus Ihren vorhandenen Kalendern."
 
-#: src/frontends/gui/window.ts:51
-msgid "Calendar"
+#: src/frontends/gui/model.ts:136 src/frontends/gui/view-model.ts:96
+#: src/frontends/gui/views/tasks.ts:54 src/frontends/gui/views/tasks.ts:121
+msgid "Untitled"
+msgstr "Ohne Titel"
+
+#: src/frontends/gui/view-model.ts:57
+msgid "Calendars"
 msgstr "Kalender"
 
-#: src/frontends/gui/window.ts:52
-msgid "Events from your calendars will appear here."
-msgstr "Termine aus Ihren Kalendern erscheinen hier."
+#: src/frontends/gui/view-model.ts:58
+msgid "Task lists"
+msgstr "Aufgabenlisten"
 
-#: src/frontends/gui/window.ts:56
+#: src/frontends/gui/view-model.ts:74
+msgid "Overdue"
+msgstr "Überfällig"
+
+#: src/frontends/gui/view-model.ts:76
+msgid "Today"
+msgstr "Heute"
+
+#: src/frontends/gui/view-model.ts:78
+msgid "Upcoming"
+msgstr "Demnächst"
+
+#: src/frontends/gui/view-model.ts:80
+msgid "Later"
+msgstr "Später"
+
+#: src/frontends/gui/view-model.ts:82
+msgid "No date"
+msgstr "Ohne Datum"
+
+#: src/frontends/gui/view-model.ts:108
+msgid "sign-in rejected"
+msgstr "Anmeldung abgelehnt"
+
+#: src/frontends/gui/view-model.ts:110
+msgid "no access"
+msgstr "kein Zugriff"
+
+#: src/frontends/gui/view-model.ts:112
+msgid "rate limited"
+msgstr "Anfragen begrenzt"
+
+#: src/frontends/gui/view-model.ts:114
+msgid "cannot be read"
+msgstr "nicht lesbar"
+
+#: src/frontends/gui/view-model.ts:116
+msgid "could not be updated"
+msgstr "konnte nicht aktualisiert werden"
+
+#: src/frontends/gui/view-model.ts:132
+msgid "Not up to date — {sources}"
+msgstr "Nicht aktuell — {sources}"
+
+#: src/frontends/gui/views/overview.ts:60
+#: src/frontends/gui/views/overview.ts:75
+msgid "Sources"
+msgstr "Quellen"
+
+#: src/frontends/gui/views/tasks.ts:38
+msgid "Open"
+msgstr "Offen"
+
+#: src/frontends/gui/views/tasks.ts:39
+msgid "In progress"
+msgstr "In Bearbeitung"
+
+#: src/frontends/gui/views/tasks.ts:40
+msgid "Completed"
+msgstr "Erledigt"
+
+#: src/frontends/gui/views/tasks.ts:41
+msgid "Cancelled"
+msgstr "Abgebrochen"
+
+#: src/frontends/gui/views/tasks.ts:42
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: src/frontends/gui/views/tasks.ts:60
+msgid "List"
+msgstr "Liste"
+
+#: src/frontends/gui/views/tasks.ts:66
+msgid "Due"
+msgstr "Fällig"
+
+#: src/frontends/gui/views/tasks.ts:68
+msgid "Status"
+msgstr "Status"
+
+#: src/frontends/gui/views/tasks.ts:87 src/frontends/gui/views/tasks.ts:177
+#: src/frontends/gui/window.ts:71
 msgid "Tasks"
 msgstr "Aufgaben"
 
-#: src/frontends/gui/window.ts:57
+#: src/frontends/gui/views/tasks.ts:88 src/frontends/gui/views/tasks.ts:179
+#: src/frontends/gui/window.ts:72
 msgid "Your reminders will appear here."
-msgstr "Ihre Erinnerungen erscheinen hier."
+msgstr "Deine Erinnerungen erscheinen hier."
 
-#: src/frontends/gui/window.ts:61
+#: src/frontends/gui/views/tasks.ts:113
+msgid "This task was changed elsewhere. Reloading it."
+msgstr "Diese Aufgabe wurde anderswo geändert. Sie wird neu geladen."
+
+#: src/frontends/gui/views/tasks.ts:114
+msgid "Changing this list is not allowed."
+msgstr "Diese Liste darf nicht geändert werden."
+
+#: src/frontends/gui/views/tasks.ts:115
+msgid "Could not save: {message}"
+msgstr "Speichern fehlgeschlagen: {message}"
+
+#: src/frontends/gui/views/tasks.ts:169
+msgid "Completed ({count})"
+msgstr "Erledigt ({count})"
+
+#: src/frontends/gui/views/tasks.ts:179
+msgid "Every list is hidden."
+msgstr "Alle Listen sind ausgeblendet."
+
+#: src/frontends/gui/views/tasks.ts:199
+msgid "Cannot load tasks"
+msgstr "Aufgaben konnten nicht geladen werden"
+
+#: src/frontends/gui/window.ts:66
+msgid "Calendar"
+msgstr "Kalender"
+
+#: src/frontends/gui/window.ts:67
+msgid "Events from your calendars will appear here."
+msgstr "Termine aus Ihren Kalendern erscheinen hier."
+
+#: src/frontends/gui/window.ts:76
 msgid "Board"
 msgstr "Board"
 
-#: src/frontends/gui/window.ts:62
+#: src/frontends/gui/window.ts:77
 msgid "Your reminders as cards will appear here."
 msgstr "Ihre Erinnerungen als Karten erscheinen hier."
 
-#: src/frontends/gui/window.ts:89 src/frontends/gui/window.ts:147
+#: src/frontends/gui/window.ts:112 src/frontends/gui/window.ts:205
 msgid "Keyboard Shortcuts"
 msgstr "Tastenkürzel"
 
-#: src/frontends/gui/window.ts:90
+#: src/frontends/gui/window.ts:113
 msgid "About reminder"
 msgstr "Über reminder"
 
-#: src/frontends/gui/window.ts:91
+#: src/frontends/gui/window.ts:114
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/frontends/gui/window.ts:143
+#: src/frontends/gui/window.ts:200
 msgid "General"
 msgstr "Allgemein"
 
-#: src/frontends/gui/window.ts:148
+#: src/frontends/gui/window.ts:204
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: src/frontends/gui/window.ts:206
 msgid "Quit"
 msgstr "Beenden"
 

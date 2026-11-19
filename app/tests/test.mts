@@ -32,6 +32,9 @@ import swipeRules from './unit/widgets/swipe-rules.test.ts';
 import adaptiveContainer from './unit/widgets/adaptive-container.test.ts';
 
 import sizeClasses from './unit/gui/size-classes.test.ts';
+import guiViewModel from './unit/gui/view-model.test.ts';
+import guiSettings from './unit/gui/settings.test.ts';
+import guiModel from './unit/gui/model.test.ts';
 
 import mcpTools from './unit/mcp/tools.test.ts';
 
@@ -64,6 +67,9 @@ run({
   swipeRules,
   adaptiveContainer,
   sizeClasses,
+  guiViewModel,
+  guiSettings,
+  guiModel,
   mcpTools,
   i18n,
 });

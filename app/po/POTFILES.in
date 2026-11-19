@@ -1,5 +1,6 @@
 ../packages/cache-fs/src/index.ts
 ../packages/core/src/accounts.ts
+../packages/core/src/agenda.ts
 ../packages/core/src/cache.ts
 ../packages/core/src/compare.ts
 ../packages/core/src/config.ts
@@ -62,6 +63,14 @@ src/frontends/cli/todos.ts
 src/frontends/cli/update.ts
 src/frontends/gui/constants.ts
 src/frontends/gui/main.ts
+src/frontends/gui/model.ts
+src/frontends/gui/settings.ts
+src/frontends/gui/signals.ts
+src/frontends/gui/sync-sources.ts
+src/frontends/gui/sync.ts
+src/frontends/gui/view-model.ts
+src/frontends/gui/views/overview.ts
+src/frontends/gui/views/tasks.ts
 src/frontends/gui/window.d.blp.ts
 src/frontends/gui/window.ts
 src/frontends/mcp/server.ts
