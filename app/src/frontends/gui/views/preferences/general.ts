@@ -46,7 +46,11 @@ export function applyColorScheme(value: ColorScheme): void {
 
 export function createGeneralPage(ctx: PageContext): PrefsPage {
   const settings: GuiSettings = ctx.env.settings;
-  const page = new Adw.PreferencesPage({ title: _('General'), iconName: 'preferences-system-symbolic' });
+  const page = new Adw.PreferencesPage({
+    name: 'general',
+    title: _('General'),
+    iconName: 'preferences-system-symbolic',
+  });
   const look = new Adw.PreferencesGroup({ title: _('Appearance') });
   const calendar = new Adw.PreferencesGroup({ title: _('Dates') });
   page.add(look);

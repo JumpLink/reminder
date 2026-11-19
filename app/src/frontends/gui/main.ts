@@ -76,14 +76,15 @@ function createServices(window: MainWindow) {
   };
   window.onPreferences = () => presentPreferences(window, env, demo);
   applyColorScheme(settings.colorScheme());
-  return { start, open: window.onPreferences };
+  return { start, open: (page?: string) => presentPreferences(window, env, demo, page) };
 }
 
 async function startServices(window: MainWindow): Promise<void> {
   try {
     const services = createServices(window);
     await services.start();
-    if (process.env[PREFS_HOOK]) services.open();
+    const page = process.env[PREFS_HOOK];
+    if (page) services.open(page);
   } catch (err) {
     window.showError(errorMessage(err));
   }

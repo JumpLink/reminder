@@ -11,7 +11,13 @@ import type { PageContext, PrefsPage } from './page-context.ts';
 
 export { applyColorScheme } from './general.ts';
 
-export function presentPreferences(parent: Gtk.Widget, env: PreferencesEnv, demo: boolean): void {
+/** `page` is a page name (`accounts`, `agent-access`, `general`); an unknown one keeps the first. */
+export function presentPreferences(
+  parent: Gtk.Widget,
+  env: PreferencesEnv,
+  demo: boolean,
+  page?: string,
+): void {
   const dialog = new Adw.PreferencesDialog();
   const listeners = new Set<() => void>();
   const ctx: PageContext = {
@@ -35,5 +41,6 @@ export function presentPreferences(parent: Gtk.Widget, env: PreferencesEnv, demo
     ctx.onReload(entry.refresh);
     entry.refresh();
   }
+  if (page && pages.some((entry) => entry.page.name === page)) dialog.set_visible_page_name(page);
   dialog.present(parent);
 }

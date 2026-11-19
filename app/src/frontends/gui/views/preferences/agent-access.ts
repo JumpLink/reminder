@@ -19,7 +19,11 @@ import {
 import type { PageContext, PrefsPage } from './page-context.ts';
 
 export function createAgentAccessPage(ctx: PageContext): PrefsPage {
-  const page = new Adw.PreferencesPage({ title: _('Agent access'), iconName: 'security-high-symbolic' });
+  const page = new Adw.PreferencesPage({
+    name: 'agent-access',
+    title: _('Agent access'),
+    iconName: 'security-high-symbolic',
+  });
   const granted = new Adw.PreferencesGroup({
     title: _('Granted'),
     description: _('Agents can always read. They change something only where it is listed here.'),
@@ -37,10 +41,14 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
   submit.add_css_class('suggested-action');
   add.add(capability);
   add.add(target);
-  add.add(submit);
+  // A group of its own: a button row inside the form's list reads as one more field.
+  const actions = new Adw.PreferencesGroup();
+  actions.add(submit);
+  page.add(actions);
 
   let rows: Gtk.Widget[] = [];
   let choices: TargetChoice[] = [];
+  let preselected = false;
 
   const updateTargets = (): void => {
     try {
@@ -106,6 +114,17 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
       });
       granted.add(row);
       rows.push(row);
+    }
+    // Open on a capability that has somewhere to go, not on one whose target list is empty.
+    if (!preselected) {
+      preselected = true;
+      try {
+        const config = ctx.env.store.read();
+        const first = CAPABILITIES.findIndex((c) => targetChoices(config, ctx.env.lists(), c).length > 0);
+        if (first > 0) capability.set_selected(first);
+      } catch {
+        // The error row above already says the configuration cannot be read.
+      }
     }
     updateTargets();
   };

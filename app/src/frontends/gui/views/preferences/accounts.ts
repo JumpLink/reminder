@@ -17,7 +17,11 @@ function addRow(title: string, subtitle: string): Adw.ActionRow {
 }
 
 export function createAccountsPage(ctx: PageContext): PrefsPage {
-  const page = new Adw.PreferencesPage({ title: _('Accounts'), iconName: 'avatar-default-symbolic' });
+  const page = new Adw.PreferencesPage({
+    name: 'accounts',
+    title: _('Accounts'),
+    iconName: 'avatar-default-symbolic',
+  });
   const list = new Adw.PreferencesGroup({
     title: _('Accounts'),
     description: _('Open an account to choose which calendars and task lists are kept.'),
