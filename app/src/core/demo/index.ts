@@ -16,11 +16,14 @@ import {
   type SecretStore,
 } from '@reminder/core';
 
+import type { BoardSourceEntry } from '../board-sources.ts';
 import type { Context } from '../context.ts';
-import { DEMO_ACCOUNTS, DEMO_LISTS, demoCalendars, demoReminders } from './fixtures.ts';
+import { createDemoBoardSource } from './board-source.ts';
+import { DEMO_ACCOUNTS, DEMO_IDENTITY, DEMO_LISTS, demoCalendars, demoReminders } from './fixtures.ts';
 import { createMemoryBackend } from './memory-backend.ts';
 
-export { DEMO_ACCOUNTS, DEMO_LISTS } from './fixtures.ts';
+export { DEMO_ACCOUNTS, DEMO_IDENTITY, DEMO_LISTS } from './fixtures.ts';
+export { createDemoBoardSource, DEMO_BOARD_SOURCE_ID } from './board-source.ts';
 
 /** The demo flag is an environment variable, so `--demo` and the CLI commands share one switch. */
 export function demoActive(env: Record<string, string | undefined> = process.env): boolean {
@@ -70,6 +73,13 @@ export function createDemoContext(now: Date = new Date(), config: ReminderConfig
     return found;
   };
   const cache = createMemoryCacheStore();
+  // One board that is no task list, so `--demo` shows a column board the way a Deck or an
+  // OpenProject would serve one. `example.org` is a reserved documentation domain: the host is
+  // never dialled, the source answers from the arrays in `board-source.ts`.
+  const board = createDemoBoardSource(now);
+  const extra: BoardSourceEntry[] = [
+    { source: board, info: board.describe(), kind: 'deck', host: 'boards.example.org' },
+  ];
   return {
     config: () => config,
     backend: () =>
@@ -81,5 +91,7 @@ export function createDemoContext(now: Date = new Date(), config: ReminderConfig
     // No demo account names a secret, so this is never asked; if one ever does, it fails loudly.
     secrets: () => noSecrets,
     accountBackend: own,
+    boardIdentity: () => ({ ...DEMO_IDENTITY, addresses: [...DEMO_IDENTITY.addresses] }),
+    extraBoardSources: () => extra,
   };
 }

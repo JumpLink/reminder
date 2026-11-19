@@ -32,6 +32,7 @@ import {
 import { createEdsBackend } from '@gjsify/pim/eds';
 import { createLibsecretStore } from '@reminder/secrets-libsecret';
 
+import type { BoardIdentity, BoardSourceEntry } from './board-sources.ts';
 import { loadConfig } from './config.ts';
 import { createDemoContext, demoActive } from './demo/index.ts';
 import { IDENTITY } from './identity.ts';
@@ -45,6 +46,13 @@ export interface Context {
   secrets(): SecretStore;
   /** One account's own backend, when the context supplies them (demo mode, tests). */
   accountBackend?(account: AccountConfig): CalendarBackend | undefined;
+  /** Who "me" is on a board whose source has no identity to ask (VTODO task lists). */
+  boardIdentity?(): BoardIdentity;
+  /**
+   * Board sources that come from no configured account — demo mode's invented column board. A
+   * real source type arrives as a factory in `board-sources.ts` instead.
+   */
+  extraBoardSources?(): BoardSourceEntry[];
 }
 
 /** The file-system cache under `$XDG_CACHE_HOME/<cacheDirName>`. */
