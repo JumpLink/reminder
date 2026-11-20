@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 11:10+0100\n"
+"POT-Creation-Date: 2026-11-20 11:31+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -187,7 +187,8 @@ msgstr "Dieses Board kennt keine Karte {id}"
 msgid "card {id} changed since it was read"
 msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
-#: ../packages/core/src/board/write.ts:69 src/core/config-write.ts:285
+#: ../packages/core/src/board/write.ts:69 src/core/board-read.ts:226
+#: src/core/config-write.ts:285
 msgid "no board source \"{id}\""
 msgstr "Keine Board-Quelle „{id}“"
 
@@ -643,28 +644,44 @@ msgstr "Liste {id} hat kein Textfeld, das als Titel dienen kann"
 msgid "Zenkit did not return the new entry"
 msgstr "Zenkit hat den neuen Eintrag nicht geliefert"
 
-#: src/core/board-read.ts:103
+#: src/core/board-read.ts:112
 msgid "boards cannot be read: {problems}"
 msgstr "Boards lassen sich nicht lesen: {problems}"
 
-#: src/core/board-read.ts:133
+#: src/core/board-read.ts:155 src/core/board-read.ts:229
 msgid "no board \"{board}\" — list the boards first"
 msgstr "Kein Board „{board}“ — liste zuerst die Boards auf"
 
-#: src/core/board-read.ts:137
+#: src/core/board-read.ts:159
 msgid "several sources have a board \"{board}\" — name the source ({sources})"
 msgstr ""
 "Mehrere Quellen haben ein Board „{board}“ — nenne die Quelle ({sources})"
 
-#: src/core/board-sources.ts:225
+#: src/core/board-read.ts:221
+msgid "give exactly one of column or lane"
+msgstr "Gib genau eines von column oder lane an"
+
+#: src/core/board-read.ts:239
+msgid "no single column \"{column}\" — the columns are: {columns}"
+msgstr "Keine eindeutige Spalte „{column}“ — die Spalten sind: {columns}"
+
+#: src/core/board-read.ts:250
+msgid "no column maps onto lane \"{lane}\" — the columns are: {columns}"
+msgstr "Keine Spalte gehört zur Lane „{lane}“ — die Spalten sind: {columns}"
+
+#: src/core/board-read.ts:258
+msgid "several columns map onto lane \"{lane}\" — name one: {columns}"
+msgstr "Mehrere Spalten gehören zur Lane „{lane}“ — nenne eine: {columns}"
+
+#: src/core/board-sources.ts:228
 msgid "this build has no board support for \"{type}\""
 msgstr "Dieser Build unterstützt keine Boards vom Typ „{type}“"
 
-#: src/core/board-sources.ts:243
+#: src/core/board-sources.ts:246
 msgid "source \"{id}\": no credential — store it as {ref}"
 msgstr "Quelle „{id}“: Keine Zugangsdaten — als {ref} speichern"
 
-#: src/core/board-sources.ts:251
+#: src/core/board-sources.ts:254
 msgid "source \"{id}\": {message}"
 msgstr "Quelle „{id}“: {message}"
 

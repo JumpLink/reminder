@@ -52,6 +52,8 @@ export interface BoardSourceDeps {
    */
   calendars?(account: AccountConfig): readonly CalendarInfo[] | null;
   identity?: BoardIdentity;
+  /** Build sources that implement `writeCard` where the adapter can (ADR 0013); the grant is still checked above. */
+  writable?: boolean;
   /**
    * The resolved credential of each external source, by source id. A source whose secret could not
    * be read is absent and becomes a problem line, never a request without credentials.
@@ -107,6 +109,7 @@ export const BOARD_SOURCE_FACTORIES: Readonly<Partial<Record<BoardSourceType, Bo
     return createVtodoBoardSource(withoutDisabled(base, disabledIn(deps.config, account.id)), {
       id: account.id,
       identity: deps.identity,
+      writable: deps.writable,
     });
   },
 };
