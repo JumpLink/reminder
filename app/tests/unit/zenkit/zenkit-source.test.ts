@@ -81,7 +81,6 @@ export default async () => {
         const seen = (await cardsOf(source.listCards(board, { mine: 'all' }))).find((c) => c.ref.id === 'E1');
         if (!seen) throw new Error('fixture card missing');
         fake.touch('wk1', 'E1', { displayString: 'Edited by Robin' });
-        fake.rest.requests.filter((r) => r.method !== 'GET' && r.method !== 'POST').length;
         const before = fake.rest.requests.filter((r) => r.method === 'PUT').length;
         const err = await rejection(
           source.writeCard!({ kind: 'move', ref: seen.ref, version: seen.version, toColumn: 'Done' }),

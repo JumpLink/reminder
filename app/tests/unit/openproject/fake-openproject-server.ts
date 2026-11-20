@@ -89,6 +89,13 @@ export function fixtures(): FakeData {
   };
 }
 
+interface WriteBody {
+  subject?: string;
+  dueDate?: string | null;
+  lockVersion?: number;
+  _links?: { status?: { href?: string } };
+}
+
 export interface RecordedRequest {
   method: string;
   path: string;
@@ -207,7 +214,7 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
         send(404, { _type: 'Error', errorIdentifier: 'urn:openproject-org:api:v3:errors:NotFound' });
         return;
       }
-      const input = rawBody ? (JSON.parse(rawBody) as Record<string, any>) : {};
+      const input = rawBody ? (JSON.parse(rawBody) as WriteBody) : {};
       const wanted = Number(
         String(input._links?.status?.href ?? '')
           .split('/')
@@ -262,7 +269,7 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
       return;
     }
     if (req.method === 'POST') {
-      const input = JSON.parse(rawBody) as Record<string, any>;
+      const input = JSON.parse(rawBody) as WriteBody;
       const status = Number(
         String(input._links?.status?.href ?? '')
           .split('/')
