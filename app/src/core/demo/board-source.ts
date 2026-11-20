@@ -29,7 +29,7 @@ import {
 import { DEMO_IDENTITY, DEMO_PEOPLE } from './fixtures.ts';
 
 export const DEMO_BOARD_SOURCE_ID = 'relaunch-board';
-const BOARD_ID = 'relaunch';
+export const DEMO_BOARD_ID = 'relaunch';
 
 /** The data never changes, so one token is enough: every later read answers `unchanged`. */
 const TOKEN = 'demo-1';
@@ -52,7 +52,7 @@ const INFO: SourceInfo = {
 
 const BOARD: BoardRef = {
   source: DEMO_BOARD_SOURCE_ID,
-  id: BOARD_ID,
+  id: DEMO_BOARD_ID,
   title: 'Website relaunch',
   url: 'https://boards.example.org/b/relaunch',
 };
@@ -180,7 +180,7 @@ function dayString(now: Date, offset: number): string {
 
 function toCard(entry: DemoCard, now: Date): Card {
   return {
-    ref: { source: DEMO_BOARD_SOURCE_ID, board: BOARD_ID, id: entry.id },
+    ref: { source: DEMO_BOARD_SOURCE_ID, board: DEMO_BOARD_ID, id: entry.id },
     title: entry.title,
     sourceColumn: entry.column,
     closed: entry.closed === true,
@@ -188,7 +188,7 @@ function toCard(entry: DemoCard, now: Date): Card {
     assignees: entry.assignees.map((user) => ({ ...user })),
     watchedByMe: entry.watchedByMe,
     labels: (entry.labels ?? []).map((name) => ({ name, color: null })),
-    url: `https://boards.example.org/b/${BOARD_ID}/card/${entry.id}`,
+    url: `https://boards.example.org/b/${DEMO_BOARD_ID}/card/${entry.id}`,
     version: TOKEN,
     // One of the three time shapes of `types.ts` — a UTC instant without a fraction, which is
     // what the contract test accepts.
@@ -204,11 +204,11 @@ export function createDemoBoardSource(now: Date = new Date()): BoardSource {
     whoAmI: async () => ({ ...me }),
     listBoards: async () => [{ ...BOARD }],
     async listColumns(board) {
-      if (board.id !== BOARD_ID) throw boardNotFound(board.id);
+      if (board.id !== DEMO_BOARD_ID) throw boardNotFound(board.id);
       return COLUMNS.map((column) => ({ ...column }));
     },
     async listCards(board, query: CardQuery = {}, since = null): Promise<CardPage> {
-      if (board.id !== BOARD_ID) throw boardNotFound(board.id);
+      if (board.id !== DEMO_BOARD_ID) throw boardNotFound(board.id);
       if (since === TOKEN) return { kind: 'unchanged' };
       const matched = filterMine(
         CARDS.map((entry) => toCard(entry, now)),
