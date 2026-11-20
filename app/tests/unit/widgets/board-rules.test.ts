@@ -8,6 +8,9 @@ import {
   clampColumn,
   columnOffset,
   columnWidth,
+  dropIndex,
+  dropPlacement,
+  moveColumn,
   neighbourFocus,
   snapColumn,
   visibleColumns,
@@ -83,6 +86,54 @@ export default async () => {
       expect(canDrag(false, true)).toBe(true);
       expect(canDrag(true, true)).toBe(false);
       expect(canDrag(false, false)).toBe(false);
+    });
+
+    await it('splits each card at its middle to find the drop index', async () => {
+      const extents = [
+        { top: 0, height: 100 },
+        { top: 108, height: 60 },
+        { top: 176, height: 60 },
+      ];
+      expect(dropIndex(0, extents)).toBe(0);
+      expect(dropIndex(49, extents)).toBe(0);
+      expect(dropIndex(50, extents)).toBe(1);
+      expect(dropIndex(137, extents)).toBe(1);
+      expect(dropIndex(138, extents)).toBe(2);
+      expect(dropIndex(500, extents)).toBe(3);
+      expect(dropIndex(-20, extents)).toBe(0);
+    });
+
+    await it('drops into an empty column at the front', async () => {
+      expect(dropIndex(0, [])).toBe(0);
+      expect(dropIndex(400, [])).toBe(0);
+      expect(dropIndex(Number.NaN, [])).toBe(0);
+    });
+
+    await it('takes the dragged card out of the count within its own column', async () => {
+      // Three cards, dragging the middle one: the raw index counts it, the position must not.
+      expect(dropPlacement(true, 1, 0)).toBe(0);
+      expect(dropPlacement(true, 1, 1)).toBe(null);
+      expect(dropPlacement(true, 1, 2)).toBe(null);
+      expect(dropPlacement(true, 1, 3)).toBe(2);
+      expect(dropPlacement(true, 0, 0)).toBe(null);
+      expect(dropPlacement(true, 2, 0)).toBe(0);
+    });
+
+    await it('keeps the raw index when the card changes column', async () => {
+      expect(dropPlacement(false, 1, 0)).toBe(0);
+      expect(dropPlacement(false, 1, 2)).toBe(2);
+      expect(dropPlacement(false, -1, 3)).toBe(3);
+      expect(dropPlacement(false, 0, -2)).toBe(0);
+    });
+
+    await it('moves a card one column sideways and stops at both ends', async () => {
+      expect(moveColumn(0, 1, 4)).toBe(1);
+      expect(moveColumn(3, 1, 4)).toBe(null);
+      expect(moveColumn(0, -1, 4)).toBe(null);
+      expect(moveColumn(2, -1, 4)).toBe(1);
+      expect(moveColumn(2, 3, 4)).toBe(3);
+      expect(moveColumn(1, 0, 4)).toBe(null);
+      expect(moveColumn(0, 1, 0)).toBe(null);
     });
   });
 };

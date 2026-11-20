@@ -11,6 +11,8 @@ export const COLUMN_GAP = 12;
 export const COLUMN_PEEK = 24;
 /** Narrowest a column may get before its cards stop being legible. */
 export const MIN_COLUMN_WIDTH = 220;
+/** Space between two cards in a column, px. */
+export const CARD_SPACING = 8;
 
 /** Pure: compact pages one column, medium scrolls a strip, wide shows every column. */
 export function boardPresentation(sizeClass: SizeClass): BoardPresentation {
@@ -96,9 +98,56 @@ export function snapColumn(offset: number, width: number, count: number): number
 }
 
 /**
- * Pure: whether a card may be dragged. Phase 4 hooks a `Gtk.DragSource` onto cards where this is
- * true; a read-only card (a source that cannot be written) never gets a grip, whatever the board.
+ * Pure: whether a card may be dragged. A `Gtk.DragSource` is attached to every card and asks this
+ * when the drag starts, so a board that becomes writable needs no rebuild; a read-only card (a
+ * source that cannot be written) never gets a grip, whatever the board.
  */
 export function canDrag(cardReadOnly: boolean, boardWritable: boolean): boolean {
   return boardWritable && !cardReadOnly;
+}
+
+/** One card's vertical extent inside a column's card box, as its allocation reports it. */
+export interface CardExtent {
+  /** Top edge, px, relative to the box the cards sit in — the drop target's own coordinates. */
+  top: number;
+  height: number;
+}
+
+/**
+ * Pure: the index a card dropped at `y` is inserted BEFORE; `extents.length` means after the last
+ * one. A card is split at its middle, so the half a pointer is over decides, and a drop below
+ * every card lands at the end — an empty column therefore answers 0.
+ */
+export function dropIndex(y: number, extents: readonly CardExtent[]): number {
+  if (!Number.isFinite(y)) return extents.length;
+  for (let i = 0; i < extents.length; i++) {
+    const extent = extents[i];
+    if (y < extent.top + extent.height / 2) return i;
+  }
+  return extents.length;
+}
+
+/**
+ * Pure: the position a drop asks the host to write, or `null` when the card would land exactly
+ * where it already is and there is nothing to ask for.
+ *
+ * Within one column the dragged card is still in the list while it is dragged, so `dropIndex`
+ * counts it: taking it out first shifts everything below up by one, which is why a drop just under
+ * its own place is the place it already has.
+ */
+export function dropPlacement(sameColumn: boolean, fromIndex: number, rawIndex: number): number | null {
+  if (!sameColumn) return Math.max(0, rawIndex);
+  const index = rawIndex > fromIndex ? rawIndex - 1 : rawIndex;
+  return index === fromIndex ? null : Math.max(0, index);
+}
+
+/**
+ * Pure: the column a card moves to when the keyboard moves it `dx` columns sideways from `column`,
+ * or `null` at either end. Dragging needs a pointer; this is the same move without one.
+ */
+export function moveColumn(column: number, dx: number, count: number): number | null {
+  const step = Math.sign(dx);
+  if (step === 0 || count <= 0) return null;
+  const next = column + step;
+  return next >= 0 && next < count ? next : null;
 }
