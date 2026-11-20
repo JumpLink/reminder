@@ -24,6 +24,7 @@ import board from './unit/board/board.test.ts';
 import boardRules from './unit/board/rules.test.ts';
 import boardMine from './unit/board/mine.test.ts';
 import boardVtodo from './unit/board/vtodo-source.test.ts';
+import boardVtodoWrite from './unit/board/vtodo-write.test.ts';
 import boardConfig from './unit/board/config.test.ts';
 import zenkit from './unit/zenkit/zenkit-source.test.ts';
 import boardOpenProject from './unit/openproject/openproject-source.test.ts';
@@ -97,6 +98,7 @@ run({
   boardRules,
   boardMine,
   boardVtodo,
+  boardVtodoWrite,
   boardConfig,
   zenkit,
   boardOpenProject,

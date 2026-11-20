@@ -93,10 +93,10 @@ export default async () => {
       expect(waiting?.closed).toBe(null);
     });
 
-    await it('reports the four RFC statuses as columns even where no task sits', async () => {
+    await it('reports the lanes as columns even where no task sits', async () => {
       const board = (await source().listBoards())[1];
       const names = (await source().listColumns(board)).map((column) => column.name).join(',');
-      expect(names).toBe('NEEDS-ACTION,IN-PROCESS,COMPLETED,CANCELLED');
+      expect(names).toBe('BACKLOG,NEEDS-ACTION,IN-PROCESS,COMPLETED,CANCELLED');
     });
 
     await it('calls completed and cancelled tasks closed, and keeps them out by default', async () => {
