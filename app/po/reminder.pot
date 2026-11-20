@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 08:13+0100\n"
+"POT-Creation-Date: 2026-11-20 09:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,77 +149,85 @@ msgstr ""
 msgid "no board {id} in this source"
 msgstr ""
 
-#: ../packages/core/src/config.ts:143
+#: ../packages/core/src/config.ts:153
 msgid "backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:144
+#: ../packages/core/src/config.ts:154
 msgid "accounts[{index}]: backend {backend} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:157
+#: ../packages/core/src/config.ts:167
 msgid "priorities must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:161
+#: ../packages/core/src/config.ts:171
 msgid "priorities.list must be a non-empty task list uid"
 msgstr ""
 
-#: ../packages/core/src/config.ts:169
+#: ../packages/core/src/config.ts:179
 msgid "backend \"caldav\" needs a caldav object with url and username"
 msgstr ""
 
-#: ../packages/core/src/config.ts:174
+#: ../packages/core/src/config.ts:184
 msgid "caldav.{key} must be a non-empty string"
 msgstr ""
 
-#: ../packages/core/src/config.ts:178
+#: ../packages/core/src/config.ts:188
 msgid "caldav.url is required"
 msgstr ""
 
-#: ../packages/core/src/config.ts:183 ../packages/core/src/config.ts:186
+#: ../packages/core/src/config.ts:193 ../packages/core/src/config.ts:196
 msgid "caldav.url must be an http(s) URL"
 msgstr ""
 
-#: ../packages/core/src/config.ts:189
+#: ../packages/core/src/config.ts:199
 msgid "caldav.url must use https unless the server is on this machine"
 msgstr ""
 
-#: ../packages/core/src/config.ts:193
+#: ../packages/core/src/config.ts:203
 msgid "caldav.auth {auth} is not supported (known: {known})"
 msgstr ""
 
-#: ../packages/core/src/config.ts:199
+#: ../packages/core/src/config.ts:209
 msgid "caldav.username is required for basic auth"
 msgstr ""
 
-#: ../packages/core/src/config.ts:201
+#: ../packages/core/src/config.ts:211
 msgid ""
 "caldav.password must not be in the file — set passwordEnv and export the "
 "variable"
 msgstr ""
 
-#: ../packages/core/src/config.ts:204
+#: ../packages/core/src/config.ts:214
 msgid "caldav: set passwordEnv or passwordSecret, not both"
 msgstr ""
 
-#: ../packages/core/src/config.ts:218
+#: ../packages/core/src/config.ts:229
+msgid "vdir must be an object"
+msgstr ""
+
+#: ../packages/core/src/config.ts:232
+msgid "vdir.path must be a non-empty string"
+msgstr ""
+
+#: ../packages/core/src/config.ts:238
 msgid "accounts must be a list with at least one account"
 msgstr ""
 
-#: ../packages/core/src/config.ts:222
+#: ../packages/core/src/config.ts:242
 msgid "accounts[{index}] must be an object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:225
+#: ../packages/core/src/config.ts:245
 msgid "accounts[{index}]: id \"{id}\" is used twice"
 msgstr ""
 
-#: ../packages/core/src/config.ts:249
+#: ../packages/core/src/config.ts:276
 msgid "config must be a JSON object"
 msgstr ""
 
-#: ../packages/core/src/config.ts:269
+#: ../packages/core/src/config.ts:307
 msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 
@@ -516,15 +524,15 @@ msgstr ""
 msgid "several sources have a board \"{board}\" — name the source ({sources})"
 msgstr ""
 
-#: src/core/board-sources.ts:224
+#: src/core/board-sources.ts:225
 msgid "this build has no board support for \"{type}\""
 msgstr ""
 
-#: src/core/board-sources.ts:242
+#: src/core/board-sources.ts:243
 msgid "source \"{id}\": no credential — store it as {ref}"
 msgstr ""
 
-#: src/core/board-sources.ts:250
+#: src/core/board-sources.ts:251
 msgid "source \"{id}\": {message}"
 msgstr ""
 
@@ -532,19 +540,19 @@ msgstr ""
 msgid "account \"{id}\" already exists"
 msgstr ""
 
-#: src/core/config-write.ts:137
+#: src/core/config-write.ts:142
 msgid "no account \"{id}\""
 msgstr ""
 
-#: src/core/config-write.ts:138
+#: src/core/config-write.ts:143
 msgid "a configuration needs at least one account"
 msgstr ""
 
-#: src/core/config-write.ts:264
+#: src/core/config-write.ts:274
 msgid "\"{id}\" is already in use"
 msgstr ""
 
-#: src/core/config-write.ts:275
+#: src/core/config-write.ts:285
 msgid "no board source \"{id}\""
 msgstr ""
 
@@ -560,27 +568,27 @@ msgstr ""
 msgid "{path}: {message}"
 msgstr ""
 
-#: src/core/context.ts:87
+#: src/core/context.ts:88
 msgid "no secret stored for \"{ref}\""
 msgstr ""
 
-#: src/core/context.ts:90
+#: src/core/context.ts:91
 msgid "secret \"{ref}\" cannot be read: {reason}"
 msgstr ""
 
-#: src/core/context.ts:137
+#: src/core/context.ts:138
 msgid "account \"{account}\": {message}"
 msgstr ""
 
-#: src/core/context.ts:152
+#: src/core/context.ts:158
 msgid "backend \"caldav\" needs a caldav section"
 msgstr ""
 
-#: src/core/context.ts:157
+#: src/core/context.ts:163
 msgid "the passwordSecret has not been resolved yet"
 msgstr ""
 
-#: src/core/context.ts:161
+#: src/core/context.ts:167
 msgid "export the CalDAV password as {name}"
 msgstr ""
 
@@ -743,9 +751,9 @@ msgstr ""
 #: src/frontends/cli/events.ts:75 src/frontends/cli/events.ts:98
 #: src/frontends/cli/output.ts:48 src/frontends/cli/priorities.ts:53
 #: src/frontends/cli/priorities.ts:60
-#: src/frontends/gui/calendar-view-model.ts:253
-#: src/frontends/gui/views/calendar.ts:100
-#: src/frontends/gui/views/calendar.ts:213 src/frontends/gui/views/tasks.ts:154
+#: src/frontends/gui/calendar-view-model.ts:266
+#: src/frontends/gui/views/calendar.ts:101
+#: src/frontends/gui/views/calendar.ts:217 src/frontends/gui/views/tasks.ts:154
 msgid "(no title)"
 msgstr ""
 
@@ -914,8 +922,8 @@ msgstr ""
 #: src/frontends/gui/board-view-model.ts:200
 #: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:171
 #: src/frontends/gui/view-model.ts:121
-#: src/frontends/gui/views/preferences/controller.ts:108
-#: src/frontends/gui/views/preferences/controller.ts:146
+#: src/frontends/gui/views/preferences/controller.ts:111
+#: src/frontends/gui/views/preferences/controller.ts:149
 #: src/frontends/gui/views/tasks.ts:59 src/frontends/gui/views/tasks.ts:133
 msgid "Untitled"
 msgstr ""
@@ -941,26 +949,26 @@ msgstr ""
 msgid "Some boards are missing — {sources}"
 msgstr ""
 
-#: src/frontends/gui/calendar-view-model.ts:249
+#: src/frontends/gui/calendar-view-model.ts:262
 msgid "Time zone {zone} unknown — shown as entered"
 msgstr ""
 
-#: src/frontends/gui/calendar-view-model.ts:269
-#: src/frontends/gui/calendar-view-model.ts:270
+#: src/frontends/gui/calendar-view-model.ts:282
+#: src/frontends/gui/calendar-view-model.ts:283
 #: src/frontends/gui/view-model.ts:89
 msgid "All day"
 msgstr ""
 
-#: src/frontends/gui/calendar-view-model.ts:313
+#: src/frontends/gui/calendar-view-model.ts:352
 #: src/frontends/gui/view-model.ts:158
 msgid "Not up to date — {sources}"
 msgstr ""
 
-#: src/frontends/gui/main.ts:68
+#: src/frontends/gui/main.ts:75
 msgid "No calendar backend could be set up."
 msgstr ""
 
-#: src/frontends/gui/main.ts:139
+#: src/frontends/gui/main.ts:146
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
@@ -981,8 +989,8 @@ msgstr ""
 msgid "Overdue"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:101 src/frontends/gui/views/calendar.ts:171
-#: src/frontends/gui/window.ts:307
+#: src/frontends/gui/view-model.ts:101 src/frontends/gui/views/calendar.ts:175
+#: src/frontends/gui/window.ts:305
 msgid "Today"
 msgstr ""
 
@@ -1094,62 +1102,62 @@ msgstr ""
 msgid "No card matches the filters."
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:70 src/frontends/gui/window.ts:308
+#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:306
 msgid "Month"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:309
+#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:307
 msgid "Week"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:310
+#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:308
 msgid "Day"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:87
+#: src/frontends/gui/views/calendar.ts:88
 msgid "Could not open the event: {message}"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:111
+#: src/frontends/gui/views/calendar.ts:112
 msgid "When"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:112
+#: src/frontends/gui/views/calendar.ts:113
 msgid "Where"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:113
-#: src/frontends/gui/views/calendar.ts:186
+#: src/frontends/gui/views/calendar.ts:114
+#: src/frontends/gui/views/calendar.ts:190
 #: src/frontends/gui/views/preferences/account-detail.ts:19
-#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:304
+#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:302
 msgid "Calendar"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:115
+#: src/frontends/gui/views/calendar.ts:116
 msgid "Time zone"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:120
+#: src/frontends/gui/views/calendar.ts:121
 msgid "Open the original"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:169 src/frontends/gui/window.ts:305
+#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:303
 msgid "Previous"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:170 src/frontends/gui/window.ts:306
+#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:304
 msgid "Next"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:187 src/frontends/gui/window.ts:83
+#: src/frontends/gui/views/calendar.ts:191 src/frontends/gui/window.ts:83
 msgid "Events from your calendars will appear here."
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:351
+#: src/frontends/gui/views/calendar.ts:362
 msgid "Nothing on this day."
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:378
+#: src/frontends/gui/views/calendar.ts:389
 msgid "Cannot load the calendar"
 msgstr ""
 
@@ -1193,7 +1201,7 @@ msgid "Account added"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/account-add.ts:58
-#: src/frontends/gui/views/preferences/accounts.ts:35
+#: src/frontends/gui/views/preferences/accounts.ts:36
 msgid "Add CalDAV account"
 msgstr ""
 
@@ -1253,37 +1261,46 @@ msgstr ""
 msgid "The last account cannot be removed."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:22
-#: src/frontends/gui/views/preferences/accounts.ts:26
+#: src/frontends/gui/views/preferences/accounts.ts:23
+#: src/frontends/gui/views/preferences/accounts.ts:27
 msgid "Accounts"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:27
+#: src/frontends/gui/views/preferences/accounts.ts:28
 msgid "Open an account to choose which calendars and task lists are kept."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:36
+#: src/frontends/gui/views/preferences/accounts.ts:37
 #: src/frontends/gui/views/preferences/board.ts:66
 msgid "Not available in demo mode"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:36
+#: src/frontends/gui/views/preferences/accounts.ts:37
 msgid "Any server that speaks CalDAV"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:42
-msgid "Add system calendars"
+#: src/frontends/gui/views/preferences/accounts.ts:43
+#: src/frontends/gui/views/preferences/local-list-add.ts:73
+msgid "Create local list"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:42
-msgid "The calendars of your desktop accounts"
+#: src/frontends/gui/views/preferences/accounts.ts:43
+msgid "A task list kept as files on this computer"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/accounts.ts:47
+msgid "Add system calendars"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/accounts.ts:47
+msgid "The calendars of your desktop accounts"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/accounts.ts:52
 msgid "System calendars added"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/accounts.ts:85
+#: src/frontends/gui/views/preferences/accounts.ts:90
 #: src/frontends/gui/views/preferences/agent-access.ts:112
 #: src/frontends/gui/views/preferences/board.ts:192
 msgid "The configuration cannot be read"
@@ -1372,7 +1389,7 @@ msgid "Enter the server address, e.g. https://cloud.example.org/"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/board-controller.ts:212
-#: src/frontends/gui/views/preferences/controller.ts:227
+#: src/frontends/gui/views/preferences/controller.ts:230
 msgid "Enter the user name."
 msgstr ""
 
@@ -1480,36 +1497,48 @@ msgstr ""
 msgid "No board sources yet"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:79
+#: src/frontends/gui/views/preferences/controller.ts:82
+msgid "Local lists"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:82
 msgid "System calendars"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:119
+#: src/frontends/gui/views/preferences/controller.ts:122
 msgid "Create events"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:121
+#: src/frontends/gui/views/preferences/controller.ts:124
 msgid "Create reminders"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:123
+#: src/frontends/gui/views/preferences/controller.ts:126
 msgid "Change reminders"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:223
+#: src/frontends/gui/views/preferences/controller.ts:226
 msgid "The address must start with https://"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:225
+#: src/frontends/gui/views/preferences/controller.ts:228
 msgid "Enter the server address, e.g. https://dav.example.org/"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:228
+#: src/frontends/gui/views/preferences/controller.ts:231
 msgid "Enter the password."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:296
+#: src/frontends/gui/views/preferences/controller.ts:299
 msgid "The account is removed, but cleaning up failed: {message}"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:317
+msgid "Enter a name for the list."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:318
+msgid "The colour must look like #3584e4."
 msgstr ""
 
 #: src/frontends/gui/views/preferences/general.ts:21
@@ -1538,7 +1567,7 @@ msgid "Saturday"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/general.ts:51
-#: src/frontends/gui/window.ts:294
+#: src/frontends/gui/window.ts:292
 msgid "General"
 msgstr ""
 
@@ -1556,6 +1585,28 @@ msgstr ""
 
 #: src/frontends/gui/views/preferences/general.ts:64
 msgid "First day of the week"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/local-list-add.ts:24
+msgid ""
+"The list is stored as plain files on this computer, so other tools can read "
+"it."
+msgstr ""
+
+#: src/frontends/gui/views/preferences/local-list-add.ts:26
+msgid "Name"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/local-list-add.ts:31
+msgid "Colour"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/local-list-add.ts:39
+msgid "Create list"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/local-list-add.ts:61
+msgid "List created"
 msgstr ""
 
 #: src/frontends/gui/views/tasks.ts:42
@@ -1620,11 +1671,11 @@ msgstr ""
 msgid "Your reminders as cards will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:137 src/frontends/gui/window.ts:299
+#: src/frontends/gui/window.ts:137 src/frontends/gui/window.ts:297
 msgid "Preferences"
 msgstr ""
 
-#: src/frontends/gui/window.ts:138 src/frontends/gui/window.ts:300
+#: src/frontends/gui/window.ts:138 src/frontends/gui/window.ts:298
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -1636,11 +1687,11 @@ msgstr ""
 msgid "Main Menu"
 msgstr ""
 
-#: src/frontends/gui/window.ts:298
+#: src/frontends/gui/window.ts:296
 msgid "Refresh"
 msgstr ""
 
-#: src/frontends/gui/window.ts:301
+#: src/frontends/gui/window.ts:299
 msgid "Quit"
 msgstr ""
 

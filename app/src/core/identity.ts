@@ -15,6 +15,8 @@ export const IDENTITY = {
   gettextDomain: 'reminder',
   /** Directory under `$XDG_CONFIG_HOME`. */
   configDirName: 'reminder',
+  /** Directory under `$XDG_DATA_HOME`: the person's own files (local lists). */
+  dataDirName: 'reminder',
   /** Directory under `$XDG_CACHE_HOME`. */
   cacheDirName: 'reminder',
   secretSchemaName: 'eu.jumplink.Reminder.Secret',

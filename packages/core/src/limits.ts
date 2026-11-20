@@ -30,12 +30,13 @@ export function capLimit(value: number | undefined, spec: LimitSpec): number {
 }
 
 /** The kinds of source the sync service schedules (docs/adr/0017). */
-export type SyncSourceKind = 'caldav' | 'eds' | 'deck' | 'openproject' | 'zenkit';
+export type SyncSourceKind = 'caldav' | 'eds' | 'vdir' | 'deck' | 'openproject' | 'zenkit';
 
 /** How often a source is refetched while everything works. A failure doubles it up to the cap. */
 export const SYNC_INTERVAL_MS: Record<SyncSourceKind, number> = {
   caldav: 5 * 60_000,
   eds: 2 * 60_000,
+  vdir: 60_000,
   deck: 2 * 60_000,
   openproject: 5 * 60_000,
   zenkit: 10 * 60_000,

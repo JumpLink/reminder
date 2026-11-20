@@ -71,6 +71,7 @@
 ../packages/secrets-libsecret/src/libs.gjs.ts
 ../packages/secrets-libsecret/src/optional.ts
 ../packages/secrets-libsecret/src/store.gjs.ts
+../packages/vdir/src/index.ts
 ../packages/zenkit/src/index.ts
 ../packages/zenkit/src/source.ts
 src/core/board-cache.ts
@@ -126,6 +127,7 @@ src/frontends/gui/views/preferences/board.ts
 src/frontends/gui/views/preferences/controller.ts
 src/frontends/gui/views/preferences/general.ts
 src/frontends/gui/views/preferences/index.ts
+src/frontends/gui/views/preferences/local-list-add.ts
 src/frontends/gui/views/preferences/page-context.ts
 src/frontends/gui/views/tasks.ts
 src/frontends/gui/window.blp

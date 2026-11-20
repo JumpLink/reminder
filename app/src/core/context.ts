@@ -30,6 +30,7 @@ import {
   type SecretStore,
 } from '@reminder/core';
 import { createEdsBackend } from '@gjsify/pim/eds';
+import { createVdirBackend, vdirRoot } from '@reminder/vdir';
 import { createLibsecretStore } from '@reminder/secrets-libsecret';
 
 import type { BoardIdentity, BoardSourceEntry } from './board-sources.ts';
@@ -147,6 +148,11 @@ export function createAccountBackend(
   switch (account.backend) {
     case 'eds':
       return createEdsBackend();
+    case 'vdir':
+      return createVdirBackend({
+        root: account.vdir?.path ?? vdirRoot(IDENTITY.dataDirName, env),
+        prodId: IDENTITY.prodId,
+      });
     case 'caldav': {
       const caldav = account.caldav;
       if (!caldav) throw new ConfigError(about(_('backend "caldav" needs a caldav section'), account, named));
