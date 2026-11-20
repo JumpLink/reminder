@@ -57,6 +57,12 @@
       <caption xml:lang="de">Deine Aufgaben aus allen Kalendern, nach Fälligkeit sortiert</caption>
     </screenshot>
     <screenshot>
+      <image>https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/calendar.en.png</image>
+      <image xml:lang="de">https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/calendar.de.png</image>
+      <caption>A month, a week or a day of events from every calendar</caption>
+      <caption xml:lang="de">Ein Monat, eine Woche oder ein Tag mit Terminen aus allen Kalendern</caption>
+    </screenshot>
+    <screenshot>
       <image>https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks-narrow.en.png</image>
       <image xml:lang="de">https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks-narrow.de.png</image>
       <caption>The same on a phone-sized screen</caption>

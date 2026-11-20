@@ -5,7 +5,7 @@
   and `desktop-file-validate app/data/eu.jumplink.Reminder.desktop`. The pedantic
   `cid-contains-uppercase-letter` note is expected: the app ID is fixed.
 - `app/dev/screenshots.sh` — listing screenshots from the demo data into `docs/screenshots/`.
-  TODO: Calendar and Board are placeholders, so they have no motif yet.
+  TODO: Board is still a placeholder, so it has no motif yet.
 - `eu.jumplink.Reminder.json` — Flatpak manifest on the GNOME 50 runtime. Evolution Data Server is
   NOT bundled in this version, so the GNOME-calendar backend degrades to CalDAV only inside the
   sandbox. `gjsify-sources.json` is the offline npm cache; regenerate it after any lockfile change:
