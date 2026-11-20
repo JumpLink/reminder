@@ -53,6 +53,10 @@ value in `BACKENDS`; callers do not change.
   suite never runs. EDS is tested behind `app/tests/unit/fake-backend.ts`; the live backend only for
   its degrade path. Use field comparisons: `@gjsify/unit`'s `toEqual` is `==`.
 - Commits: conventional, imperative, subject ≤ 50 chars, first word not an acronym.
+- A PR that changes the UI shows it: headless screenshots (demo data only, under
+  `scripts/headless-run`) go to the orphan branch `pr-screenshots`, folder `<pr-number>/`, and
+  the PR description embeds them via `raw.githubusercontent.com/JumpLink/reminder/pr-screenshots/…`.
+  Narrow and wide; dark or German where the change touches them.
 
 ## Run / build / test
 
