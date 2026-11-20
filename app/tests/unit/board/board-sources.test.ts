@@ -47,6 +47,14 @@ export default async () => {
       expect(set.sources.every((s) => s.info.canWrite === false)).toBe(true);
     });
 
+    await it('builds writing sources only when asked to', async () => {
+      const config = parseConfig(TWO);
+      const set = createBoardSources({ config, backend: (a) => backendOf(a.id), writable: true });
+      // The adapter can write (ADR 0013 §2); the grant is still asked for in `write.ts`.
+      expect(set.sources.every((s) => s.info.canWrite === true)).toBe(true);
+      expect(set.sources.every((s) => s.source.writeCard !== undefined)).toBe(true);
+    });
+
     await it('never loads a disabled list, named as its account spells it', async () => {
       const config = parseConfig({ ...TWO, disabled: ['work:private'] });
       const set = createBoardSources({ config, backend: (a) => backendOf(a.id) });

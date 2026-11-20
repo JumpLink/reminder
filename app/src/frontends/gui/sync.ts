@@ -189,6 +189,8 @@ export async function createGuiSync(
       // Every account was listed above; a board source asking again would double that listing.
       calendars: (account) => lists.find((entry) => entry.account === account.id)?.calendars ?? null,
       identity: context.boardIdentity?.(),
+      // The GUI moves cards (plan 4.6); `write.ts` still checks the grant per board.
+      writable: true,
     },
     { host: (account) => hostOf(config, account.id) },
   );

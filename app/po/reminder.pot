@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 11:31+0100\n"
+"POT-Creation-Date: 2026-11-20 12:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -160,14 +160,14 @@ msgstr ""
 #: ../packages/core/src/board/vtodo-source.ts:355
 #: ../packages/deck/src/deck-source.ts:309
 #: ../packages/openproject/src/openproject-source.ts:344
-#: ../packages/zenkit/src/source.ts:440
+#: ../packages/zenkit/src/source.ts:440 src/core/demo/board-source.ts:262
 msgid "no card {id} on this board"
 msgstr ""
 
 #: ../packages/core/src/board/vtodo-source.ts:357
 #: ../packages/deck/src/deck-source.ts:311
 #: ../packages/openproject/src/openproject-source.ts:273
-#: ../packages/zenkit/src/source.ts:442
+#: ../packages/zenkit/src/source.ts:442 src/core/demo/board-source.ts:264
 msgid "card {id} changed since it was read"
 msgstr ""
 
@@ -630,15 +630,15 @@ msgstr ""
 msgid "several columns map onto lane \"{lane}\" — name one: {columns}"
 msgstr ""
 
-#: src/core/board-sources.ts:228
+#: src/core/board-sources.ts:230
 msgid "this build has no board support for \"{type}\""
 msgstr ""
 
-#: src/core/board-sources.ts:246
+#: src/core/board-sources.ts:248
 msgid "source \"{id}\": no credential — store it as {ref}"
 msgstr ""
 
-#: src/core/board-sources.ts:254
+#: src/core/board-sources.ts:256
 msgid "source \"{id}\": {message}"
 msgstr ""
 
@@ -692,6 +692,10 @@ msgstr ""
 
 #: src/core/context.ts:167
 msgid "export the CalDAV password as {name}"
+msgstr ""
+
+#: src/core/demo/board-source.ts:252
+msgid "this board has no column \"{column}\""
 msgstr ""
 
 #: src/core/demo/index.ts:41

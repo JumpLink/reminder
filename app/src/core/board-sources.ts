@@ -106,6 +106,8 @@ export const BOARD_SOURCE_FACTORIES: Readonly<Partial<Record<BoardSourceType, Bo
     if (own === null) return null;
     const known = deps.calendars?.(account) ?? null;
     const base = known === null ? own : withKnownCalendars(own, known);
+    // `writable` is what the ADAPTER can do, never a permission (ADR 0013 §2): every write still
+    // goes through `write.ts`, which refuses without a `board.move` grant for that exact board.
     return createVtodoBoardSource(withoutDisabled(base, disabledIn(deps.config, account.id)), {
       id: account.id,
       identity: deps.identity,
