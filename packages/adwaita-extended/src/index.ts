@@ -9,10 +9,27 @@
 
 export { AdaptivePane } from './adaptive-pane.ts';
 export { containerFor, type PaneContainer } from './adaptive-container.ts';
+export { AgendaList, firstAgendaDate } from './agenda-list.ts';
+export { groupByDay, type AgendaDay, type AgendaEntry, type AgendaOptions } from './agenda-rules.ts';
 export { BoardCard, MAX_AVATARS, type BoardCardData } from './board-card.ts';
 export { BoardColumn, type BoardColumnData } from './board-column.ts';
 export { boardPresentation, visibleColumns, type BoardPresentation } from './board-rules.ts';
+export type { CalendarEvent, CalendarEventData } from './calendar-event.ts';
+export {
+  dayHeading,
+  hourLabel,
+  isoDate,
+  monthTitle,
+  parseIsoDate,
+  shortDayHeading,
+  timeLabel,
+  timeRangeLabel,
+  usesHour12,
+  weekdayNames,
+} from './calendar-format.ts';
 export { KanbanBoard } from './kanban-board.ts';
+export { MonthGrid, eventCountText, moreText, weekText } from './month-grid.ts';
+export { barRows, dotsForDay, monthDensity, moveGridFocus, type GridMove, type MonthDensity } from './month-rules.ts';
 export { ColorCheck } from './color-check.ts';
 export { DueChip } from './due-chip.ts';
 export { dueState, SOON_DAYS, type DueState } from './due-state.ts';
@@ -25,4 +42,18 @@ export { SourceList, type SourceItem, type SourceSection } from './source-list.t
 export { commitDistance, rowMinHeight, swipeOutcome, type SwipeOutcome } from './swipe-rules.ts';
 export { SwipeRow } from './swipe-row.ts';
 export { TaskRow, type TaskRowData } from './task-row.ts';
+export { TimeGrid } from './time-grid.ts';
+export {
+  GUTTER_WIDTH,
+  HOUR_HEIGHT,
+  SLOT_MINUTES,
+  clampDays,
+  columnBounds,
+  gridHeight,
+  minuteAtOffset,
+  nowOffset,
+  offsetForMinute,
+  scrollTarget,
+  visibleRange,
+} from './time-grid-rules.ts';
 export { initI18n, TEXT_DOMAIN } from './i18n.ts';
