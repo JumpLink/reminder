@@ -114,13 +114,18 @@ export function withoutGrant(config: ReminderConfig, grant: Grant): ReminderConf
 export function withAccount(config: ReminderConfig, account: AccountConfig): ReminderConfig {
   if (config.accounts.some((a) => a.id === account.id))
     throw new ConfigError(fmt(_('account "{id}" already exists'), { id: account.id }));
-  const { backend, caldav: _caldav, ...rest } = config;
+  const { backend, caldav: _caldav, vdir: _vdir, ...rest } = config;
   const accounts = [...config.accounts, account];
   let extra = rest.extra;
   // A caldav section left behind by a one-account `eds` file belongs to that account now.
   if (backend !== undefined && backend !== 'caldav' && extra.caldav !== undefined) {
     const { caldav: stashed, ...others } = extra;
     accounts[0] = { ...accounts[0], extra: { ...accounts[0].extra, caldav: stashed } };
+    extra = others;
+  }
+  if (backend !== undefined && backend !== 'vdir' && extra.vdir !== undefined) {
+    const { vdir: stashed, ...others } = extra;
+    accounts[0] = { ...accounts[0], extra: { ...accounts[0].extra, vdir: stashed } };
     extra = others;
   }
   const next: ReminderConfig = { ...rest, extra, accounts };
@@ -177,6 +182,11 @@ export function caldavAccount(id: string, input: { url: string; username: string
     },
     extra: {},
   };
+}
+
+/** The local-lists account: a directory of `.ics` files; no path means the app's data directory. */
+export function vdirAccount(id: string, path?: string): AccountConfig {
+  return { id, backend: 'vdir', vdir: path === undefined ? {} : { path }, extra: {} };
 }
 
 export function edsAccount(id: string): AccountConfig {

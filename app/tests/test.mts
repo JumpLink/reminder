@@ -34,6 +34,7 @@ import boardRead from './unit/board/board-read.test.ts';
 import boardCache from './unit/core/board-cache.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
+import vdir from './unit/vdir/vdir.test.ts';
 
 import caldav from './unit/caldav/caldav.test.ts';
 import caldavDelta from './unit/caldav/delta.test.ts';
@@ -105,6 +106,7 @@ run({
   boardCache,
   secrets,
   cacheFs,
+  vdir,
   caldav,
   caldavDelta,
   eds,

@@ -1,0 +1,24 @@
+{
+  "name": "@reminder/vdir",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "vdir driver for the CalendarBackend port: one directory per collection, one .ics file per item, atomic writes, no reserialising. Plain files the person owns and other tools (vdirsyncer, khal) can read.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit --project tsconfig.json",
+    "lint": "gjsify lint ."
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@reminder/core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2"
+  }
+}

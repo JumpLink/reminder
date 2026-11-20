@@ -6,6 +6,7 @@ import Gtk from '@girs/gtk-4.0';
 import { _, errorMessage } from '@reminder/core';
 
 import { createAccountAdd } from './account-add.ts';
+import { createLocalListAdd } from './local-list-add.ts';
 import { createAccountDetail } from './account-detail.ts';
 import { accountRows, addSystemAccounts, canAddSystemAccounts } from './controller.ts';
 import type { PageContext, PrefsPage } from './page-context.ts';
@@ -38,6 +39,10 @@ export function createAccountsPage(ctx: PageContext): PrefsPage {
   caldav.set_sensitive(!ctx.demo);
   caldav.connect('activated', () => ctx.dialog.push_subpage(createAccountAdd(ctx)));
   add.add(caldav);
+
+  const local = addRow(_('Create local list'), _('A task list kept as files on this computer'));
+  local.connect('activated', () => ctx.dialog.push_subpage(createLocalListAdd(ctx)));
+  add.add(local);
 
   const system = addRow(_('Add system calendars'), _('The calendars of your desktop accounts'));
   system.connect('activated', () => {

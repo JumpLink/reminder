@@ -106,6 +106,13 @@ and every uid carries its account: a target reads `<account-id>:<uid>`, exactly 
 calendars` prints it. See [config.accounts.example.json](config.accounts.example.json). A file
 without `accounts` is one account and stays as it is — nothing to migrate, no prefix to write.
 
+### Local lists (vdir)
+
+An account with `"backend": "vdir"` keeps lists as plain files: one folder per list, one `.ics` per
+item, optional `displayname` and `color` files (the vdirsyncer/khal layout). The directory is
+`$XDG_DATA_HOME/reminder/vdir` unless the account sets `"vdir": {"path": "…"}`. **This directory is
+your data, not a cache: back it up.** Preferences → Accounts → "Create local list" makes one.
+
 ## Development
 
 ```sh

@@ -25,10 +25,13 @@ import {
   type SecretStore,
 } from '@reminder/core';
 
+import { createVdirBackend } from '@reminder/vdir';
+
 import {
   accountIdFor,
   caldavAccount,
   edsAccount,
+  vdirAccount,
   withAccount,
   withDisabled,
   withGrant,
@@ -76,7 +79,7 @@ export function accountRows(config: ReminderConfig, failures: ReadonlyMap<string
   return config.accounts.map((a) => ({
     id: a.id,
     backend: a.backend,
-    detail: a.caldav?.url ?? _('System calendars'),
+    detail: a.caldav?.url ?? (a.backend === 'vdir' ? _('Local lists') : _('System calendars')),
     problem: failures.get(a.id) ?? null,
   }));
 }
@@ -299,4 +302,52 @@ export async function removeAccount(env: PreferencesEnv, id: string): Promise<Ou
     };
   }
   return { ok: true };
+}
+
+export interface LocalListInput {
+  name: string;
+  /** `#rrggbb`, or empty for none. */
+  color: string;
+  /** The vdir root; the account's own `path` wins when one exists. */
+  root: string;
+}
+
+/** Whether a name can become a local list. */
+export function validateLocalList(input: LocalListInput): string | null {
+  if (input.name.trim() === '') return _('Enter a name for the list.');
+  if (input.color !== '' && !/^#[0-9a-fA-F]{6}$/.test(input.color))
+    return _('The colour must look like #3584e4.');
+  return null;
+}
+
+/**
+ * Create a local task list in the vdir directory, and the `vdir` account that serves it when the
+ * configuration has none yet. The directory is the person's data: the list is a folder of `.ics`.
+ */
+export async function createLocalList(env: PreferencesEnv, input: LocalListInput): Promise<Outcome> {
+  const problem = validateLocalList(input);
+  if (problem !== null) return { ok: false, message: problem };
+  try {
+    const config = env.store.read();
+    const existing = config.accounts.find((a) => a.backend === 'vdir');
+    const root = existing?.vdir?.path ?? input.root;
+    const created = await createVdirBackend({ root }).createCollection({
+      name: input.name,
+      kind: 'reminder',
+      ...(input.color !== '' ? { color: input.color } : {}),
+    });
+    if (existing === undefined) {
+      const id = accountIdFor(
+        'local',
+        config.accounts.map((a) => a.id),
+      );
+      const done = await change(env, (c) => withAccount(c, vdirAccount(id)));
+      if (!done.ok) return done;
+      return { ok: true, id };
+    }
+    await env.rebuild();
+    return { ok: true, id: existing.id + ':' + created };
+  } catch (err) {
+    return { ok: false, message: errorMessage(err) };
+  }
 }

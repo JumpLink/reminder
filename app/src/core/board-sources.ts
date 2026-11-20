@@ -90,6 +90,7 @@ export type BoardSourceFactory = (account: AccountConfig, deps: BoardSourceDeps)
 export const BOARD_TYPE_OF_BACKEND: Readonly<Record<BackendId, BoardSourceType>> = {
   eds: 'vtodo',
   caldav: 'vtodo',
+  vdir: 'vtodo',
 };
 
 /**

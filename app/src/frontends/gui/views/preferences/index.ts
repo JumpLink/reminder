@@ -4,6 +4,7 @@ import Adw from '@girs/adw-1';
 import type Gtk from '@girs/gtk-4.0';
 
 import { createAccountsPage } from './accounts.ts';
+import { createLocalListAdd } from './local-list-add.ts';
 import { createAgentAccessPage } from './agent-access.ts';
 import { createBoardPage } from './board.ts';
 import type { PreferencesEnv } from './controller.ts';
@@ -49,4 +50,6 @@ export function presentPreferences(
   }
   if (page && pages.some((entry) => entry.page.name === page)) dialog.set_visible_page_name(page);
   dialog.present(parent);
+  // Dev hook for screenshots: `REMINDER_APP_PREFS=local-list` opens the form itself.
+  if (page === 'local-list') dialog.push_subpage(createLocalListAdd(ctx));
 }

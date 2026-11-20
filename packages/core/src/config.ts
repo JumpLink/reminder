@@ -30,7 +30,7 @@ import {
 } from './board/sources-config.ts';
 import { _, fmt } from './i18n.ts';
 
-export const BACKENDS = ['eds', 'caldav'] as const;
+export const BACKENDS = ['eds', 'caldav', 'vdir'] as const;
 export type BackendId = (typeof BACKENDS)[number];
 
 /** Where priorities live (docs/adr/0002). No default: an arbitrary list would rank arbitrary tasks. */
@@ -64,12 +64,19 @@ export interface CaldavConfig {
   passwordSecret?: string;
 }
 
+/** A directory of `.ics` files (docs/adr/0013). No path means the app's default data directory. */
+export interface VdirConfig {
+  path?: string;
+}
+
 /** One place calendars come from: an id the person chose plus what its backend needs. */
 export interface AccountConfig extends AccountRef {
   id: string;
   backend: BackendId;
   /** Present when `backend` is `caldav`. Two CalDAV accounts carry two URLs and two variables. */
   caldav?: CaldavConfig;
+  /** Present when `backend` is `vdir`. */
+  vdir?: VdirConfig;
   /** Keys this build does not know, kept verbatim. */
   extra: Record<string, unknown>;
 }
@@ -85,6 +92,8 @@ export interface ReminderConfig extends RoutingConfig {
   backend?: BackendId;
   /** The one-account spelling's CalDAV section; see `backend`. */
   caldav?: CaldavConfig;
+  /** The one-account spelling's vdir section; see `backend`. */
+  vdir?: VdirConfig;
   grants: Grant[];
   priorities: PrioritiesConfig;
   /** Lanes and "mine" per board (docs/adr/0008); empty until a person configures one. */
@@ -108,11 +117,12 @@ const KNOWN = new Set([
   'defaults',
   'priorities',
   'caldav',
+  'vdir',
   'disabled',
   'boards',
   'boardSources',
 ]);
-const ACCOUNT_KNOWN = new Set(['id', 'backend', 'caldav']);
+const ACCOUNT_KNOWN = new Set(['id', 'backend', 'caldav', 'vdir']);
 
 export function emptyConfig(): ReminderConfig {
   return {
@@ -213,6 +223,16 @@ function parseCaldav(value: unknown): CaldavConfig {
   };
 }
 
+function parseVdir(value: unknown): VdirConfig {
+  if (value === undefined) return {};
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    throw new ConfigError(_('vdir must be an object'));
+  const { path } = value as Record<string, unknown>;
+  if (path === undefined) return {};
+  if (typeof path !== 'string' || path === '') throw new ConfigError(_('vdir.path must be a non-empty string'));
+  return { path };
+}
+
 function parseAccounts(value: unknown): AccountConfig[] {
   if (!Array.isArray(value) || value.length === 0)
     throw new ConfigError(_('accounts must be a list with at least one account'));
@@ -229,7 +249,14 @@ function parseAccounts(value: unknown): AccountConfig[] {
     for (const [key, v] of Object.entries(record)) if (!ACCOUNT_KNOWN.has(key)) extra[key] = v;
     // Another backend's section stays in the file untouched (see the header: never erase on save).
     if (backend !== 'caldav' && record.caldav !== undefined) extra.caldav = record.caldav;
-    return { id, backend, ...(backend === 'caldav' ? { caldav: parseCaldav(record.caldav) } : {}), extra };
+    if (backend !== 'vdir' && record.vdir !== undefined) extra.vdir = record.vdir;
+    return {
+      id,
+      backend,
+      ...(backend === 'caldav' ? { caldav: parseCaldav(record.caldav) } : {}),
+      ...(backend === 'vdir' ? { vdir: parseVdir(record.vdir) } : {}),
+      extra,
+    };
   });
 }
 
@@ -257,14 +284,25 @@ export function parseConfig(raw: unknown): ReminderConfig {
     const caldav = backend === 'caldav' ? parseCaldav(record.caldav) : undefined;
     // Another backend's section stays in the file untouched (see the header: never erase on save).
     if (backend !== 'caldav' && record.caldav !== undefined) extra.caldav = record.caldav;
+    const vdir = backend === 'vdir' ? parseVdir(record.vdir) : undefined;
+    if (backend !== 'vdir' && record.vdir !== undefined) extra.vdir = record.vdir;
     shape = {
-      accounts: [{ id: DEFAULT_ACCOUNT_ID, backend, ...(caldav ? { caldav } : {}), extra: {} }],
+      accounts: [
+        {
+          id: DEFAULT_ACCOUNT_ID,
+          backend,
+          ...(caldav ? { caldav } : {}),
+          ...(vdir ? { vdir } : {}),
+          extra: {},
+        },
+      ],
       backend,
       ...(caldav ? { caldav } : {}),
+      ...(vdir ? { vdir } : {}),
     };
   } else {
     // Guessing which of the two spellings wins is how a write lands on the wrong server.
-    for (const key of ['backend', 'caldav']) {
+    for (const key of ['backend', 'caldav', 'vdir']) {
       if (record[key] !== undefined)
         throw new ConfigError(fmt(_('a file with accounts must not also have a top-level {key}'), { key }));
     }
@@ -297,17 +335,17 @@ function serializeCaldav(caldav: CaldavConfig): Record<string, unknown> {
 }
 
 function serializeAccount(account: AccountConfig): Record<string, unknown> {
-  const { extra, id, backend, caldav } = account;
-  return { ...extra, id, backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}) };
+  const { extra, id, backend, caldav, vdir } = account;
+  return { ...extra, id, backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}), ...(vdir ? { vdir } : {}) };
 }
 
 export function serializeConfig(config: ReminderConfig): string {
-  const { extra, accounts, backend, caldav, disabled, boards, boardSources, ...rest } = config;
+  const { extra, accounts, backend, caldav, vdir, disabled, boards, boardSources, ...rest } = config;
   // Written back in the spelling it was read in: `backend` present means the file had no accounts.
   const shape =
     backend === undefined
       ? { accounts: accounts.map(serializeAccount) }
-      : { backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}) };
+      : { backend, ...(caldav ? { caldav: serializeCaldav(caldav) } : {}), ...(vdir ? { vdir } : {}) };
   // An empty list is not written: a file that never disabled anything stays as it was.
   const off = disabled.length > 0 ? { disabled } : {};
   // Same for the board section: nothing configured means nothing written.
