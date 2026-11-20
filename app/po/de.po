@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 10:45+0100\n"
+"POT-Creation-Date: 2026-11-20 11:10+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -169,13 +169,21 @@ msgstr "Die Aufgabenliste „{uid}“ ist schreibgeschützt"
 
 #: ../packages/core/src/board/vtodo-source.ts:322
 msgid "a task list has no column \"{column}\" to write to"
-msgstr "Eine Aufgabenliste hat keine Spalte „{column}“, in die geschrieben werden kann"
+msgstr ""
+"Eine Aufgabenliste hat keine Spalte „{column}“, in die geschrieben werden "
+"kann"
 
 #: ../packages/core/src/board/vtodo-source.ts:355
+#: ../packages/deck/src/deck-source.ts:309
+#: ../packages/openproject/src/openproject-source.ts:344
+#: ../packages/zenkit/src/source.ts:440
 msgid "no card {id} on this board"
 msgstr "Dieses Board kennt keine Karte {id}"
 
 #: ../packages/core/src/board/vtodo-source.ts:357
+#: ../packages/deck/src/deck-source.ts:311
+#: ../packages/openproject/src/openproject-source.ts:273
+#: ../packages/zenkit/src/source.ts:442
 msgid "card {id} changed since it was read"
 msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
@@ -500,25 +508,43 @@ msgstr "disabled[{index}] muss eine nicht leere Kalender-UID sein"
 msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr "Kalender „{uid}“ ist in der Konfiguration deaktiviert"
 
-#: ../packages/deck/src/deck-source.ts:164
+#: ../packages/deck/src/deck-source.ts:186
 msgid "Deck did not say who is signed in"
 msgstr "Deck hat nicht gesagt, wer angemeldet ist"
 
-#: ../packages/deck/src/deck-source.ts:191
+#: ../packages/deck/src/deck-source.ts:213
 msgid "Deck did not return a list of stacks"
 msgstr "Deck hat keine Liste von Stapeln geliefert"
 
-#: ../packages/deck/src/deck-source.ts:237
+#: ../packages/deck/src/deck-source.ts:265
+#: ../packages/openproject/src/openproject-source.ts:287
+#: ../packages/zenkit/src/source.ts:416
+msgid "no column \"{column}\" on this board"
+msgstr "Dieses Board hat keine Spalte „{column}“"
+
+#: ../packages/deck/src/deck-source.ts:276
+msgid "Deck did not return the card after writing it"
+msgstr "Deck hat die Karte nach dem Schreiben nicht geliefert"
+
+#: ../packages/deck/src/deck-source.ts:300
+msgid "Deck did not return the new card"
+msgstr "Deck hat die neue Karte nicht geliefert"
+
+#: ../packages/deck/src/deck-source.ts:347
 msgid "Deck did not return a list of boards"
 msgstr "Deck hat keine Liste von Boards geliefert"
 
-#: ../packages/openproject/src/openproject-source.ts:118
+#: ../packages/openproject/src/openproject-source.ts:122
 msgid "OpenProject base URL \"{url}\" is not a URL"
 msgstr "Die OpenProject-Adresse „{url}“ ist keine URL"
 
-#: ../packages/openproject/src/openproject-source.ts:121
+#: ../packages/openproject/src/openproject-source.ts:125
 msgid "OpenProject base URL must start with http:// or https://"
 msgstr "Die OpenProject-Adresse muss mit http:// oder https:// beginnen"
+
+#: ../packages/openproject/src/openproject-source.ts:365
+msgid "this card cannot go to \"{column}\"; allowed: {allowed}"
+msgstr "Diese Karte kann nicht nach „{column}“; erlaubt: {allowed}"
 
 #: ../packages/pim/src/caldav/backend.ts:87
 #: ../packages/pim/src/caldav/delta.ts:131
@@ -585,21 +611,37 @@ msgstr "Typelib {label} nicht verfügbar: {message}"
 msgid "secret service not available: {message}"
 msgstr "Geheimnisdienst nicht verfügbar: {message}"
 
-#: ../packages/zenkit/src/source.ts:108
+#: ../packages/zenkit/src/source.ts:112
 msgid "No value"
 msgstr "Kein Wert"
 
-#: ../packages/zenkit/src/source.ts:172
+#: ../packages/zenkit/src/source.ts:176
 msgid "no field {field} in list {id}"
 msgstr "Kein Feld „{field}“ in Liste {id}"
 
-#: ../packages/zenkit/src/source.ts:174
+#: ../packages/zenkit/src/source.ts:178
 msgid "field {field} in list {id} has the wrong type for this use"
 msgstr "Feld „{field}“ in Liste {id} hat für diesen Zweck den falschen Typ"
 
-#: ../packages/zenkit/src/source.ts:257
+#: ../packages/zenkit/src/source.ts:261
 msgid "list {id} has no choice field to use as its columns"
 msgstr "Liste {id} hat kein Auswahlfeld, das als Spalten dienen kann"
+
+#: ../packages/zenkit/src/source.ts:381
+msgid "list {id} has no date field to use as the due date"
+msgstr "Liste {id} hat kein Datumsfeld, das als Fälligkeit dienen kann"
+
+#: ../packages/zenkit/src/source.ts:395
+msgid "Zenkit did not return the entry after writing it"
+msgstr "Zenkit hat den Eintrag nach dem Schreiben nicht geliefert"
+
+#: ../packages/zenkit/src/source.ts:420
+msgid "list {id} has no text field to use as the title"
+msgstr "Liste {id} hat kein Textfeld, das als Titel dienen kann"
+
+#: ../packages/zenkit/src/source.ts:434
+msgid "Zenkit did not return the new entry"
+msgstr "Zenkit hat den neuen Eintrag nicht geliefert"
 
 #: src/core/board-read.ts:103
 msgid "boards cannot be read: {problems}"

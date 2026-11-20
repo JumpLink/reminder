@@ -7,6 +7,7 @@ import {
   NetworkError,
   NotFoundError,
   RateLimitedError,
+  ResponseFormatError,
   ServerError,
   TimeoutError,
   UnauthorizedError,
@@ -87,6 +88,26 @@ export default async () => {
         expect(err.message.startsWith('POST ')).toBe(true);
         expect(err.message.includes(TOKEN)).toBe(false);
         expect(JSON.stringify(client).includes(TOKEN)).toBe(false);
+      });
+    });
+
+    await it('sends PUT and PATCH bodies and accepts an empty 2xx only when told to', async () => {
+      await withServer(async (rest) => {
+        rest.on('/api/card', (req, res) => {
+          res.writeHead(200);
+          res.end(req.method === 'PUT' ? '' : JSON.stringify({ echo: JSON.parse(req.body) }));
+        });
+        const client = basic(rest);
+        const put = await client.sendJson('PUT', 'card', { title: 'x' }, { allowEmpty: true });
+        expect(put.status).toBe('ok');
+        expect(rest.requests[0].method).toBe('PUT');
+        expect(rest.requests[0].body).toBe('{"title":"x"}');
+        expect(rest.requests[0].headers['content-type']).toBe('application/json');
+        const refused = await rejection(client.sendJson('PUT', 'card', {}));
+        expect(refused instanceof ResponseFormatError).toBe(true);
+        const patch = await client.sendJson<{ echo: { a: number } }>('PATCH', 'card', { a: 1 });
+        expect(patch.status === 'ok' && patch.data.echo.a).toBe(1);
+        expect(rest.requests[2].method).toBe('PATCH');
       });
     });
 

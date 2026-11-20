@@ -1,6 +1,13 @@
 import { describe, expect, it } from '@gjsify/unit';
 import { BackendAuthError } from '@gjsify/pim';
-import { boardSourceContract, classifyCard, type BoardSource } from '@reminder/core';
+import {
+  boardSourceContract,
+  boardSourceWriteContract,
+  classifyCard,
+  ConflictError,
+  InputError,
+  type BoardSource,
+} from '@reminder/core';
 import { apiKeyAuth, createOpenProjectSource } from '@reminder/openproject';
 
 import { fixtures, startFakeOpenProject, TOKEN, type FakeOpenProject } from './fake-openproject-server.ts';
@@ -31,12 +38,81 @@ export default async () => {
     });
   });
 
+  await describe('BoardSource write contract (OpenProject)', async () => {
+    await withServer(async (server) => {
+      for (const check of boardSourceWriteContract(() => sourceFor(server))) {
+        await it(check.name, async () => {
+          await check.run();
+        });
+      }
+    });
+  });
+
+  await describe('OpenProject writes', async () => {
+    const seen = async (source: BoardSource, id: string) => {
+      const [board] = await source.listBoards();
+      const page = await source.listCards(board, { mine: 'all', includeClosed: true });
+      const card = page.kind === 'changed' ? page.cards.find((c) => c.ref.id === id) : undefined;
+      if (!card) throw new Error(`card ${id} missing`);
+      return card;
+    };
+    const failure = async (promise: Promise<unknown>): Promise<unknown> => {
+      try {
+        await promise;
+      } catch (err) {
+        return err;
+      }
+      return undefined;
+    };
+
+    await it('turns a 409 from the server into ConflictError', async () => {
+      await withServer(async (server) => {
+        const source = sourceFor(server);
+        const card = await seen(source, '101');
+        // A second person saves between the adapter's read and its PATCH.
+        server.beforePatch = () => {
+          const wp = server.data.workPackages.find((w) => w.id === 101);
+          if (wp) wp.lockVersion += 1;
+        };
+        const err = await failure(
+          source.writeCard?.({
+            kind: 'update',
+            ref: card.ref,
+            version: card.version,
+            changes: { title: 'Mine' },
+          }) as Promise<unknown>,
+        );
+        expect(err instanceof ConflictError).toBe(true);
+        expect(server.data.workPackages.find((w) => w.id === 101)?.subject).toBe('Sharpen the plane iron');
+      });
+    });
+
+    await it('refuses a status the form does not allow before any PATCH', async () => {
+      await withServer(async (server) => {
+        const source = sourceFor(server);
+        const card = await seen(source, '101');
+        const err = await failure(
+          source.writeCard?.({
+            kind: 'move',
+            ref: card.ref,
+            version: card.version,
+            toColumn: 'Rejected',
+          }) as Promise<unknown>,
+        );
+        expect(err instanceof InputError).toBe(true);
+        expect((err as Error).message.includes('In progress')).toBe(true);
+        expect(server.requests.filter((r) => r.method === 'PATCH').length).toBe(0);
+        expect(server.data.workPackages.find((w) => w.id === 101)?.status).toBe(1);
+      });
+    });
+  });
+
   await describe('OpenProject board source', async () => {
-    await it('is read-only and says what it can do', async () => {
+    await it('says what it can do', async () => {
       await withServer(async (server) => {
         const info = sourceFor(server).describe();
         expect(info.type).toBe('openproject');
-        expect(info.canWrite).toBe(false);
+        expect(info.canWrite).toBe(true);
         expect(info.hasWatchers).toBe(true);
         expect(info.changeToken).toBe(true);
       });

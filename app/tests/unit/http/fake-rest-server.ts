@@ -21,11 +21,20 @@ export interface FakeRest {
   requests: RecordedRequest[];
   /** Replace the handler for a path. */
   on(path: string, handler: Handler): void;
+  /** A handler for every path the pattern matches and no exact `on` claims; `groups` are its captures. */
+  onMatch(
+    pattern: RegExp,
+    handler: (req: RecordedRequest, res: ServerResponse, groups: string[]) => void,
+  ): void;
   close(): Promise<void>;
 }
 
 export async function startFakeRest(): Promise<FakeRest> {
   const handlers = new Map<string, Handler>();
+  const patterns: {
+    pattern: RegExp;
+    handler: (req: RecordedRequest, res: ServerResponse, groups: string[]) => void;
+  }[] = [];
   const requests: RecordedRequest[] = [];
   const pending = new Set<ServerResponse>();
 
@@ -46,6 +55,11 @@ export async function startFakeRest(): Promise<FakeRest> {
     req.on('end', () => {
       recorded.body = Buffer.concat(chunks).toString('utf8');
       const handler = handlers.get(path);
+      const hit = handler ? null : patterns.find((entry) => entry.pattern.test(path));
+      if (hit) {
+        hit.handler(recorded, res, (hit.pattern.exec(path) ?? []).slice(1));
+        return;
+      }
       if (!handler) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end('{}');
@@ -61,6 +75,7 @@ export async function startFakeRest(): Promise<FakeRest> {
     url: `http://127.0.0.1:${port}/api/`,
     requests,
     on: (path, handler) => void handlers.set(path, handler),
+    onMatch: (pattern, handler) => void patterns.push({ pattern, handler }),
     close: () =>
       new Promise<void>((resolve) => {
         for (const res of pending) res.destroy();

@@ -2,7 +2,13 @@ import { describe, expect, it } from '@gjsify/unit';
 import { BackendAuthError } from '@gjsify/pim';
 import { HostLimiter } from '@gjsify/http-client';
 import { createDeckBoardSource } from '@reminder/deck';
-import { boardSourceContract, classifyColumn, type BoardSource } from '@reminder/core';
+import {
+  boardSourceContract,
+  boardSourceWriteContract,
+  classifyColumn,
+  ConflictError,
+  type BoardSource,
+} from '@reminder/core';
 
 import { DECK_PASSWORD, DECK_USER, startFakeDeck, type FakeDeck } from './fake-deck-server.ts';
 
@@ -50,6 +56,58 @@ export default async () => {
     });
   });
 
+  await describe('BoardSource write contract (Deck, fake server)', async () => {
+    for (const check of boardSourceWriteContract(async () => {
+      const deck = await startFakeDeck();
+      closers.push(() => deck.close());
+      return sourceFor(deck);
+    })) {
+      await it(check.name, async () => {
+        await check.run();
+      });
+    }
+    await it('closes the contract servers', async () => {
+      for (const close of closers.splice(0)) await close();
+    });
+
+    await it("refuses when the card changed between the caller's read and the write, and writes nothing", async () => {
+      await withDeck(async (deck) => {
+        const source = sourceFor(deck);
+        const [workshop] = await source.listBoards();
+        const page = await source.listCards(workshop, { mine: 'all' });
+        if (page.kind !== 'changed') throw new Error('unchanged');
+        const seen = page.cards.find((c) => c.ref.id === '103');
+        if (!seen) throw new Error('fixture card missing');
+        deck.editCard(103, { title: 'Edited by Bob' });
+        const before = deck.requests.filter((r) => r.method !== 'GET').length;
+        let error: unknown;
+        try {
+          await source.writeCard?.({
+            kind: 'move',
+            ref: seen.ref,
+            version: seen.version,
+            toColumn: 'Erledigt',
+          });
+        } catch (err) {
+          error = err;
+        }
+        expect(error instanceof ConflictError).toBe(true);
+        expect(deck.requests.filter((r) => r.method !== 'GET').length).toBe(before);
+        const stored = deck.cardsOf(10).find((c) => c.id === 103);
+        expect(stored?.title).toBe('Edited by Bob');
+        expect(stored?.stackId).toBe(1);
+      });
+    });
+
+    await it('says it can write', async () => {
+      await withDeck(async (deck) => {
+        const source = sourceFor(deck);
+        expect(source.describe().canWrite).toBe(true);
+        expect(source.writeCard !== undefined).toBe(true);
+      });
+    });
+  });
+
   await describe('Deck source', async () => {
     await it('reads boards, skipping archived ones, with a link into the Deck UI', async () => {
       await withDeck(async (deck) => {
@@ -82,7 +140,7 @@ export default async () => {
         const lamp = page.cards.find((c) => c.ref.id === '102');
         if (!plane || !shelf || !lamp) throw new Error('fixture cards missing');
         expect(plane.sourceColumn).toBe('Zu erledigen');
-        expect(plane.due).toBe('2026-12-01T00:00:00Z');
+        expect(plane.due).toBe('2026-12-01');
         expect(plane.assignees.length).toBe(1);
         expect(plane.assignees[0].id).toBe(DECK_USER);
         expect(plane.assignees[0].isMe).toBe(true);
