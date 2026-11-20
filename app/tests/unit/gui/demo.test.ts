@@ -10,9 +10,13 @@ import {
 import { existsSync } from 'node:fs';
 
 import { createDemoContext, DEMO_LISTS } from '../../../src/core/demo/index.ts';
+import { expandEvents } from '../../../src/core/expand-events.ts';
 import { createGuiSync } from '../../../src/frontends/gui/sync.ts';
 
 const NOW = new Date(2026, 10, 18, 9, 0);
+
+const ymd = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 async function reminders(context = createDemoContext(NOW)): Promise<ReminderItem[]> {
   const raw = await context.backend().listItems({ kind: 'reminder' });
@@ -29,10 +33,25 @@ export default async () => {
     });
 
     await it('has four lists on two accounts, two of them named alike', async () => {
-      const calendars = await createDemoContext(NOW).backend().listCalendars();
+      const calendars = await createDemoContext(NOW).backend().listCalendars('reminder');
       expect(calendars.length).toBe(4);
       expect(calendars.filter((c) => c.name === 'Tasks').length).toBe(2);
       expect(new Set(calendars.map((c) => c.account)).size).toBe(2);
+    });
+
+    await it('shows a recurring event and a moved one today, and skips the excluded day', async () => {
+      const backend = createDemoContext(NOW).backend();
+      const today = await expandEvents(backend, { from: ymd(NOW), to: ymd(NOW) }, NOW);
+      expect(
+        today.occurrences
+          .map((o) => o.summary)
+          .sort()
+          .join('|'),
+      ).toBe('Morning stand-up|Piano lesson (moved)');
+      expect(today.occurrences.some((o) => o.override)).toBe(true);
+      const next = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() + 1);
+      const tomorrow = await expandEvents(backend, { from: ymd(next), to: ymd(next) }, NOW);
+      expect(tomorrow.occurrences.some((o) => o.summary === 'Morning stand-up')).toBe(false);
     });
 
     await it('grants every list but the read-only one', async () => {

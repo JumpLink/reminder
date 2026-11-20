@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-19 22:01+0100\n"
+"POT-Creation-Date: 2026-11-20 06:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -584,8 +584,12 @@ msgstr ""
 msgid "export the CalDAV password as {name}"
 msgstr ""
 
-#: src/core/demo/index.ts:34
+#: src/core/demo/index.ts:41
 msgid "Demo mode — invented data, nothing is saved."
+msgstr ""
+
+#: src/core/expand-events.ts:102
+msgid "window ends before it starts: {from} – {to}"
 msgstr ""
 
 #. TRANSLATORS: Not shown. The language code of THIS catalogue ("de" in de.po); it selects the
@@ -726,6 +730,7 @@ msgstr ""
 
 #: src/frontends/cli/events.ts:54 src/frontends/cli/output.ts:48
 #: src/frontends/cli/priorities.ts:53 src/frontends/cli/priorities.ts:60
+#: src/frontends/gui/views/tasks.ts:154
 msgid "(no title)"
 msgstr ""
 
@@ -869,7 +874,7 @@ msgstr ""
 
 #: src/frontends/gui/board-view-model.ts:101
 #: src/frontends/gui/views/preferences/board-controller.ts:133
-#: src/frontends/gui/views/tasks.ts:39
+#: src/frontends/gui/views/tasks.ts:43
 msgid "In progress"
 msgstr ""
 
@@ -883,11 +888,11 @@ msgid "Unsorted"
 msgstr ""
 
 #: src/frontends/gui/board-view-model.ts:153
-#: src/frontends/gui/board-view-model.ts:200 src/frontends/gui/model.ts:139
-#: src/frontends/gui/view-model.ts:103
+#: src/frontends/gui/board-view-model.ts:200 src/frontends/gui/model.ts:171
+#: src/frontends/gui/view-model.ts:121
 #: src/frontends/gui/views/preferences/controller.ts:108
 #: src/frontends/gui/views/preferences/controller.ts:146
-#: src/frontends/gui/views/tasks.ts:55 src/frontends/gui/views/tasks.ts:129
+#: src/frontends/gui/views/tasks.ts:59 src/frontends/gui/views/tasks.ts:133
 msgid "Untitled"
 msgstr ""
 
@@ -920,56 +925,64 @@ msgstr ""
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:57
+#: src/frontends/gui/view-model.ts:58
 msgid "Calendars"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:58
+#: src/frontends/gui/view-model.ts:59
 #: src/frontends/gui/views/preferences/board-controller.ts:80
 msgid "Task lists"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:81
+#: src/frontends/gui/view-model.ts:89
+msgid "All day"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:92
+msgid "{time} (time zone {zone} unknown)"
+msgstr ""
+
+#: src/frontends/gui/view-model.ts:99
 msgid "Overdue"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:83
+#: src/frontends/gui/view-model.ts:101
 msgid "Today"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:85
+#: src/frontends/gui/view-model.ts:103
 msgid "Upcoming"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:87
+#: src/frontends/gui/view-model.ts:105
 msgid "Later"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:89
+#: src/frontends/gui/view-model.ts:107
 msgid "No date"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:116
+#: src/frontends/gui/view-model.ts:134
 msgid "sign-in rejected"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:118
+#: src/frontends/gui/view-model.ts:136
 msgid "no access"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:120
+#: src/frontends/gui/view-model.ts:138
 msgid "rate limited"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:122
+#: src/frontends/gui/view-model.ts:140
 msgid "cannot be read"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:124
+#: src/frontends/gui/view-model.ts:142
 msgid "could not be updated"
 msgstr ""
 
-#: src/frontends/gui/view-model.ts:140
+#: src/frontends/gui/view-model.ts:158
 msgid "Not up to date — {sources}"
 msgstr ""
 
@@ -992,7 +1005,7 @@ msgstr ""
 msgid "Column"
 msgstr ""
 
-#: src/frontends/gui/views/board.ts:92 src/frontends/gui/views/tasks.ts:73
+#: src/frontends/gui/views/board.ts:92 src/frontends/gui/views/tasks.ts:77
 msgid "Due"
 msgstr ""
 
@@ -1459,61 +1472,61 @@ msgstr ""
 msgid "First day of the week"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:38
+#: src/frontends/gui/views/tasks.ts:42
 msgid "Open"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:40
+#: src/frontends/gui/views/tasks.ts:44
 msgid "Completed"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:41
+#: src/frontends/gui/views/tasks.ts:45
 msgid "Cancelled"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:42
+#: src/frontends/gui/views/tasks.ts:46
 msgid "Unknown"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:66
+#: src/frontends/gui/views/tasks.ts:70
 msgid "List"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:75
+#: src/frontends/gui/views/tasks.ts:79
 msgid "Status"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:94 src/frontends/gui/views/tasks.ts:182
+#: src/frontends/gui/views/tasks.ts:98 src/frontends/gui/views/tasks.ts:210
 #: src/frontends/gui/window.ts:82
 msgid "Tasks"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:95 src/frontends/gui/views/tasks.ts:184
+#: src/frontends/gui/views/tasks.ts:99 src/frontends/gui/views/tasks.ts:212
 #: src/frontends/gui/window.ts:83
 msgid "Your reminders will appear here."
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:120
+#: src/frontends/gui/views/tasks.ts:124
 msgid "This task was changed elsewhere. Reloading it."
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:121
+#: src/frontends/gui/views/tasks.ts:125
 msgid "Changing this list is not allowed."
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:123
+#: src/frontends/gui/views/tasks.ts:127
 msgid "Could not save: {message}"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:174
+#: src/frontends/gui/views/tasks.ts:202
 msgid "Completed ({count})"
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:184
+#: src/frontends/gui/views/tasks.ts:212
 msgid "Every list is hidden."
 msgstr ""
 
-#: src/frontends/gui/views/tasks.ts:204
+#: src/frontends/gui/views/tasks.ts:232
 msgid "Cannot load tasks"
 msgstr ""
 

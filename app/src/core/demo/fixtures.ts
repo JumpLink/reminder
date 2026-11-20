@@ -48,15 +48,27 @@ export const DEMO_LISTS: readonly DemoList[] = [
   { account: 'work', uid: 'reading', name: 'Reading list', readOnly: true },
 ];
 
+/** The one invented event calendar; it lives on the first account. */
+export const DEMO_EVENT_CALENDAR = { account: 'home', uid: 'family', name: 'Family' } as const;
+
 export const demoCalendars = (account: string): CalendarInfo[] => {
   const name = DEMO_ACCOUNTS.find((a) => a.id === account)?.name ?? null;
-  return DEMO_LISTS.filter((l) => l.account === account).map((l) => ({
+  const lists: CalendarInfo[] = DEMO_LISTS.filter((l) => l.account === account).map((l) => ({
     uid: l.uid,
     name: l.name,
     kind: 'reminder',
     backend: 'demo',
     account: name,
   }));
+  if (account === DEMO_EVENT_CALENDAR.account)
+    lists.push({
+      uid: DEMO_EVENT_CALENDAR.uid,
+      name: DEMO_EVENT_CALENDAR.name,
+      kind: 'event',
+      backend: 'demo',
+      account: name,
+    });
+  return lists;
 };
 
 interface DemoAttendee {
@@ -225,4 +237,55 @@ export function demoReminders(account: string, now: Date): Record<string, string
     (out[uid] ??= []).push(vtodo(task, now));
   }
   return out;
+}
+
+/**
+ * Two invented recurring events, in floating local time so they read the same in every zone: a
+ * daily stand-up that skips tomorrow (EXDATE), and a weekly lesson whose instance today was moved
+ * (a `RECURRENCE-ID` override). Both started before today, so only expansion can show them.
+ */
+export function demoEvents(account: string, now: Date): Record<string, string[]> {
+  if (account !== DEMO_EVENT_CALENDAR.account) return {};
+  const wrap = (...components: string[][]): string =>
+    [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//reminder demo//EN',
+      ...components.flat(),
+      'END:VCALENDAR',
+      '',
+    ].join('\r\n');
+  const stamp = `DTSTAMP:${utcStamp(now)}`;
+  const standup = [
+    'BEGIN:VEVENT',
+    'UID:demo-e01',
+    stamp,
+    'SUMMARY:Morning stand-up',
+    `DTSTART:${day(now, -3)}T093000`,
+    `DTEND:${day(now, -3)}T094500`,
+    'RRULE:FREQ=DAILY',
+    `EXDATE:${day(now, 1)}T093000`,
+    'END:VEVENT',
+  ];
+  const lesson = [
+    'BEGIN:VEVENT',
+    'UID:demo-e02',
+    stamp,
+    'SUMMARY:Piano lesson',
+    `DTSTART:${day(now, -14)}T170000`,
+    `DTEND:${day(now, -14)}T180000`,
+    'RRULE:FREQ=WEEKLY',
+    'END:VEVENT',
+  ];
+  const moved = [
+    'BEGIN:VEVENT',
+    'UID:demo-e02',
+    stamp,
+    'SUMMARY:Piano lesson (moved)',
+    `RECURRENCE-ID:${day(now, 0)}T170000`,
+    `DTSTART:${day(now, 0)}T183000`,
+    `DTEND:${day(now, 0)}T193000`,
+    'END:VEVENT',
+  ];
+  return { [DEMO_EVENT_CALENDAR.uid]: [wrap(standup), wrap(lesson, moved)] };
 }

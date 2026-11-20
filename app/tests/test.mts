@@ -19,6 +19,7 @@ import cache from './unit/core/cache.test.ts';
 import sync from './unit/core/sync.test.ts';
 import visibility from './unit/core/visibility.test.ts';
 import agenda from './unit/core/agenda.test.ts';
+import expandEvents from './unit/core/expand-events.test.ts';
 import board from './unit/board/board.test.ts';
 import boardRules from './unit/board/rules.test.ts';
 import boardMine from './unit/board/mine.test.ts';
@@ -83,6 +84,7 @@ run({
   sync,
   visibility,
   agenda,
+  expandEvents,
   board,
   boardRules,
   boardMine,

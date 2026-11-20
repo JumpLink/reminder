@@ -1,4 +1,10 @@
 ../packages/cache-fs/src/index.ts
+../packages/calendar-layout/src/bars.ts
+../packages/calendar-layout/src/dates.ts
+../packages/calendar-layout/src/index.ts
+../packages/calendar-layout/src/item.ts
+../packages/calendar-layout/src/month.ts
+../packages/calendar-layout/src/time-grid.ts
 ../packages/core/src/accounts.ts
 ../packages/core/src/agenda.ts
 ../packages/core/src/board/config.ts
@@ -57,6 +63,10 @@
 ../packages/pim/src/index.ts
 ../packages/pim/src/optional.ts
 ../packages/pim/src/types.ts
+../packages/recurrence/src/cache.ts
+../packages/recurrence/src/expand.ts
+../packages/recurrence/src/index.ts
+../packages/recurrence/src/zones.ts
 ../packages/secrets-libsecret/src/index.ts
 ../packages/secrets-libsecret/src/libs.gjs.ts
 ../packages/secrets-libsecret/src/optional.ts
@@ -73,6 +83,7 @@ src/core/demo/board-source.ts
 src/core/demo/fixtures.ts
 src/core/demo/index.ts
 src/core/demo/memory-backend.ts
+src/core/expand-events.ts
 src/core/i18n-init.ts
 src/core/i18n.ts
 src/core/identity.ts

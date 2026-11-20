@@ -10,6 +10,8 @@
 import {
   _,
   cacheKeyOfTarget,
+  shiftDate,
+  type AgendaOccurrence,
   ConflictError,
   decodeCollectionBody,
   errorMessage,
@@ -25,6 +27,8 @@ import {
   type SourceStatus,
   type SyncService,
 } from '@reminder/core';
+
+import { expandEvents } from '../../core/expand-events.ts';
 
 export type WriteOutcome =
   | { kind: 'ok' }
@@ -46,6 +50,8 @@ export interface TasksModel {
   load(): Promise<void>;
   calendars(): CalendarInfo[];
   reminders(): ReminderItem[];
+  /** Occurrences of events around today (recurring ones expanded); the view keeps today's. */
+  occurrences(): AgendaOccurrence[];
   /** The list a reminder belongs to, for its colour and name. */
   calendar(uid: string): CalendarInfo | null;
   writable(calendarUid: string): boolean;
@@ -71,6 +77,30 @@ export function createTasksModel(deps: TasksModelDeps): TasksModel {
   const byTarget = new Map<string, ReminderItem[]>();
   const statuses = new Map<string, SourceStatus>();
   const listeners = new Set<() => void>();
+  let occurrences: AgendaOccurrence[] = [];
+  const loadOccurrences = async (): Promise<void> => {
+    const d = now();
+    const day = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    try {
+      // A day either side: all-day and floating values are read as UTC, the view cuts to today.
+      const result = await expandEvents(backend, { from: shiftDate(day, -1), to: shiftDate(day, 1) }, d);
+      occurrences = result.occurrences.map((o) => ({
+        uid: o.uid,
+        calendarUid: o.calendarUid,
+        summary: o.summary,
+        start: o.start,
+        end: o.end,
+        allDay: o.allDay,
+        floating: o.floating,
+        tzid: o.tzid,
+        override: o.override,
+        zoneUnresolved: o.zoneUnresolved,
+      }));
+    } catch {
+      // Events are an extra on the task view: a calendar that cannot be read leaves the tasks alone.
+      occurrences = [];
+    }
+  };
   const notify = (): void => {
     for (const listener of listeners) listener();
   };
@@ -125,10 +155,12 @@ export function createTasksModel(deps: TasksModelDeps): TasksModel {
   return {
     async load() {
       calendars = await backend.listCalendars();
+      await loadOccurrences();
       notify();
     },
     calendars: () => [...calendars],
     reminders: () => [...byTarget.values()].flat(),
+    occurrences: () => [...occurrences],
     calendar: (uid) => calendars.find((c) => c.uid === uid) ?? null,
     writable: (uid) => isGranted(config.grants, 'reminder.update', uid),
     setDone: (item, done) => write(item, { status: done ? 'completed' : 'needs-action' }),
@@ -144,6 +176,9 @@ export function createTasksModel(deps: TasksModelDeps): TasksModel {
       };
     },
     focus: () => service?.focus(),
-    refresh: () => service?.refresh(),
+    refresh() {
+      service?.refresh();
+      void loadOccurrences().then(notify);
+    },
   };
 }

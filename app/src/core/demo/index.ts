@@ -19,7 +19,14 @@ import {
 import type { BoardSourceEntry } from '../board-sources.ts';
 import type { Context } from '../context.ts';
 import { createDemoBoardSource } from './board-source.ts';
-import { DEMO_ACCOUNTS, DEMO_IDENTITY, DEMO_LISTS, demoCalendars, demoReminders } from './fixtures.ts';
+import {
+  DEMO_ACCOUNTS,
+  DEMO_IDENTITY,
+  DEMO_LISTS,
+  demoCalendars,
+  demoEvents,
+  demoReminders,
+} from './fixtures.ts';
 import { createMemoryBackend } from './memory-backend.ts';
 
 export { DEMO_ACCOUNTS, DEMO_IDENTITY, DEMO_LISTS } from './fixtures.ts';
@@ -62,7 +69,7 @@ export function createDemoContext(now: Date = new Date(), config: ReminderConfig
       createMemoryBackend(
         'demo',
         demoCalendars(a.id),
-        demoReminders(a.id, now),
+        { ...demoReminders(a.id, now), ...demoEvents(a.id, now) },
         new Set(DEMO_LISTS.filter((l) => l.account === a.id && l.readOnly).map((l) => l.uid)),
       ),
     ]),
