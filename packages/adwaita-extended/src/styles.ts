@@ -31,7 +31,7 @@ const CSS = `
 .gjsify-week-number { padding: 0 4px; }
 .gjsify-time-hour { border-top: 1px solid alpha(currentColor, 0.12); }
 .gjsify-time-column { border-left: 1px solid alpha(currentColor, 0.12); }
-.gjsify-time-event { border-radius: 6px; padding: 1px 5px; background-color: alpha(currentColor, 0.15); }
+.gjsify-time-event { border-radius: 6px; padding: 1px 5px; background-color: color-mix(in srgb, currentColor 15%, @window_bg_color); }
 .gjsify-time-now { background-color: @error_color; min-height: 2px; }
 .gjsify-time-strip { border-bottom: 1px solid alpha(currentColor, 0.12); }
 .gjsify-agenda-header { padding: 10px 12px 2px 12px; }
