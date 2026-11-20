@@ -124,7 +124,7 @@ backend; EDS adds a local-only shape that only some installations have, and a Fl
 would otherwise have no internal board at all. Choosing EDS as the default would make the feature
 depend on the one part of the stack that is not always there.
 
-This is **plan open question 8** and it stays open for Pascal. Nothing else in this ADR depends on
+This is **plan open question 8** and it stays open for the maintainer. Nothing else in this ADR depends on
 the answer: both are `CalendarBackend` implementations behind the same port, the board source is the
 same `createVtodoBoardSource`, and the decision is one value in the setup flow.
 
@@ -143,5 +143,5 @@ same `createVtodoBoardSource`, and the decision is one value in the setup flow.
   renumber during a drag, or a slow list feels broken.
 - `@reminder/vdir` is a third backend to maintain, and the contract test is what keeps the cost
   bounded. It is also what makes a server-side or Flatpak install work without EDS.
-- Open question 8 (EDS or vdir on the desktop) is for Pascal. Until it is answered the setup flow
+- Open question 8 (EDS or vdir on the desktop) is for the maintainer. Until it is answered the setup flow
   implements the proposed default: vdir, EDS offered where it is reachable.
