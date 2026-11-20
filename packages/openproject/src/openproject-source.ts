@@ -1,5 +1,5 @@
 /**
- * OpenProject (API v3) as a read-only board (docs/adr/0007).
+ * OpenProject (API v3) as a board (docs/adr/0007); writes per docs/adr/0013.
  *
  * Projects are boards, statuses are columns, work packages are cards. The adapter normalises and
  * decides nothing: a card's `sourceColumn` is its status name and `closed` is the status's own
@@ -13,6 +13,7 @@
 
 import {
   createHttpClient,
+  HttpError,
   NotFoundError,
   paginateAll,
   ResponseFormatError,
@@ -24,11 +25,14 @@ import {
   _,
   boardNotFound,
   ConfigError,
+  ConflictError,
   fmt,
+  InputError,
   type BoardRef,
   type BoardSource,
   type Card,
   type CardPage,
+  type CardWrite,
   type CardQuery,
   type SourceColumn,
   type SourceInfo,
@@ -134,7 +138,7 @@ export function createOpenProjectSource(options: OpenProjectOptions): BoardSourc
     limiter: options.limiter,
   });
 
-  const info: SourceInfo = { id, type: 'openproject', canWrite: false, hasWatchers: true, changeToken: true };
+  const info: SourceInfo = { id, type: 'openproject', canWrite: true, hasWatchers: true, changeToken: true };
 
   let me: SourceUser | null = null;
 
@@ -265,9 +269,120 @@ export function createOpenProjectSource(options: OpenProjectOptions): BoardSourc
   const newestFirst = (a: Card, b: Card): number =>
     byCodeUnit(b.updated ?? '', a.updated ?? '') || byCodeUnit(a.ref.id, b.ref.id);
 
+  const staleCard = (cardId: string): ConflictError =>
+    new ConflictError(fmt(_('card {id} changed since it was read'), { id: cardId }), 'openproject', 409);
+
+  /** OpenProject answers a `lockVersion` that no longer matches with 409 (API v3, "Update Conflict"). */
+  async function locked<T>(cardId: string, run: () => Promise<T>): Promise<T> {
+    try {
+      return await run();
+    } catch (err) {
+      if (err instanceof HttpError && err.status === 409) throw staleCard(cardId);
+      throw err;
+    }
+  }
+
+  async function statusNamed(name: string): Promise<StatusResource> {
+    const found = (await statuses()).find((status) => status.name === name);
+    if (!found) throw new InputError(fmt(_('no column "{column}" on this board'), { column: name }));
+    return found;
+  }
+
+  async function fetchOne(cardId: string): Promise<WorkPackageResource> {
+    const result = await client.getJson<WorkPackageResource>(`work_packages/${encodeURIComponent(cardId)}`);
+    if (result.status !== 'ok') throw new ResponseFormatError('a work package came back unchanged', { url: client.origin });
+    return result.data;
+  }
+
+  /** The card as the server has it now, with the watcher flag a list read would carry. */
+  async function readBack(board: BoardRef, cardId: string): Promise<Card> {
+    const [wp, byStatus, meUser] = await Promise.all([fetchOne(cardId), statuses(), whoAmI()]);
+    const idFilter = { id: { operator: '=', values: [cardId] } };
+    const watching = await fetchAll(
+      board,
+      JSON.stringify([idFilter, { watcher: { operator: '=', values: [meUser.id] } }]),
+    );
+    return toCard(
+      board,
+      wp,
+      new Map(byStatus.map((status) => [String(status.id), status])),
+      meUser.id,
+      new Set(watching.map((w) => w.id)),
+    );
+  }
+
+  const asBoard = (boardId: string): BoardRef => ({ source: id, id: boardId, title: '', url: null });
+
+  /**
+   * Request shapes: OpenProject API v3, https://www.openproject.org/docs/api/endpoints/work-packages/
+   * (update: PATCH with `lockVersion`, 409 on mismatch; create in a project; the update form).
+   */
+  async function writeCard(write: CardWrite): Promise<Card> {
+    if (write.kind === 'create') {
+      const board = asBoard(write.board);
+      const status = await statusNamed(write.column);
+      const body: Record<string, unknown> = {
+        subject: write.title,
+        _links: { status: { href: `/api/v3/statuses/${status.id}` } },
+      };
+      if (write.due) body.dueDate = write.due.slice(0, 10);
+      // UNVERIFIED: no `type` link is sent, so the project's default type applies; the public
+      // docs do not state this for the create call.
+      const created = await inBoard(board, () =>
+        client.sendJson<WorkPackageResource>('POST', `${workPackagesPath(board)}`, body),
+      );
+      if (created.status !== 'ok' || created.data?.id === undefined) {
+        throw new ResponseFormatError('creating a work package did not return it', { url: client.origin });
+      }
+      return readBack(board, String(created.data.id));
+    }
+
+    const board = asBoard(write.ref.board);
+    const cardId = write.ref.id;
+    const current = await fetchOne(cardId);
+    if (idOf(current._links?.project) !== board.id) {
+      throw new InputError(fmt(_('no card {id} on this board'), { id: cardId }));
+    }
+    const lockVersion = Number(write.version ?? current.lockVersion);
+    if (current.lockVersion !== lockVersion) throw staleCard(cardId);
+    const path = `work_packages/${encodeURIComponent(cardId)}`;
+
+    if (write.kind === 'move') {
+      const status = await statusNamed(write.toColumn);
+      const link = { href: `/api/v3/statuses/${status.id}` };
+      // Which statuses are reachable depends on type, role and workflow: ask the form first.
+      const form = await locked(cardId, () =>
+        client.sendJson<{ _embedded?: { schema?: { status?: { _embedded?: { allowedValues?: { name?: string }[] } } } } }>(
+          'POST',
+          `${path}/form`,
+          { lockVersion, _links: { status: link } },
+        ),
+      );
+      const allowed = form.status === 'ok' ? (form.data._embedded?.schema?.status?._embedded?.allowedValues ?? []) : [];
+      const names = allowed.map((value) => value.name ?? '');
+      if (!names.includes(write.toColumn)) {
+        throw new InputError(
+          fmt(_('this card cannot go to "{column}"; allowed: {allowed}'), {
+            column: write.toColumn,
+            allowed: names.join(', '),
+          }),
+        );
+      }
+      await locked(cardId, () => client.sendJson('PATCH', path, { lockVersion, _links: { status: link } }));
+    } else {
+      const body: Record<string, unknown> = { lockVersion };
+      if (write.changes.title !== undefined) body.subject = write.changes.title;
+      // The work package has a date, not an instant: a time of day is dropped.
+      if (write.changes.due !== undefined) body.dueDate = write.changes.due === null ? null : write.changes.due.slice(0, 10);
+      await locked(cardId, () => client.sendJson('PATCH', path, body));
+    }
+    return readBack(board, cardId);
+  }
+
   return {
     describe: () => ({ ...info }),
     whoAmI,
+    writeCard,
     async listBoards() {
       const projects = await paginateAll<ProjectResource>(client, 'projects', {
         style: 'offset',

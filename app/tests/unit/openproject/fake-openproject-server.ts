@@ -4,7 +4,7 @@
  * number. Every request is recorded. All names, hosts and ids are invented.
  */
 
-import { createServer, type Server, type ServerResponse } from 'node:http';
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 
 export const TOKEN = 'op-test-token-0000';
 export const ME = 7;
@@ -36,6 +36,8 @@ export interface FakeData {
   projects: { id: number; identifier: string; name: string }[];
   statuses: FakeStatus[];
   workPackages: FakeWorkPackage[];
+  /** Status id -> status ids a work package may move to; absent means every status. */
+  transitions?: Record<number, number[]>;
 }
 
 export function fixtures(): FakeData {
@@ -56,6 +58,7 @@ export function fixtures(): FakeData {
     ...rest,
   });
   return {
+    transitions: { 1: [1, 2, 3] },
     users: { [ME]: 'Pat Example', [OTHER]: 'Robin Example' },
     projects: [
       { id: 1, identifier: 'workshop', name: 'Workshop' },
@@ -87,6 +90,7 @@ export function fixtures(): FakeData {
 }
 
 export interface RecordedRequest {
+  method: string;
   path: string;
   query: URLSearchParams;
   authorization: string | undefined;
@@ -97,6 +101,8 @@ export interface FakeOpenProject {
   url: string;
   data: FakeData;
   requests: RecordedRequest[];
+  /** Runs once, right before the next PATCH is checked: a second person editing in between. */
+  beforePatch: (() => void) | undefined;
   close(): Promise<void>;
 }
 
@@ -104,6 +110,8 @@ type Filter = Record<string, { operator: string; values?: string[] }>;
 
 export async function startFakeOpenProject(data: FakeData = fixtures()): Promise<FakeOpenProject> {
   const requests: RecordedRequest[] = [];
+  let clock = Date.parse('2026-11-20T09:00:00Z');
+  const state: { beforePatch: (() => void) | undefined } = { beforePatch: undefined };
   const open = new Set<ServerResponse>();
   const expected = `Basic ${Buffer.from(`apikey:${TOKEN}`).toString('base64')}`;
 
@@ -122,6 +130,7 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
       updatedAt: w.updatedAt,
       _links: {
         self: { href: href('work_packages', w.id) },
+        project: { href: href('projects', w.project) },
         status: { href: href('statuses', w.status), title: status?.name },
         assignee: userLink(w.assignee),
         responsible: userLink(w.responsible),
@@ -138,16 +147,22 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
         const ids = values.map(Number);
         if (name === 'assignee') return w.assignee !== undefined && ids.includes(w.assignee);
         if (name === 'responsible') return w.responsible !== undefined && ids.includes(w.responsible);
+        if (name === 'id') return ids.includes(w.id);
         if (name === 'watcher') return w.watchers.some((id) => ids.includes(id));
         throw new Error(`the fake does not know the filter ${name} ${operator}`);
       }),
     );
 
-  const server: Server = createServer((req, res) => {
+  const handle = (req: IncomingMessage, res: ServerResponse, rawBody: string) => {
     open.add(res);
     res.on('close', () => open.delete(res));
     const url = new URL(req.url ?? '/', 'http://localhost');
-    requests.push({ path: url.pathname, query: url.searchParams, authorization: req.headers.authorization });
+    requests.push({
+      method: req.method ?? 'GET',
+      path: url.pathname,
+      query: url.searchParams,
+      authorization: req.headers.authorization,
+    });
     const send = (status: number, body: unknown) => {
       res.writeHead(status, { 'Content-Type': 'application/hal+json; charset=utf-8' });
       res.end(JSON.stringify(body));
@@ -185,6 +200,57 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
       );
       return;
     }
+    const wpRoute = /^\/api\/v3\/work_packages\/(\d+)(\/form)?$/.exec(url.pathname);
+    if (wpRoute) {
+      const target = data.workPackages.find((w) => String(w.id) === wpRoute[1]);
+      if (!target) {
+        send(404, { _type: 'Error', errorIdentifier: 'urn:openproject-org:api:v3:errors:NotFound' });
+        return;
+      }
+      const input = rawBody ? (JSON.parse(rawBody) as Record<string, any>) : {};
+      const wanted = Number(
+        String(input._links?.status?.href ?? '')
+          .split('/')
+          .pop() || target.status,
+      );
+      if (wpRoute[2] && req.method === 'POST') {
+        const reachable = data.transitions?.[target.status] ?? data.statuses.map((x) => x.id);
+        send(200, {
+          _type: 'Form',
+          _embedded: {
+            schema: {
+              status: {
+                _embedded: {
+                  allowedValues: data.statuses
+                    .filter((x) => reachable.includes(x.id))
+                    .map((x) => ({ id: x.id, name: x.name })),
+                },
+              },
+            },
+          },
+        });
+        return;
+      }
+      if (req.method === 'PATCH') {
+        const hook = state.beforePatch;
+        state.beforePatch = undefined;
+        hook?.();
+        if (input.lockVersion !== target.lockVersion) {
+          send(409, { _type: 'Error', errorIdentifier: 'urn:openproject-org:api:v3:errors:UpdateConflict' });
+          return;
+        }
+        if (typeof input.subject === 'string') target.subject = input.subject;
+        if ('dueDate' in input) target.dueDate = input.dueDate ?? undefined;
+        if (input._links?.status) target.status = wanted;
+        target.lockVersion += 1;
+        clock += 60_000;
+        target.updatedAt = new Date(clock).toISOString();
+        send(200, element(target));
+        return;
+      }
+      send(200, element(target));
+      return;
+    }
     const project = /^\/api\/v3\/projects\/([^/]+)(\/work_packages)?$/.exec(url.pathname);
     const found = project ? data.projects.find((p) => String(p.id) === project[1]) : undefined;
     if (!project || !found) {
@@ -195,6 +261,28 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
       send(200, { _type: 'Project', ...found });
       return;
     }
+    if (req.method === 'POST') {
+      const input = JSON.parse(rawBody) as Record<string, any>;
+      const status = Number(
+        String(input._links?.status?.href ?? '')
+          .split('/')
+          .pop() || 1,
+      );
+      clock += 60_000;
+      const made: FakeWorkPackage = {
+        id: 300 + data.workPackages.length,
+        project: found.id,
+        subject: String(input.subject),
+        status,
+        watchers: [],
+        updatedAt: new Date(clock).toISOString(),
+        lockVersion: 1,
+        ...(input.dueDate ? { dueDate: String(input.dueDate) } : {}),
+      };
+      data.workPackages.push(made);
+      send(201, element(made));
+      return;
+    }
     const filters = JSON.parse(url.searchParams.get('filters') ?? '[]') as Filter[];
     const size = Number(url.searchParams.get('pageSize') ?? 25);
     const page = Number(url.searchParams.get('offset') ?? 1);
@@ -202,6 +290,11 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
       .filter((w) => w.project === found.id && matches(w, filters))
       .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : a.updatedAt > b.updatedAt ? -1 : a.id - b.id));
     collection(hits.slice((page - 1) * size, page * size).map(element), hits.length, size, page);
+  };
+  const server: Server = createServer((req, res) => {
+    const chunks: Buffer[] = [];
+    req.on('data', (chunk: Buffer) => chunks.push(chunk));
+    req.on('end', () => handle(req, res, Buffer.concat(chunks).toString('utf8')));
   });
 
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', () => resolve()));
@@ -210,6 +303,12 @@ export async function startFakeOpenProject(data: FakeData = fixtures()): Promise
     url: `http://127.0.0.1:${port}/`,
     data,
     requests,
+    get beforePatch() {
+      return state.beforePatch;
+    },
+    set beforePatch(fn) {
+      state.beforePatch = fn;
+    },
     close: () =>
       new Promise<void>((resolve) => {
         for (const res of open) res.destroy();

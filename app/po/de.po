@@ -175,11 +175,13 @@ msgstr ""
 
 #: ../packages/core/src/board/vtodo-source.ts:355
 #: ../packages/deck/src/deck-source.ts:309
+#: ../packages/openproject/src/openproject-source.ts:344
 msgid "no card {id} on this board"
 msgstr "Dieses Board kennt keine Karte {id}"
 
 #: ../packages/core/src/board/vtodo-source.ts:357
 #: ../packages/deck/src/deck-source.ts:311
+#: ../packages/openproject/src/openproject-source.ts:273
 msgid "card {id} changed since it was read"
 msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
@@ -513,6 +515,7 @@ msgid "Deck did not return a list of stacks"
 msgstr "Deck hat keine Liste von Stapeln geliefert"
 
 #: ../packages/deck/src/deck-source.ts:265
+#: ../packages/openproject/src/openproject-source.ts:287
 msgid "no column \"{column}\" on this board"
 msgstr "Dieses Board hat keine Spalte „{column}“"
 
@@ -528,13 +531,17 @@ msgstr "Deck hat die neue Karte nicht geliefert"
 msgid "Deck did not return a list of boards"
 msgstr "Deck hat keine Liste von Boards geliefert"
 
-#: ../packages/openproject/src/openproject-source.ts:118
+#: ../packages/openproject/src/openproject-source.ts:122
 msgid "OpenProject base URL \"{url}\" is not a URL"
 msgstr "Die OpenProject-Adresse „{url}“ ist keine URL"
 
-#: ../packages/openproject/src/openproject-source.ts:121
+#: ../packages/openproject/src/openproject-source.ts:125
 msgid "OpenProject base URL must start with http:// or https://"
 msgstr "Die OpenProject-Adresse muss mit http:// oder https:// beginnen"
+
+#: ../packages/openproject/src/openproject-source.ts:365
+msgid "this card cannot go to \"{column}\"; allowed: {allowed}"
+msgstr "Diese Karte kann nicht nach „{column}“; erlaubt: {allowed}"
 
 #: ../packages/pim/src/caldav/backend.ts:87
 #: ../packages/pim/src/caldav/delta.ts:131
