@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 10:06+0100\n"
+"POT-Creation-Date: 2026-11-20 10:45+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -159,9 +159,25 @@ msgstr "boardSources muss eine Liste sein"
 msgid "boardSources[{index}]: id \"{id}\" is used twice"
 msgstr "boardSources[{index}]: id „{id}“ wird zweimal verwendet"
 
-#: ../packages/core/src/board/types.ts:177
+#: ../packages/core/src/board/types.ts:182
 msgid "no board {id} in this source"
 msgstr "Diese Quelle kennt kein Board {id}"
+
+#: ../packages/core/src/board/vtodo-source.ts:316
+msgid "task list \"{uid}\" is read-only"
+msgstr "Die Aufgabenliste „{uid}“ ist schreibgeschützt"
+
+#: ../packages/core/src/board/vtodo-source.ts:322
+msgid "a task list has no column \"{column}\" to write to"
+msgstr "Eine Aufgabenliste hat keine Spalte „{column}“, in die geschrieben werden kann"
+
+#: ../packages/core/src/board/vtodo-source.ts:355
+msgid "no card {id} on this board"
+msgstr "Dieses Board kennt keine Karte {id}"
+
+#: ../packages/core/src/board/vtodo-source.ts:357
+msgid "card {id} changed since it was read"
+msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
 #: ../packages/core/src/board/write.ts:69 src/core/config-write.ts:285
 msgid "no board source \"{id}\""
@@ -192,7 +208,7 @@ msgstr "Der Kartentitel darf nicht leer sein"
 msgid "a position must be a non-negative integer"
 msgstr "Die Position muss eine nicht negative ganze Zahl sein"
 
-#: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:205
+#: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:213
 msgid "nothing to change"
 msgstr "Nichts zu ändern"
 
@@ -275,16 +291,16 @@ msgstr "accounts[{index}] muss ein Objekt sein"
 msgid "accounts[{index}]: id \"{id}\" is used twice"
 msgstr "accounts[{index}]: id „{id}“ wird zweimal verwendet"
 
-#: ../packages/core/src/config.ts:276
+#: ../packages/core/src/config.ts:277
 msgid "config must be a JSON object"
 msgstr "Die Konfiguration muss ein JSON-Objekt sein"
 
-#: ../packages/core/src/config.ts:307
+#: ../packages/core/src/config.ts:308
 msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 "Eine Datei mit accounts darf zusätzlich kein {key} auf oberster Ebene haben"
 
-#: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:172
+#: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:178
 msgid "summary must not be empty"
 msgstr "Der Titel darf nicht leer sein"
 
@@ -393,11 +409,11 @@ msgstr "Kein {component} im gespeicherten Eintrag"
 msgid "unterminated {component} in the stored item"
 msgstr "Nicht abgeschlossenes {component} im gespeicherten Eintrag"
 
-#: ../packages/core/src/rewrite.ts:186
+#: ../packages/core/src/rewrite.ts:192
 msgid "priority must be 0 (none) to 9, not {value}"
 msgstr "Die Priorität muss 0 (keine) bis 9 sein, nicht {value}"
 
-#: ../packages/core/src/rewrite.ts:192
+#: ../packages/core/src/rewrite.ts:198
 msgid "cannot set status \"{value}\""
 msgstr "Der Status „{value}“ kann nicht gesetzt werden"
 
@@ -1071,7 +1087,7 @@ msgid "Overdue"
 msgstr "Überfällig"
 
 #: src/frontends/gui/view-model.ts:101 src/frontends/gui/views/calendar.ts:175
-#: src/frontends/gui/window.ts:305
+#: src/frontends/gui/window.ts:307
 msgid "Today"
 msgstr "Heute"
 
@@ -1185,15 +1201,15 @@ msgstr ""
 msgid "No card matches the filters."
 msgstr "Keine Karte passt zu den Filtern."
 
-#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:306
+#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:308
 msgid "Month"
 msgstr "Monat"
 
-#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:307
+#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:309
 msgid "Week"
 msgstr "Woche"
 
-#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:308
+#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:310
 msgid "Day"
 msgstr "Tag"
 
@@ -1212,7 +1228,7 @@ msgstr "Wo"
 #: src/frontends/gui/views/calendar.ts:114
 #: src/frontends/gui/views/calendar.ts:190
 #: src/frontends/gui/views/preferences/account-detail.ts:19
-#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:302
+#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:304
 msgid "Calendar"
 msgstr "Kalender"
 
@@ -1224,11 +1240,11 @@ msgstr "Zeitzone"
 msgid "Open the original"
 msgstr "Im Original öffnen"
 
-#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:303
+#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:305
 msgid "Previous"
 msgstr "Zurück"
 
-#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:304
+#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:306
 msgid "Next"
 msgstr "Weiter"
 
@@ -1392,52 +1408,52 @@ msgid "System calendars added"
 msgstr "Systemkalender hinzugefügt"
 
 #: src/frontends/gui/views/preferences/accounts.ts:90
-#: src/frontends/gui/views/preferences/agent-access.ts:112
+#: src/frontends/gui/views/preferences/agent-access.ts:116
 #: src/frontends/gui/views/preferences/board.ts:192
 msgid "The configuration cannot be read"
 msgstr "Die Konfiguration kann nicht gelesen werden"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:24
+#: src/frontends/gui/views/preferences/agent-access.ts:28
 msgid "Agent access"
 msgstr "Agentenzugriff"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:28
+#: src/frontends/gui/views/preferences/agent-access.ts:32
 msgid "Granted"
 msgstr "Erlaubt"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:29
+#: src/frontends/gui/views/preferences/agent-access.ts:33
 msgid ""
 "Agents can always read. They change something only where it is listed here."
 msgstr ""
 "Agenten dürfen immer lesen. Ändern dürfen sie nur, was hier aufgeführt ist."
 
-#: src/frontends/gui/views/preferences/agent-access.ts:31
-#: src/frontends/gui/views/preferences/agent-access.ts:40
+#: src/frontends/gui/views/preferences/agent-access.ts:35
+#: src/frontends/gui/views/preferences/agent-access.ts:44
 msgid "Grant access"
 msgstr "Zugriff erlauben"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:36
+#: src/frontends/gui/views/preferences/agent-access.ts:40
 msgid "May"
 msgstr "Darf"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:39
+#: src/frontends/gui/views/preferences/agent-access.ts:43
 msgid "In"
 msgstr "In"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:61
+#: src/frontends/gui/views/preferences/agent-access.ts:65
 msgid "Nothing to choose from"
 msgstr "Nichts zur Auswahl"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:82
+#: src/frontends/gui/views/preferences/agent-access.ts:86
 msgid "Nothing is granted"
 msgstr "Nichts ist erlaubt"
 
-#: src/frontends/gui/views/preferences/agent-access.ts:83
+#: src/frontends/gui/views/preferences/agent-access.ts:87
 msgid "Agents cannot change anything."
 msgstr "Agenten können nichts ändern."
 
-#: src/frontends/gui/views/preferences/agent-access.ts:97
-#: src/frontends/gui/views/preferences/agent-access.ts:98
+#: src/frontends/gui/views/preferences/agent-access.ts:101
+#: src/frontends/gui/views/preferences/agent-access.ts:102
 msgid "Revoke"
 msgstr "Widerrufen"
 
@@ -1674,7 +1690,7 @@ msgid "Saturday"
 msgstr "Samstag"
 
 #: src/frontends/gui/views/preferences/general.ts:51
-#: src/frontends/gui/window.ts:292
+#: src/frontends/gui/window.ts:294
 msgid "General"
 msgstr "Allgemein"
 
@@ -1780,27 +1796,27 @@ msgstr "Aufgaben konnten nicht geladen werden"
 msgid "Your reminders as cards will appear here."
 msgstr "Ihre Erinnerungen als Karten erscheinen hier."
 
-#: src/frontends/gui/window.ts:137 src/frontends/gui/window.ts:297
+#: src/frontends/gui/window.ts:138 src/frontends/gui/window.ts:299
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/frontends/gui/window.ts:138 src/frontends/gui/window.ts:298
+#: src/frontends/gui/window.ts:139 src/frontends/gui/window.ts:300
 msgid "Keyboard Shortcuts"
 msgstr "Tastenkürzel"
 
-#: src/frontends/gui/window.ts:139
+#: src/frontends/gui/window.ts:140
 msgid "About reminder"
 msgstr "Über reminder"
 
-#: src/frontends/gui/window.ts:140
+#: src/frontends/gui/window.ts:141
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/frontends/gui/window.ts:296
+#: src/frontends/gui/window.ts:298
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#: src/frontends/gui/window.ts:299
+#: src/frontends/gui/window.ts:301
 msgid "Quit"
 msgstr "Beenden"
 
