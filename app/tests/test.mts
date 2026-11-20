@@ -49,6 +49,10 @@ import priorityMarks from './unit/widgets/priority-marks.test.ts';
 import swipeRules from './unit/widgets/swipe-rules.test.ts';
 import adaptiveContainer from './unit/widgets/adaptive-container.test.ts';
 import boardLayout from './unit/widgets/board-rules.test.ts';
+import calendarFormat from './unit/widgets/calendar-format.test.ts';
+import monthRules from './unit/widgets/month-rules.test.ts';
+import timeGridRules from './unit/widgets/time-grid-rules.test.ts';
+import agendaRules from './unit/widgets/agenda-rules.test.ts';
 
 import calendarLayout from './unit/calendar-layout/calendar-layout.test.ts';
 
@@ -111,6 +115,10 @@ run({
   swipeRules,
   adaptiveContainer,
   boardLayout,
+  calendarFormat,
+  monthRules,
+  timeGridRules,
+  agendaRules,
   calendarLayout,
   sizeClasses,
   guiViewModel,

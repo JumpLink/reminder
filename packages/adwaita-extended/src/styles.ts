@@ -20,6 +20,21 @@ const CSS = `
 .gjsify-swipe-backdrop image { opacity: 0.55; }
 .gjsify-swipe-backdrop.armed image { opacity: 1; }
 .gjsify-swipe-actions button { min-width: 32px; min-height: 32px; }
+.gjsify-month-head { padding: 0 6px; min-height: 24px; border-radius: 99px; }
+.gjsify-month-head.today { background-color: @accent_bg_color; color: @accent_fg_color; }
+.gjsify-month-head.other-month { opacity: 0.45; }
+.gjsify-month-week { border-top: 1px solid alpha(currentColor, 0.12); }
+.gjsify-month-bar { min-height: 18px; padding: 0 6px; border-radius: 6px; background-color: alpha(currentColor, 0.12); }
+.gjsify-month-bar.continues-left { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.gjsify-month-bar.continues-right { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.gjsify-month-more { padding: 0 6px; min-height: 16px; }
+.gjsify-week-number { padding: 0 4px; }
+.gjsify-time-hour { border-top: 1px solid alpha(currentColor, 0.12); }
+.gjsify-time-column { border-left: 1px solid alpha(currentColor, 0.12); }
+.gjsify-time-event { border-radius: 6px; padding: 1px 5px; background-color: alpha(currentColor, 0.15); }
+.gjsify-time-now { background-color: @error_color; min-height: 2px; }
+.gjsify-time-strip { border-bottom: 1px solid alpha(currentColor, 0.12); }
+.gjsify-agenda-header { padding: 10px 12px 2px 12px; }
 `;
 
 let loaded = false;

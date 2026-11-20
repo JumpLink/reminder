@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gjsify-adwaita-extended\n"
 "Report-Msgid-Bugs-To: https://github.com/gjsify/gjsify/issues\n"
-"POT-Creation-Date: 2026-11-19 19:57+0100\n"
+"POT-Creation-Date: 2026-11-20 06:48+0100\n"
 "PO-Revision-Date: 2026-11-18 18:48+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,9 +17,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/adaptive-pane.ts:46 src/adaptive-pane.ts:47
+#: src/adaptive-pane.ts:58 src/adaptive-pane.ts:59
 msgid "Close"
 msgstr "Schließen"
+
+#: src/agenda-list.ts:43
+msgid "Nothing scheduled"
+msgstr "Nichts geplant"
+
+#: src/agenda-list.ts:112 src/due-chip.ts:21
+msgid "Today"
+msgstr "Heute"
+
+#: src/agenda-list.ts:151 src/time-grid.ts:76
+msgid "All day"
+msgstr "Ganztägig"
+
+#: src/agenda-list.ts:186
+msgid "Continues on another day"
+msgstr "Geht an einem anderen Tag weiter"
 
 #: src/board-card.ts:66 src/board-card.ts:134
 msgid "Read-only"
@@ -45,10 +61,6 @@ msgstr "Keine Karten"
 msgid "Overdue"
 msgstr "Überfällig"
 
-#: src/due-chip.ts:21
-msgid "Today"
-msgstr "Heute"
-
 #: src/due-chip.ts:23
 msgid "Soon"
 msgstr "Bald"
@@ -61,6 +73,25 @@ msgstr "Später"
 #, javascript-format
 msgid "Remove filter %s"
 msgstr "Filter %s entfernen"
+
+#: src/month-grid.ts:329
+#, javascript-format
+msgid "%d event"
+msgid_plural "%d events"
+msgstr[0] "%d Termin"
+msgstr[1] "%d Termine"
+
+#: src/month-grid.ts:334
+#, javascript-format
+msgid "+%d more"
+msgid_plural "+%d more"
+msgstr[0] "+%d weiterer"
+msgstr[1] "+%d weitere"
+
+#: src/month-grid.ts:339
+#, javascript-format
+msgid "Week %d"
+msgstr "Woche %d"
 
 #: src/swipe-row.ts:49
 msgid "Complete"
