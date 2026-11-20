@@ -52,3 +52,12 @@ export const PREFS_HOOK = `${DEV_HOOK_PREFIX}_PREFS`;
 
 /** `REMINDER_APP_CARD=1` opens the first card's detail on the board, so a screenshot shows the pane. */
 export const CARD_HOOK = `${DEV_HOOK_PREFIX}_CARD`;
+
+/** `REMINDER_APP_CALENDAR_MODE=month|week|day`: the calendar mode a screenshot wants. */
+export const CALENDAR_MODE_HOOK = `${DEV_HOOK_PREFIX}_CALENDAR_MODE`;
+
+/**
+ * `REMINDER_APP_SCHEME=light|dark|system` for this run only, nothing saved. A headless session has
+ * no desktop preference to follow, so this is the only way to shoot the dark listing images.
+ */
+export const SCHEME_HOOK = `${DEV_HOOK_PREFIX}_SCHEME`;
