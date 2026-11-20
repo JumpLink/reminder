@@ -160,12 +160,14 @@ msgstr ""
 #: ../packages/core/src/board/vtodo-source.ts:355
 #: ../packages/deck/src/deck-source.ts:309
 #: ../packages/openproject/src/openproject-source.ts:344
+#: ../packages/zenkit/src/source.ts:440
 msgid "no card {id} on this board"
 msgstr ""
 
 #: ../packages/core/src/board/vtodo-source.ts:357
 #: ../packages/deck/src/deck-source.ts:311
 #: ../packages/openproject/src/openproject-source.ts:273
+#: ../packages/zenkit/src/source.ts:442
 msgid "card {id} changed since it was read"
 msgstr ""
 
@@ -477,6 +479,7 @@ msgstr ""
 
 #: ../packages/deck/src/deck-source.ts:265
 #: ../packages/openproject/src/openproject-source.ts:287
+#: ../packages/zenkit/src/source.ts:416
 msgid "no column \"{column}\" on this board"
 msgstr ""
 
@@ -566,20 +569,36 @@ msgstr ""
 msgid "secret service not available: {message}"
 msgstr ""
 
-#: ../packages/zenkit/src/source.ts:108
+#: ../packages/zenkit/src/source.ts:112
 msgid "No value"
 msgstr ""
 
-#: ../packages/zenkit/src/source.ts:172
+#: ../packages/zenkit/src/source.ts:176
 msgid "no field {field} in list {id}"
 msgstr ""
 
-#: ../packages/zenkit/src/source.ts:174
+#: ../packages/zenkit/src/source.ts:178
 msgid "field {field} in list {id} has the wrong type for this use"
 msgstr ""
 
-#: ../packages/zenkit/src/source.ts:257
+#: ../packages/zenkit/src/source.ts:261
 msgid "list {id} has no choice field to use as its columns"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:381
+msgid "list {id} has no date field to use as the due date"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:395
+msgid "Zenkit did not return the entry after writing it"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:420
+msgid "list {id} has no text field to use as the title"
+msgstr ""
+
+#: ../packages/zenkit/src/source.ts:434
+msgid "Zenkit did not return the new entry"
 msgstr ""
 
 #: src/core/board-read.ts:103

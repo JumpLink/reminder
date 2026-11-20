@@ -27,6 +27,8 @@ export interface FakeZenkit {
   url: string;
   /** Edit an entry as a second person would; bumps its `updated_at`. */
   touch(list: string, entry: string, patch: Json): void;
+  /** The entries of a list as the server holds them. */
+  entriesOf(list: string): Json[];
   close(): Promise<void>;
 }
 
@@ -87,8 +89,37 @@ export async function startFakeZenkit(lists: FakeList[], options: FakeZenkitOpti
     );
   }
 
+  const writeInto = (entry: Json, body: Json): void => {
+    clock += 60_000;
+    for (const [key, value] of Object.entries(body)) {
+      if (key === 'updateAction') continue;
+      entry[key] = value;
+      if (key.endsWith('_text')) entry.displayString = value;
+    }
+    entry.updated_at = new Date(clock).toISOString();
+  };
+  for (const list of lists) {
+    rest.on(`/api/lists/${list.shortId}/entries`, (req, res) => {
+      if (req.headers['zenkit-api-key'] !== options.apiKey) return json(res, 401, {});
+      if (req.method !== 'POST') return json(res, 404, {});
+      const entry: Json = { shortId: `N${list.entries.length + 1}`, 'a-owner_persons': [] };
+      writeInto(entry, JSON.parse(req.body) as Json);
+      list.entries.push(entry);
+      json(res, 200, entry);
+    });
+    rest.onMatch(new RegExp(`^/api/lists/${list.shortId}/entries/([A-Za-z0-9]+)$`), (req, res, [entryId]) => {
+      if (req.headers['zenkit-api-key'] !== options.apiKey) return json(res, 401, {});
+      const entry = list.entries.find((e) => e.shortId === entryId);
+      if (!entry || req.method !== 'PUT') return json(res, 404, {});
+      writeInto(entry, JSON.parse(req.body) as Json);
+      res.writeHead(200);
+      res.end();
+    });
+  }
+
   return {
     rest,
+    entriesOf: (listId) => lists.find((l) => l.shortId === listId)?.entries ?? [],
     url: rest.url,
     touch(listId, entryId, patch) {
       const entry = lists.find((l) => l.shortId === listId)?.entries.find((e) => e.shortId === entryId);

@@ -1,5 +1,5 @@
 /**
- * Zenkit as a read-only `BoardSource` (docs/adr/0007).
+ * Zenkit as a `BoardSource` (docs/adr/0007); writes per docs/adr/0013.
  *
  * Mapping: a Zenkit list is a board; the values of one choice (categories) field are its columns;
  * a persons field says whose card it is; a second choice field gives labels and a date field the
@@ -17,6 +17,7 @@ import { HttpClient, ResponseFormatError, type HostLimiter } from '@gjsify/http-
 import {
   _,
   boardNotFound,
+  ConflictError,
   filterMine,
   fmt,
   InputError,
@@ -25,6 +26,7 @@ import {
   type Card,
   type CardLabel,
   type CardPage,
+  type CardWrite,
   type CardQuery,
   type ChangeToken,
   type SourceColumn,
@@ -33,6 +35,7 @@ import {
 
 /** Zenkit's `elementcategory` numbers (the kind of a field). */
 const DATE = 4;
+const TEXT = 1;
 const CATEGORIES = 6;
 const PERSONS = 14;
 
@@ -103,6 +106,7 @@ interface Layout {
   persons: Field | null;
   labels: Field | null;
   due: Field | null;
+  title: Field | null;
 }
 
 const NO_VALUE = (): string => _('No value');
@@ -260,6 +264,7 @@ export function createZenkitBoardSource(options: ZenkitOptions): BoardSource {
       persons: selectField(fields, wanted.personField, PERSONS, [], list.id),
       labels: selectField(fields, wanted.labelField, CATEGORIES, [column.uuid], list.id),
       due: selectField(fields, wanted.dueField, DATE, [], list.id),
+      title: fields.find((field) => field.category === TEXT) ?? null,
     };
   }
 
@@ -366,12 +371,95 @@ export function createZenkitBoardSource(options: ZenkitOptions): BoardSource {
     };
   }
 
+  const asBoard = (boardId: string): BoardRef => ({ source: id, id: boardId, title: '', url: null });
+
+  /** The choice id as Zenkit stores it in an entry: a number when it is one. */
+  const choiceValue = (choice: Choice): string | number => (/^\d+$/.test(choice.id) ? Number(choice.id) : choice.id);
+
+  /** A date becomes midnight UTC without a time; an instant keeps its time. */
+  function dateFields(layout: Layout, list: ListInfo, due: string | null): Json {
+    if (!layout.due) throw new InputError(fmt(_('list {id} has no date field to use as the due date'), { id: list.id }));
+    const key = layout.due.uuid;
+    if (due === null) return { [`${key}_date`]: null, [`${key}_hasTime`]: false };
+    const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(due);
+    return {
+      [`${key}_date`]: dateOnly ? `${due}T00:00:00.000Z` : new Date(Date.parse(due)).toISOString(),
+      [`${key}_hasTime`]: !dateOnly,
+    };
+  }
+
+  async function readBack(list: ListInfo, entryId: string): Promise<Card> {
+    const layout = await layoutOf(list);
+    const entry = (await fetchAll(list)).find((e) => (asString(e.shortId) ?? asString(e.id)) === entryId);
+    const card = entry ? toCard(list, layout, entry, await whoAmI()) : null;
+    if (!card) throw new ResponseFormatError(_('Zenkit did not return the entry after writing it'), { url: client.origin });
+    return card;
+  }
+
+  /**
+   * Zenkit has no conditional write, so the entry is read and its `updated_at` compared first
+   * (ADR 0013 §5); an edit between that read and the write is still lost — a window, not a lock.
+   * UNVERIFIED, the public docs (https://base.zenkit.com/docs/api) were not readable when this
+   * was written, so these come from the documented naming scheme and must be checked against a
+   * real list before release:
+   *   - `PUT lists/{list}/entries/{entry}` updates an entry; `POST lists/{list}/entries` creates one;
+   *   - field values are keyed `<field uuid>_<kind>`: `_text` (title), `_categories` (choice ids),
+   *     `_date` and `_hasTime` (due);
+   *   - `updateAction: "replace"` replaces a list value instead of appending to it;
+   *   - the entry is found in the filter answer, not by a single-entry GET.
+   */
+  async function writeCard(write: CardWrite): Promise<Card> {
+    const list = await findList(asBoard(write.kind === 'create' ? write.board : write.ref.board));
+    const layout = await layoutOf(list);
+    const choiceNamed = (name: string): Choice => {
+      const found = layout.column.choices.find((choice) => choice.name === name);
+      if (!found) throw new InputError(fmt(_('no column "{column}" on this board'), { column: name }));
+      return found;
+    };
+    const titleKey = (): string => {
+      if (!layout.title) throw new InputError(fmt(_('list {id} has no text field to use as the title'), { id: list.id }));
+      return `${layout.title.uuid}_text`;
+    };
+
+    if (write.kind === 'create') {
+      const choice = choiceNamed(write.column);
+      const body: Json = {
+        [titleKey()]: write.title,
+        [`${layout.column.uuid}_categories`]: [choiceValue(choice)],
+        updateAction: 'replace',
+      };
+      if (write.due) Object.assign(body, dateFields(layout, list, write.due));
+      const created = await client.sendJson<Json>('POST', `lists/${list.id}/entries`, body);
+      const entryId = created.status === 'ok' ? (asString(created.data?.shortId) ?? asString(created.data?.id)) : null;
+      if (!entryId) throw new ResponseFormatError(_('Zenkit did not return the new entry'), { url: client.origin });
+      return readBack(list, entryId);
+    }
+
+    const entryId = write.ref.id;
+    const current = (await fetchAll(list)).find((e) => (asString(e.shortId) ?? asString(e.id)) === entryId);
+    if (!current) throw new InputError(fmt(_('no card {id} on this board'), { id: entryId }));
+    if (instant(current.updated_at) !== write.version) {
+      throw new ConflictError(fmt(_('card {id} changed since it was read'), { id: entryId }), 'zenkit', 409);
+    }
+    const body: Json = { updateAction: 'replace' };
+    if (write.kind === 'move') {
+      body[`${layout.column.uuid}_categories`] = [choiceValue(choiceNamed(write.toColumn))];
+    } else {
+      if (write.changes.title !== undefined) body[titleKey()] = write.changes.title;
+      if (write.changes.due !== undefined) Object.assign(body, dateFields(layout, list, write.changes.due));
+    }
+    await client.sendJson('PUT', `lists/${list.id}/entries/${encodeURIComponent(entryId)}`, body, { allowEmpty: true });
+    return readBack(list, entryId);
+  }
+
   return {
     describe() {
-      return { id, type: 'zenkit', canWrite: false, hasWatchers: false, changeToken: true };
+      return { id, type: 'zenkit', canWrite: true, hasWatchers: false, changeToken: true };
     },
 
     whoAmI,
+
+    writeCard,
 
     async listBoards() {
       const all = await loadLists();

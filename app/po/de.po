@@ -176,12 +176,14 @@ msgstr ""
 #: ../packages/core/src/board/vtodo-source.ts:355
 #: ../packages/deck/src/deck-source.ts:309
 #: ../packages/openproject/src/openproject-source.ts:344
+#: ../packages/zenkit/src/source.ts:440
 msgid "no card {id} on this board"
 msgstr "Dieses Board kennt keine Karte {id}"
 
 #: ../packages/core/src/board/vtodo-source.ts:357
 #: ../packages/deck/src/deck-source.ts:311
 #: ../packages/openproject/src/openproject-source.ts:273
+#: ../packages/zenkit/src/source.ts:442
 msgid "card {id} changed since it was read"
 msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
@@ -516,6 +518,7 @@ msgstr "Deck hat keine Liste von Stapeln geliefert"
 
 #: ../packages/deck/src/deck-source.ts:265
 #: ../packages/openproject/src/openproject-source.ts:287
+#: ../packages/zenkit/src/source.ts:416
 msgid "no column \"{column}\" on this board"
 msgstr "Dieses Board hat keine Spalte „{column}“"
 
@@ -608,21 +611,37 @@ msgstr "Typelib {label} nicht verfügbar: {message}"
 msgid "secret service not available: {message}"
 msgstr "Geheimnisdienst nicht verfügbar: {message}"
 
-#: ../packages/zenkit/src/source.ts:108
+#: ../packages/zenkit/src/source.ts:112
 msgid "No value"
 msgstr "Kein Wert"
 
-#: ../packages/zenkit/src/source.ts:172
+#: ../packages/zenkit/src/source.ts:176
 msgid "no field {field} in list {id}"
 msgstr "Kein Feld „{field}“ in Liste {id}"
 
-#: ../packages/zenkit/src/source.ts:174
+#: ../packages/zenkit/src/source.ts:178
 msgid "field {field} in list {id} has the wrong type for this use"
 msgstr "Feld „{field}“ in Liste {id} hat für diesen Zweck den falschen Typ"
 
-#: ../packages/zenkit/src/source.ts:257
+#: ../packages/zenkit/src/source.ts:261
 msgid "list {id} has no choice field to use as its columns"
 msgstr "Liste {id} hat kein Auswahlfeld, das als Spalten dienen kann"
+
+#: ../packages/zenkit/src/source.ts:381
+msgid "list {id} has no date field to use as the due date"
+msgstr "Liste {id} hat kein Datumsfeld, das als Fälligkeit dienen kann"
+
+#: ../packages/zenkit/src/source.ts:395
+msgid "Zenkit did not return the entry after writing it"
+msgstr "Zenkit hat den Eintrag nach dem Schreiben nicht geliefert"
+
+#: ../packages/zenkit/src/source.ts:420
+msgid "list {id} has no text field to use as the title"
+msgstr "Liste {id} hat kein Textfeld, das als Titel dienen kann"
+
+#: ../packages/zenkit/src/source.ts:434
+msgid "Zenkit did not return the new entry"
+msgstr "Zenkit hat den neuen Eintrag nicht geliefert"
 
 #: src/core/board-read.ts:103
 msgid "boards cannot be read: {problems}"
