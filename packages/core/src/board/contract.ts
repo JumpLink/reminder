@@ -10,7 +10,8 @@
  * invariants, not a data review — so a fake should cover assigned and not, open and closed.
  */
 
-import type { BoardRef, BoardSource, Card, CardPage } from './types.ts';
+import { ConflictError, InputError } from '../errors.ts';
+import { CARD_TIME, type BoardRef, type BoardSource, type Card, type CardPage, type CardWrite } from './types.ts';
 
 export interface ContractCheck {
   name: string;
@@ -20,8 +21,7 @@ export interface ContractCheck {
 /** A fresh source per check, so one check cannot leave state for the next. */
 export type MakeBoardSource = () => BoardSource | Promise<BoardSource>;
 
-/** The three time shapes of `types.ts`: a date, an instant, or a floating local time. */
-const TIME = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})?)?$/;
+const TIME = CARD_TIME;
 
 function assert(condition: boolean, message: string): void {
   if (!condition) throw new Error(`BoardSource contract: ${message}`);
@@ -55,14 +55,17 @@ async function rejects(promise: Promise<unknown>, where: string): Promise<void> 
 export function boardSourceContract(makeSource: MakeBoardSource): ContractCheck[] {
   return [
     {
-      name: 'describes itself the same way twice, and read-only',
+      name: 'describes itself the same way twice, and writes only when it says so',
       async run() {
         const source = await makeSource();
         const info = source.describe();
         const again = source.describe();
         assert(info.id !== '', 'SourceInfo.id is empty');
         assert(again.id === info.id && again.type === info.type, 'describe() is not stable');
-        assert(info.canWrite === false, 'canWrite is true — writing to a board is ADR 0013');
+        assert(
+          info.canWrite === (source.writeCard !== undefined),
+          'canWrite and writeCard disagree — there is no half-written source (ADR 0013 §4)',
+        );
         assert(
           again.canWrite === info.canWrite &&
             again.hasWatchers === info.hasWatchers &&
@@ -254,6 +257,139 @@ export function boardSourceContract(makeSource: MakeBoardSource): ContractCheck[
         const absent: BoardRef = { source: info.id, id: 'no-such-board', title: 'absent', url: null };
         await rejects(source.listColumns(absent), 'listColumns');
         await rejects(source.listCards(absent), 'listCards');
+      },
+    },
+  ];
+}
+
+async function raises(promise: Promise<unknown>, type: new (...args: never[]) => Error, where: string): Promise<void> {
+  let error: unknown = null;
+  try {
+    await promise;
+  } catch (err) {
+    error = err;
+  }
+  assert(error !== null, `${where} resolved`);
+  assert(error instanceof type, `${where} raised ${String(error)} instead of ${type.name}`);
+}
+
+async function everyCard(source: BoardSource, board: BoardRef): Promise<Card[]> {
+  return changed(await source.listCards(board, { mine: 'all', includeClosed: true }), 'listCards');
+}
+
+/**
+ * The write half (docs/adr/0013 §4). Run it for a source that claims `canWrite`; it needs a first
+ * board with a card and at least two columns. A write with a stale version must raise
+ * `ConflictError` and leave the card as it was, a column the source lacks is an `InputError`, and
+ * a success returns the card as the source has it afterwards.
+ */
+export function boardSourceWriteContract(makeSource: MakeBoardSource): ContractCheck[] {
+  const prepare = async () => {
+    const source = await makeSource();
+    assert(source.describe().canWrite && source.writeCard !== undefined, 'the source does not claim to write');
+    const board = await firstBoard(source);
+    const columns = await source.listColumns(board);
+    assert(columns.length >= 2, 'the write checks need at least two columns');
+    const cards = await everyCard(source, board);
+    assert(cards.length > 0, 'the fixture needs at least one card on the first board');
+    const card = cards[0];
+    const target = columns.find((c) => c.name !== card.sourceColumn) ?? columns[0];
+    const write = (request: CardWrite) => (source.writeCard as (w: CardWrite) => Promise<Card>)(request);
+    return { source, board, columns, card, target, write };
+  };
+  const find = (cards: Card[], id: string) => cards.find((c) => c.ref.id === id);
+
+  return [
+    {
+      name: 'moves a card and answers the card as the source has it',
+      async run() {
+        const { source, board, card, target, write } = await prepare();
+        const result = await write({ kind: 'move', ref: card.ref, version: card.version, toColumn: target.name });
+        assert(result.sourceColumn === target.name, `the move answered column "${result.sourceColumn}"`);
+        assert(result.ref.id === card.ref.id, 'the move answered another card');
+        const stored = find(await everyCard(source, board), card.ref.id);
+        assert(stored !== undefined, 'the moved card is gone from the board');
+        assert(stored?.sourceColumn === target.name, 'the read after the move shows another column');
+        assert(stored?.version === result.version, 'the answer is not the card the next read shows');
+      },
+    },
+    {
+      name: 'updates title and due date and answers the stored card',
+      async run() {
+        const { source, board, card, write } = await prepare();
+        const result = await write({
+          kind: 'update',
+          ref: card.ref,
+          version: card.version,
+          changes: { title: 'Renamed by the contract', due: '2027-02-03' },
+        });
+        assert(result.title === 'Renamed by the contract' && result.due === '2027-02-03', 'the update was not applied');
+        const stored = find(await everyCard(source, board), card.ref.id);
+        assert(stored?.title === result.title && stored?.due === result.due, 'the read after the update differs');
+        assert(stored?.sourceColumn === card.sourceColumn, 'an update moved the card');
+      },
+    },
+    {
+      name: 'refuses a stale version with ConflictError and writes nothing',
+      async run() {
+        const { source, board, card, target, write } = await prepare();
+        await write({ kind: 'update', ref: card.ref, version: card.version, changes: { title: 'Second person' } });
+        await raises(
+          write({ kind: 'move', ref: card.ref, version: card.version, toColumn: target.name }),
+          ConflictError,
+          'a move with a stale version',
+        );
+        await raises(
+          write({ kind: 'update', ref: card.ref, version: card.version, changes: { title: 'Lost update' } }),
+          ConflictError,
+          'an update with a stale version',
+        );
+        const stored = find(await everyCard(source, board), card.ref.id);
+        assert(stored?.title === 'Second person', 'a refused write changed the title');
+        assert(stored?.sourceColumn === card.sourceColumn, 'a refused write moved the card');
+      },
+    },
+    {
+      name: 'refuses a column it does not have with InputError and writes nothing',
+      async run() {
+        const { source, board, card, write } = await prepare();
+        await raises(
+          write({ kind: 'move', ref: card.ref, version: card.version, toColumn: 'No such column' }),
+          InputError,
+          'a move to an absent column',
+        );
+        await raises(
+          write({ kind: 'create', board: board.id, column: 'No such column', title: 'Never added' }),
+          InputError,
+          'a create in an absent column',
+        );
+        const cards = await everyCard(source, board);
+        assert(find(cards, card.ref.id)?.sourceColumn === card.sourceColumn, 'a refused move changed the card');
+        assert(!cards.some((c) => c.title === 'Never added'), 'a refused create added a card');
+      },
+    },
+    {
+      name: 'creates a card in a column and answers the stored card',
+      async run() {
+        const { source, board, target, write } = await prepare();
+        const result = await write({ kind: 'create', board: board.id, column: target.name, title: 'Added by the contract' });
+        assert(result.ref.board === board.id && result.ref.source === source.describe().id, 'the new card names another board');
+        assert(result.title === 'Added by the contract' && result.sourceColumn === target.name, 'the new card differs');
+        const stored = find(await everyCard(source, board), result.ref.id);
+        assert(stored !== undefined, 'the new card is not on the board');
+        assert(stored?.version === result.version, 'the answer is not the card the next read shows');
+      },
+    },
+    {
+      name: 'refuses to write to a board it does not have',
+      async run() {
+        const { source, columns, write } = await prepare();
+        await rejects(
+          write({ kind: 'create', board: 'no-such-board', column: columns[0].name, title: 'Nowhere' }),
+          'create',
+        );
+        const absent = { source: source.describe().id, board: 'no-such-board', id: 'x' };
+        await rejects(write({ kind: 'move', ref: absent, version: null, toColumn: columns[0].name }), 'move');
       },
     },
   ];

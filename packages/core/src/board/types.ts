@@ -29,9 +29,8 @@ export interface SourceInfo {
   id: string;
   type: BoardSourceType;
   /**
-   * Writing to a board is its own decision and its own grant (ADR 0007 §5); every source answers
-   * `false` in this phase. The field is a `boolean` so that a later write is one adapter plus a
-   * grant, not a change to the port.
+   * A statement about the ADAPTER: true exactly when it implements `writeCard` (ADR 0013 §2). It is
+   * never a permission — a writable source with no grant still refuses every write.
    */
   canWrite: boolean;
   /** The source knows who follows a card. When false, every `Card.watchedByMe` is null. */
@@ -132,6 +131,27 @@ export type CardPage =
     }
   | { kind: 'unchanged' };
 
+/** The three time shapes of `types.ts`: a date, an instant, or a floating local time. */
+export const CARD_TIME = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})?)?$/;
+
+/** The only two fields a person corrects while looking at the board (ADR 0013 §6). */
+export interface CardChanges {
+  title?: string;
+  /** A time shape of `types.ts`, or null to clear the due date. */
+  due?: string | null;
+}
+
+/**
+ * One write, as the port takes it (ADR 0013 §3–5). `version` is the `Card.version` the caller saw,
+ * handed back exactly as it came; null is the version of a source that has none, which means
+ * "compare before writing", never "overwrite". `toColumn` and `column` are SOURCE columns,
+ * verbatim as `listColumns` reports them — never a lane.
+ */
+export type CardWrite =
+  | { kind: 'move'; ref: CardRef; version: string | null; toColumn: string; position?: number }
+  | { kind: 'update'; ref: CardRef; version: string | null; changes: CardChanges }
+  | { kind: 'create'; board: string; column: string; title: string; due?: string | null };
+
 export interface BoardSource {
   describe(): SourceInfo;
   /** Who the configured credentials belong to; `isMe` is true. */
@@ -140,6 +160,13 @@ export interface BoardSource {
   listColumns(board: BoardRef): Promise<SourceColumn[]>;
   /** `since` is the token of the previous read of the SAME board and query, or null. */
   listCards(board: BoardRef, query?: CardQuery, since?: ChangeToken | null): Promise<CardPage>;
+  /**
+   * Absent: the source is read-only and `describe().canWrite` is false — no half-written source.
+   * Present: it raises `ConflictError` when `version` is stale (and has not written), `InputError`
+   * for a column the source does not have, and returns the card as the source has it AFTERWARDS,
+   * read back if it must be — never the input echoed (ADR 0013 §4).
+   */
+  writeCard?(write: CardWrite): Promise<Card>;
 }
 
 /**

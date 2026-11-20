@@ -5,3 +5,4 @@ export * from './config.ts';
 export * from './sources-config.ts';
 export * from './vtodo-source.ts';
 export * from './contract.ts';
+export * from './write.ts';

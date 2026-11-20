@@ -9,8 +9,34 @@
 import { ConfigError, GrantDeniedError } from './errors.ts';
 import { _, fmt } from './i18n.ts';
 
-export const CAPABILITIES = ['calendar.create', 'reminder.create', 'reminder.update'] as const;
+export const CAPABILITIES = [
+  'calendar.create',
+  'reminder.create',
+  'reminder.update',
+  'board.move',
+  'board.update',
+  'board.create',
+] as const;
 export type Capability = (typeof CAPABILITIES)[number];
+
+/** The capabilities whose target is one board, spelled `<source>:<board>` (ADR 0013 §1). */
+export const BOARD_CAPABILITIES = ['board.move', 'board.update', 'board.create'] as const;
+export type BoardCapability = (typeof BOARD_CAPABILITIES)[number];
+
+export function isBoardCapability(value: Capability): value is BoardCapability {
+  return (BOARD_CAPABILITIES as readonly string[]).includes(value);
+}
+
+/** The grant target of one board — the same string the `boards.columns` keys use. */
+export function boardTarget(source: string, board: string): string {
+  return `${source}:${board}`;
+}
+
+/** A board target names a source AND a board; a source alone would cover every board on it. */
+export function isBoardTarget(target: string): boolean {
+  const at = target.indexOf(':');
+  return at > 0 && at < target.length - 1;
+}
 
 export interface Grant {
   capability: Capability;
@@ -38,6 +64,11 @@ export function parseGrants(value: unknown): Grant[] {
     }
     if (target.includes('*'))
       throw new ConfigError(fmt(_('grants[{index}]: wildcards are not allowed in a target'), { index }));
+    if (isBoardCapability(capability) && !isBoardTarget(target)) {
+      throw new ConfigError(
+        fmt(_('grants[{index}]: {capability} needs a target of the form "<source>:<board>"'), { index, capability }),
+      );
+    }
     return { capability, target };
   });
 }

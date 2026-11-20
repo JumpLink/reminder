@@ -15,6 +15,7 @@ import {
   fmt,
   isGranted,
   parseSecretRef,
+  isBoardCapability,
   setSourceEnabled,
   targetOfCacheKey,
   type AccountConfig,
@@ -124,6 +125,12 @@ export const capabilityLabel = (capability: Capability): string => {
       return _('Create reminders');
     case 'reminder.update':
       return _('Change reminders');
+    case 'board.move':
+      return _('Move board cards');
+    case 'board.update':
+      return _('Edit board cards');
+    case 'board.create':
+      return _('Add board cards');
   }
 };
 
@@ -138,6 +145,8 @@ export function targetChoices(
   lists: readonly AccountLists[],
   capability: Capability,
 ): TargetChoice[] {
+  // Board targets are `<source>:<board>`, not collections; picking one is the board setup's job.
+  if (isBoardCapability(capability)) return [];
   const kind: ItemKind = capability === 'calendar.create' ? 'event' : 'reminder';
   const named = config.accounts.length > 1;
   return lists

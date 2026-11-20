@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 09:48+0100\n"
+"POT-Creation-Date: 2026-11-20 10:06+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -159,9 +159,42 @@ msgstr "boardSources muss eine Liste sein"
 msgid "boardSources[{index}]: id \"{id}\" is used twice"
 msgstr "boardSources[{index}]: id „{id}“ wird zweimal verwendet"
 
-#: ../packages/core/src/board/types.ts:150
+#: ../packages/core/src/board/types.ts:177
 msgid "no board {id} in this source"
 msgstr "Diese Quelle kennt kein Board {id}"
+
+#: ../packages/core/src/board/write.ts:69 src/core/config-write.ts:285
+msgid "no board source \"{id}\""
+msgstr "Keine Board-Quelle „{id}“"
+
+#: ../packages/core/src/board/write.ts:71
+msgid "source \"{id}\" is read-only"
+msgstr "Die Quelle „{id}“ ist schreibgeschützt"
+
+#: ../packages/core/src/board/write.ts:79
+msgid "a board write needs the version of the card as it was read"
+msgstr ""
+"Ein Board-Schreibzugriff braucht die Version der Karte, wie sie gelesen wurde"
+
+#: ../packages/core/src/board/write.ts:84
+msgid "a column name must not be empty"
+msgstr "Der Spaltenname darf nicht leer sein"
+
+#: ../packages/core/src/board/write.ts:89
+msgid "unparseable due date {due}"
+msgstr "Das Fälligkeitsdatum {due} ist nicht lesbar"
+
+#: ../packages/core/src/board/write.ts:94
+msgid "a card title must not be empty"
+msgstr "Der Kartentitel darf nicht leer sein"
+
+#: ../packages/core/src/board/write.ts:103
+msgid "a position must be a non-negative integer"
+msgstr "Die Position muss eine nicht negative ganze Zahl sein"
+
+#: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:205
+msgid "nothing to change"
+msgstr "Nichts zu ändern"
 
 #: ../packages/core/src/config.ts:153
 msgid "backend {backend} is not supported (known: {known})"
@@ -289,25 +322,31 @@ msgstr ""
 "Keine Freigabe für {capability} auf „{target}“ — füge {snippet} zu grants "
 "hinzu"
 
-#: ../packages/core/src/grants.ts:27
+#: ../packages/core/src/grants.ts:53
 msgid "grants must be a list"
 msgstr "grants muss eine Liste sein"
 
-#: ../packages/core/src/grants.ts:29
+#: ../packages/core/src/grants.ts:55
 msgid "grants[{index}] must be an object"
 msgstr "grants[{index}] muss ein Objekt sein"
 
-#: ../packages/core/src/grants.ts:33
+#: ../packages/core/src/grants.ts:59
 msgid "grants[{index}]: unknown capability {capability}"
 msgstr "grants[{index}]: Unbekannte Fähigkeit {capability}"
 
-#: ../packages/core/src/grants.ts:37
+#: ../packages/core/src/grants.ts:63
 msgid "grants[{index}]: target must be a non-empty string"
 msgstr "grants[{index}]: target muss ein nicht leerer String sein"
 
-#: ../packages/core/src/grants.ts:40
+#: ../packages/core/src/grants.ts:66
 msgid "grants[{index}]: wildcards are not allowed in a target"
 msgstr "grants[{index}]: Platzhalter sind in einem target nicht erlaubt"
+
+#: ../packages/core/src/grants.ts:69
+msgid ""
+"grants[{index}]: {capability} needs a target of the form \"<source>:<board>\""
+msgstr ""
+"grants[{index}]: {capability} braucht ein target der Form „<source>:<board>“"
 
 #: ../packages/core/src/ical.ts:51
 msgid "not an iCalendar content line: {line}"
@@ -361,10 +400,6 @@ msgstr "Die Priorität muss 0 (keine) bis 9 sein, nicht {value}"
 #: ../packages/core/src/rewrite.ts:192
 msgid "cannot set status \"{value}\""
 msgstr "Der Status „{value}“ kann nicht gesetzt werden"
-
-#: ../packages/core/src/rewrite.ts:205
-msgid "nothing to change"
-msgstr "Nichts zu ändern"
 
 #: ../packages/core/src/routing.ts:36
 msgid "routes must be a list"
@@ -590,10 +625,6 @@ msgstr "Eine Konfiguration braucht mindestens ein Konto"
 #: src/core/config-write.ts:274
 msgid "\"{id}\" is already in use"
 msgstr "„{id}“ wird bereits verwendet"
-
-#: src/core/config-write.ts:285
-msgid "no board source \"{id}\""
-msgstr "Keine Board-Quelle „{id}“"
 
 #: src/core/config.ts:38
 msgid "cannot read {path}: {message}"
@@ -972,8 +1003,8 @@ msgstr "Unsortiert"
 #: src/frontends/gui/board-view-model.ts:200
 #: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:171
 #: src/frontends/gui/view-model.ts:121
-#: src/frontends/gui/views/preferences/controller.ts:111
-#: src/frontends/gui/views/preferences/controller.ts:149
+#: src/frontends/gui/views/preferences/controller.ts:112
+#: src/frontends/gui/views/preferences/controller.ts:158
 #: src/frontends/gui/views/tasks.ts:59 src/frontends/gui/views/tasks.ts:133
 msgid "Untitled"
 msgstr "Ohne Titel"
@@ -1450,7 +1481,7 @@ msgid "Enter the server address, e.g. https://cloud.example.org/"
 msgstr "Gib die Serveradresse ein, z. B. https://cloud.example.org/"
 
 #: src/frontends/gui/views/preferences/board-controller.ts:212
-#: src/frontends/gui/views/preferences/controller.ts:230
+#: src/frontends/gui/views/preferences/controller.ts:239
 msgid "Enter the user name."
 msgstr "Gib den Benutzernamen ein."
 
@@ -1561,47 +1592,59 @@ msgstr "Adresse und Zugangsdaten bearbeiten"
 msgid "No board sources yet"
 msgstr "Noch keine Board-Quellen"
 
-#: src/frontends/gui/views/preferences/controller.ts:82
+#: src/frontends/gui/views/preferences/controller.ts:83
 msgid "Local lists"
 msgstr "Lokale Listen"
 
-#: src/frontends/gui/views/preferences/controller.ts:82
+#: src/frontends/gui/views/preferences/controller.ts:83
 msgid "System calendars"
 msgstr "Systemkalender"
 
-#: src/frontends/gui/views/preferences/controller.ts:122
+#: src/frontends/gui/views/preferences/controller.ts:123
 msgid "Create events"
 msgstr "Termine anlegen"
 
-#: src/frontends/gui/views/preferences/controller.ts:124
+#: src/frontends/gui/views/preferences/controller.ts:125
 msgid "Create reminders"
 msgstr "Erinnerungen anlegen"
 
-#: src/frontends/gui/views/preferences/controller.ts:126
+#: src/frontends/gui/views/preferences/controller.ts:127
 msgid "Change reminders"
 msgstr "Erinnerungen ändern"
 
-#: src/frontends/gui/views/preferences/controller.ts:226
+#: src/frontends/gui/views/preferences/controller.ts:129
+msgid "Move board cards"
+msgstr "Board-Karten verschieben"
+
+#: src/frontends/gui/views/preferences/controller.ts:131
+msgid "Edit board cards"
+msgstr "Board-Karten bearbeiten"
+
+#: src/frontends/gui/views/preferences/controller.ts:133
+msgid "Add board cards"
+msgstr "Board-Karten hinzufügen"
+
+#: src/frontends/gui/views/preferences/controller.ts:235
 msgid "The address must start with https://"
 msgstr "Die Adresse muss mit https:// beginnen"
 
-#: src/frontends/gui/views/preferences/controller.ts:228
+#: src/frontends/gui/views/preferences/controller.ts:237
 msgid "Enter the server address, e.g. https://dav.example.org/"
 msgstr "Gib die Serveradresse ein, z. B. https://dav.example.org/"
 
-#: src/frontends/gui/views/preferences/controller.ts:231
+#: src/frontends/gui/views/preferences/controller.ts:240
 msgid "Enter the password."
 msgstr "Gib das Passwort ein."
 
-#: src/frontends/gui/views/preferences/controller.ts:299
+#: src/frontends/gui/views/preferences/controller.ts:308
 msgid "The account is removed, but cleaning up failed: {message}"
 msgstr "Das Konto ist entfernt, das Aufräumen schlug aber fehl: {message}"
 
-#: src/frontends/gui/views/preferences/controller.ts:317
+#: src/frontends/gui/views/preferences/controller.ts:326
 msgid "Enter a name for the list."
 msgstr "Gib einen Namen für die Liste ein."
 
-#: src/frontends/gui/views/preferences/controller.ts:318
+#: src/frontends/gui/views/preferences/controller.ts:328
 msgid "The colour must look like #3584e4."
 msgstr "Die Farbe muss wie #3584e4 aussehen."
 

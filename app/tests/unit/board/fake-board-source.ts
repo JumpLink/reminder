@@ -10,11 +10,15 @@
 
 import {
   boardNotFound,
+  CARD_TIME,
+  ConflictError,
+  InputError,
   type BoardRef,
   type BoardSource,
   type Card,
   type CardPage,
   type CardQuery,
+  type CardWrite,
   type SourceColumn,
   type SourceUser,
 } from '@reminder/core';
@@ -30,6 +34,8 @@ export interface FakeBoardOptions {
   id?: string;
   hasWatchers?: boolean;
   changeToken?: boolean;
+  /** Implement `writeCard`, with per-card versions (default false: a read-only source). */
+  writable?: boolean;
 }
 
 const ME: SourceUser = { id: 'u-me', displayName: 'Me', isMe: true };
@@ -51,6 +57,8 @@ interface Seed {
   due: string | null;
   assignees: SourceUser[];
   watched: boolean;
+  /** The card's own version counter, bumped by every write to it. */
+  rev: number;
 }
 
 const SEEDS: Seed[] = [
@@ -63,6 +71,7 @@ const SEEDS: Seed[] = [
     due: '2026-12-01',
     assignees: [ME],
     watched: true,
+    rev: 1,
   },
   {
     id: 'c2',
@@ -73,6 +82,7 @@ const SEEDS: Seed[] = [
     due: '2026-12-04T17:00:00Z',
     assignees: [OTHER],
     watched: true,
+    rev: 1,
   },
   {
     id: 'c3',
@@ -83,6 +93,7 @@ const SEEDS: Seed[] = [
     due: null,
     assignees: [ME],
     watched: false,
+    rev: 1,
   },
   {
     id: 'c4',
@@ -93,6 +104,7 @@ const SEEDS: Seed[] = [
     due: null,
     assignees: [],
     watched: false,
+    rev: 1,
   },
   {
     id: 'c5',
@@ -103,6 +115,7 @@ const SEEDS: Seed[] = [
     due: '2027-01-15',
     assignees: [ME],
     watched: false,
+    rev: 1,
   },
 ];
 
@@ -110,9 +123,11 @@ export function createFakeBoardSource(options: FakeBoardOptions = {}): FakeBoard
   const id = options.id ?? 'fake';
   const hasWatchers = options.hasWatchers ?? true;
   const changeToken = options.changeToken ?? true;
+  const writable = options.writable ?? false;
   const calls: string[] = [];
   const seeds = SEEDS.map((seed) => ({ ...seed, assignees: [...seed.assignees] }));
   let revision = 1;
+  let serial = 0;
 
   const boards: BoardRef[] = [
     { source: id, id: 'b-workshop', title: 'Workshop', url: 'https://boards.invalid/b/b-workshop' },
@@ -131,7 +146,7 @@ export function createFakeBoardSource(options: FakeBoardOptions = {}): FakeBoard
     watchedByMe: hasWatchers ? seed.watched : null,
     labels: seed.closed ? [] : [{ name: 'shop', color: '#4a7023' }],
     url: `https://boards.invalid/b/${seed.board}/card/${seed.id}`,
-    version: `r${revision}`,
+    version: `v${seed.rev}`,
     updated: '2026-11-18T08:00:00Z',
   });
 
@@ -149,10 +164,11 @@ export function createFakeBoardSource(options: FakeBoardOptions = {}): FakeBoard
       if (!seed) throw new Error(`no card ${cardId}`);
       seed.column = column;
       seed.closed = column === 'Done';
+      seed.rev += 1;
       revision += 1;
     },
     describe() {
-      return { id, type: 'deck', canWrite: false, hasWatchers, changeToken };
+      return { id, type: 'deck', canWrite: writable, hasWatchers, changeToken };
     },
     async whoAmI() {
       calls.push('whoAmI');
@@ -186,5 +202,49 @@ export function createFakeBoardSource(options: FakeBoardOptions = {}): FakeBoard
         omitted: Math.max(0, matched.length - limit),
       };
     },
+    ...(writable
+      ? {
+          async writeCard(write: CardWrite): Promise<Card> {
+            calls.push(`writeCard:${write.kind}`);
+            const boardId = write.kind === 'create' ? write.board : write.ref.board;
+            if (!boards.some((b) => b.id === boardId)) throw boardNotFound(boardId);
+            const known = (column: string) => COLUMNS.some((c) => c.name === column);
+            if (write.kind === 'create') {
+              if (!known(write.column)) throw new InputError(`no column ${write.column}`);
+              if (write.due !== undefined && write.due !== null && !CARD_TIME.test(write.due))
+                throw new InputError(`bad due ${write.due}`);
+              serial += 1;
+              const seed: Seed = {
+                id: `n${serial}`,
+                board: write.board,
+                title: write.title,
+                column: write.column,
+                closed: write.column === 'Done',
+                due: write.due ?? null,
+                assignees: [ME],
+                watched: false,
+                rev: 1,
+              };
+              seeds.push(seed);
+              revision += 1;
+              return toCard(seed);
+            }
+            const seed = seeds.find((s) => s.id === write.ref.id && s.board === write.ref.board);
+            if (!seed) throw new InputError(`no card ${write.ref.id}`);
+            if (write.version !== `v${seed.rev}`) throw new ConflictError(`card ${seed.id} changed`);
+            if (write.kind === 'move') {
+              if (!known(write.toColumn)) throw new InputError(`no column ${write.toColumn}`);
+              seed.column = write.toColumn;
+              seed.closed = write.toColumn === 'Done';
+            } else {
+              if (write.changes.title !== undefined) seed.title = write.changes.title;
+              if (write.changes.due !== undefined) seed.due = write.changes.due;
+            }
+            seed.rev += 1;
+            revision += 1;
+            return toCard(seed);
+          },
+        }
+      : {}),
   };
 }
