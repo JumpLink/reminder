@@ -95,7 +95,8 @@ export class MainWindow extends Adw.ApplicationWindow {
       },
     };
 
-    const toast = (message: string): void => this.toasts.add_toast(new Adw.Toast({ title: message }));
+    const toast = (message: string): void =>
+      this.toasts.add_toast(new Adw.Toast({ useMarkup: false, title: message }));
     this.tasks = createTasksView(toast);
     this.board = createBoardView(toast);
     this.calendar = createCalendarView(toast);
@@ -201,7 +202,8 @@ export class MainWindow extends Adw.ApplicationWindow {
         if (this.isActive) this.model?.focus();
       });
     }
-    if (problems.length > 0) this.toasts.add_toast(new Adw.Toast({ title: problems.join(' · ') }));
+    if (problems.length > 0)
+      this.toasts.add_toast(new Adw.Toast({ useMarkup: false, title: problems.join(' · ') }));
   }
 
   /** A start-up failure (unreadable config …): say so where the tasks and the cards would be. */
