@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 10:45+0100\n"
+"POT-Creation-Date: 2026-11-20 11:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,10 +158,12 @@ msgid "a task list has no column \"{column}\" to write to"
 msgstr ""
 
 #: ../packages/core/src/board/vtodo-source.ts:355
+#: ../packages/deck/src/deck-source.ts:309
 msgid "no card {id} on this board"
 msgstr ""
 
 #: ../packages/core/src/board/vtodo-source.ts:357
+#: ../packages/deck/src/deck-source.ts:311
 msgid "card {id} changed since it was read"
 msgstr ""
 
@@ -463,15 +465,27 @@ msgstr ""
 msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr ""
 
-#: ../packages/deck/src/deck-source.ts:164
+#: ../packages/deck/src/deck-source.ts:186
 msgid "Deck did not say who is signed in"
 msgstr ""
 
-#: ../packages/deck/src/deck-source.ts:191
+#: ../packages/deck/src/deck-source.ts:213
 msgid "Deck did not return a list of stacks"
 msgstr ""
 
-#: ../packages/deck/src/deck-source.ts:237
+#: ../packages/deck/src/deck-source.ts:265
+msgid "no column \"{column}\" on this board"
+msgstr ""
+
+#: ../packages/deck/src/deck-source.ts:276
+msgid "Deck did not return the card after writing it"
+msgstr ""
+
+#: ../packages/deck/src/deck-source.ts:300
+msgid "Deck did not return the new card"
+msgstr ""
+
+#: ../packages/deck/src/deck-source.ts:347
 msgid "Deck did not return a list of boards"
 msgstr ""
 

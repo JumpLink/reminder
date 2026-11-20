@@ -43,6 +43,7 @@ function card(id: number, stackId: number, title: string, extra: Record<string, 
     order: id,
     deletedAt: 0,
     lastModified: 1_790_000_000 + id,
+    ETag: `"card-${id}-0"`,
     ...extra,
   };
 }
@@ -149,6 +150,10 @@ export interface FakeDeck {
   rejectCredentials(on?: boolean): void;
   /** Something under board 10 changed: its ETag moves. */
   touch(): void;
+  /** A second person edits a card: its fields change and its own ETag moves. */
+  editCard(id: number, patch: Record<string, unknown>): void;
+  /** Cards of a board as the server holds them, for assertions. */
+  cardsOf(boardId: number): Record<string, unknown>[];
   close(): Promise<void>;
 }
 
@@ -208,6 +213,71 @@ export async function startFakeDeck(): Promise<FakeDeck> {
     );
   }
 
+  const allCards = () => data.stacks.flatMap((stack) => stack.cards);
+  const bump = (raw: Record<string, unknown>) => {
+    const next = Number(String(raw.ETag).replace(/^.*-(\d+)"$/, '$1')) + 1;
+    raw.ETag = `"card-${raw.id}-${next}"`;
+    raw.lastModified = Number(raw.lastModified) + 1;
+    revision += 1;
+  };
+  const body = (req: RecordedRequest) => JSON.parse(req.body) as Record<string, unknown>;
+  const stackOf = (boardId: string, stackId: string) =>
+    data.stacks.find((stack) => String(stack.boardId) === boardId && String(stack.id) === stackId);
+
+  // https://github.com/nextcloud/deck/blob/main/docs/API.md — create, update and reorder a card.
+  rest.onMatch(
+    /^\/index\.php\/apps\/deck\/api\/v1\.0\/boards\/(\d+)\/stacks\/(\d+)\/cards$/,
+    guarded((req, res) => {
+      const [boardId, stackId] = [/boards\/(\d+)/.exec(req.path)![1], /stacks\/(\d+)/.exec(req.path)![1]];
+      const stack = stackOf(boardId, stackId);
+      if (!stack || req.method !== 'POST') return json(res, 404, {});
+      const input = body(req);
+      const created = card(900 + allCards().length, stack.id, String(input.title), {
+        duedate: input.duedate ?? null,
+        order: input.order,
+        owner: DECK_USER,
+      });
+      stack.cards.push(created);
+      revision += 1;
+      json(res, 200, created);
+    }),
+  );
+  rest.onMatch(
+    /^\/index\.php\/apps\/deck\/api\/v1\.0\/boards\/(\d+)\/stacks\/(\d+)\/cards\/(\d+)(\/reorder)?$/,
+    (req, res, [boardId, stackId, cardId, reorder]) =>
+      guarded((_req, response) => {
+        const stack = stackOf(boardId, stackId);
+        const raw = stack?.cards.find((c) => String(c.id) === cardId);
+        if (!stack || !raw || req.method !== 'PUT') return json(response, 404, {});
+        const input = body(req);
+        if (reorder) {
+          const target = data.stacks.find((s) => s.id === input.stackId && String(s.boardId) === boardId);
+          if (!target) return json(response, 400, { message: 'no such stack' });
+          stack.cards.splice(stack.cards.indexOf(raw), 1);
+          raw.stackId = target.id;
+          raw.order = input.order;
+          target.cards.push(raw);
+        } else {
+          for (const key of [
+            'title',
+            'description',
+            'type',
+            'owner',
+            'order',
+            'duedate',
+            'archived',
+            'done',
+          ]) {
+            if (key in input) raw[key] = input[key];
+          }
+        }
+        bump(raw);
+        // Deck answers the bare 200 the docs list for these two calls.
+        response.writeHead(200);
+        response.end();
+      })(req, res),
+  );
+
   const origin = new URL(rest.url).origin;
   return {
     baseUrl: `${origin}/`,
@@ -218,6 +288,13 @@ export async function startFakeDeck(): Promise<FakeDeck> {
     touch: () => {
       revision += 1;
     },
+    editCard: (id, patch) => {
+      const raw = allCards().find((c) => c.id === id);
+      if (!raw) throw new Error(`no card ${id}`);
+      Object.assign(raw, patch);
+      bump(raw);
+    },
+    cardsOf: (boardId) => data.stacks.filter((s) => s.boardId === boardId).flatMap((s) => s.cards),
     close: () => rest.close(),
   };
 }

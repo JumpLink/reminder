@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 10:45+0100\n"
+"POT-Creation-Date: 2026-11-20 11:10+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -169,13 +169,17 @@ msgstr "Die Aufgabenliste „{uid}“ ist schreibgeschützt"
 
 #: ../packages/core/src/board/vtodo-source.ts:322
 msgid "a task list has no column \"{column}\" to write to"
-msgstr "Eine Aufgabenliste hat keine Spalte „{column}“, in die geschrieben werden kann"
+msgstr ""
+"Eine Aufgabenliste hat keine Spalte „{column}“, in die geschrieben werden "
+"kann"
 
 #: ../packages/core/src/board/vtodo-source.ts:355
+#: ../packages/deck/src/deck-source.ts:309
 msgid "no card {id} on this board"
 msgstr "Dieses Board kennt keine Karte {id}"
 
 #: ../packages/core/src/board/vtodo-source.ts:357
+#: ../packages/deck/src/deck-source.ts:311
 msgid "card {id} changed since it was read"
 msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
@@ -500,15 +504,27 @@ msgstr "disabled[{index}] muss eine nicht leere Kalender-UID sein"
 msgid "calendar \"{uid}\" is disabled in the configuration"
 msgstr "Kalender „{uid}“ ist in der Konfiguration deaktiviert"
 
-#: ../packages/deck/src/deck-source.ts:164
+#: ../packages/deck/src/deck-source.ts:186
 msgid "Deck did not say who is signed in"
 msgstr "Deck hat nicht gesagt, wer angemeldet ist"
 
-#: ../packages/deck/src/deck-source.ts:191
+#: ../packages/deck/src/deck-source.ts:213
 msgid "Deck did not return a list of stacks"
 msgstr "Deck hat keine Liste von Stapeln geliefert"
 
-#: ../packages/deck/src/deck-source.ts:237
+#: ../packages/deck/src/deck-source.ts:265
+msgid "no column \"{column}\" on this board"
+msgstr "Dieses Board hat keine Spalte „{column}“"
+
+#: ../packages/deck/src/deck-source.ts:276
+msgid "Deck did not return the card after writing it"
+msgstr "Deck hat die Karte nach dem Schreiben nicht geliefert"
+
+#: ../packages/deck/src/deck-source.ts:300
+msgid "Deck did not return the new card"
+msgstr "Deck hat die neue Karte nicht geliefert"
+
+#: ../packages/deck/src/deck-source.ts:347
 msgid "Deck did not return a list of boards"
 msgstr "Deck hat keine Liste von Boards geliefert"
 

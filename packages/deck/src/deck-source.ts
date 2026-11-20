@@ -1,5 +1,5 @@
 /**
- * Nextcloud Deck as a board (docs/adr/0007), read-only.
+ * Nextcloud Deck as a board (docs/adr/0007); writes per docs/adr/0013.
  *
  * Mapping onto the port:
  *   · a stack is a column, in the server's `order` (ties by id); Deck has no "finished" stack, so
@@ -26,11 +26,15 @@ import {
 import {
   _,
   boardNotFound,
+  ConflictError,
   filterMine,
+  fmt,
+  InputError,
   type BoardRef,
   type BoardSource,
   type Card,
   type CardLabel,
+  type CardWrite,
   type CardPage,
   type CardQuery,
   type SourceColumn,
@@ -71,6 +75,10 @@ interface RawCard {
   deletedAt?: number;
   order?: number;
   ETag?: string;
+  stackId?: number;
+  description?: string | null;
+  type?: string;
+  owner?: string | { uid?: string; primaryKey?: string } | null;
 }
 
 interface RawStack {
@@ -99,6 +107,20 @@ function instant(value: string | null | undefined): string | null {
   if (!value) return null;
   const ms = Date.parse(value);
   return Number.isNaN(ms) ? null : isoSeconds(ms);
+}
+
+/**
+ * Deck only stores timestamps. A due date at exactly midnight UTC is how this adapter stores a
+ * date-only due (see `toDeckDue`), so it reads back as the date it was written as.
+ */
+function due(value: string | null | undefined): string | null {
+  const at = instant(value);
+  return at?.endsWith('T00:00:00Z') ? at.slice(0, 10) : at;
+}
+
+/** The `duedate` Deck takes: a date becomes midnight UTC, other shapes pass through. */
+function toDeckDue(value: string | null): string | null {
+  return value !== null && /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T00:00:00+00:00` : value;
 }
 
 function fromUnix(seconds: number | undefined): string | null {
@@ -145,7 +167,7 @@ export function createDeckBoardSource(options: DeckSourceOptions): BoardSource {
     limiter: options.limiter,
     fetch: options.fetch,
   });
-  const info: SourceInfo = { id, type: 'deck', canWrite: false, hasWatchers: false, changeToken: true };
+  const info: SourceInfo = { id, type: 'deck', canWrite: true, hasWatchers: false, changeToken: true };
   const appUrl = (path: string): string => new URL(`${APP}${path}`, root).href;
 
   let identity: Promise<SourceUser> | undefined;
@@ -215,7 +237,7 @@ export function createDeckBoardSource(options: DeckSourceOptions): BoardSource {
       title: text(raw.title) ?? cardId,
       sourceColumn: column,
       closed: archived || raw.archived === true || Boolean(raw.done),
-      due: instant(raw.duedate),
+      due: due(raw.duedate),
       assignees,
       watchedByMe: null,
       labels,
@@ -225,11 +247,99 @@ export function createDeckBoardSource(options: DeckSourceOptions): BoardSource {
     };
   }
 
+  const cardsPath = (boardId: string, stackId: number | string): string =>
+    `boards/${encodeURIComponent(boardId)}/stacks/${stackId}/cards`;
+
+  function findCard(stacks: RawStack[], cardId: string): { stack: RawStack; raw: RawCard } | undefined {
+    for (const stack of orderedStacks(stacks)) {
+      const raw = (stack.cards ?? []).find((c) => String(c.id) === cardId && !(c.deletedAt && c.deletedAt > 0));
+      if (raw) return { stack, raw };
+    }
+    return undefined;
+  }
+
+  function stackFor(stacks: RawStack[], column: string): RawStack {
+    const ordered = orderedStacks(stacks);
+    const names = columnNames(ordered);
+    const found = ordered.find((stack) => names.get(stack.id) === column);
+    if (!found) throw new InputError(fmt(_('no column "{column}" on this board'), { column }));
+    return found;
+  }
+
+  const nextOrder = (stack: RawStack): number =>
+    (stack.cards ?? []).reduce((max, c) => Math.max(max, (c.order ?? 0) + 1), 0);
+
+  async function readBack(board: BoardRef, cardId: string): Promise<Card> {
+    const answer = await stacksOf(board, '');
+    const stacks = answer === 'unchanged' ? [] : answer.stacks;
+    const hit = findCard(stacks, cardId);
+    if (!hit) throw new ResponseFormatError(_('Deck did not return the card after writing it'), { status: 200, url: board.id });
+    const names = columnNames(orderedStacks(stacks));
+    return toCard(board, hit.raw, names.get(hit.stack.id) ?? hit.stack.title, await whoAmI(), false);
+  }
+
+  /**
+   * Deck has no conditional write, so the card is read and its ETag compared first (ADR 0013 §5);
+   * a card edited between that read and the write is still lost — a window, not a lock.
+   * Requests: Deck REST API, https://github.com/nextcloud/deck/blob/main/docs/API.md
+   * (create card, update card details, reorder card).
+   */
+  async function writeCard(write: CardWrite): Promise<Card> {
+    if (write.kind === 'create') {
+      const board: BoardRef = { source: id, id: write.board, title: '', url: null };
+      const answer = await stacksOf(board, '');
+      const stacks = answer === 'unchanged' ? [] : answer.stacks;
+      const stack = stackFor(stacks, write.column);
+      const created = await client.sendJson<RawCard>('POST', cardsPath(board.id, stack.id), {
+        title: write.title,
+        type: 'plain',
+        order: nextOrder(stack),
+        duedate: toDeckDue(write.due ?? null),
+      });
+      if (created.status !== 'ok' || created.data?.id === undefined) {
+        throw new ResponseFormatError(_('Deck did not return the new card'), { status: 200, url: board.id });
+      }
+      return readBack(board, String(created.data.id));
+    }
+
+    const board: BoardRef = { source: id, id: write.ref.board, title: '', url: null };
+    const answer = await stacksOf(board, '');
+    const stacks = answer === 'unchanged' ? [] : answer.stacks;
+    const hit = findCard(stacks, write.ref.id);
+    if (!hit) throw new InputError(fmt(_('no card {id} on this board'), { id: write.ref.id }));
+    if ((hit.raw.ETag ?? null) !== write.version) {
+      throw new ConflictError(fmt(_('card {id} changed since it was read'), { id: write.ref.id }), 'deck', 412);
+    }
+    const base = `${cardsPath(board.id, hit.stack.id)}/${encodeURIComponent(write.ref.id)}`;
+
+    if (write.kind === 'move') {
+      const target = stackFor(stacks, write.toColumn);
+      await client.sendJson('PUT', `${base}/reorder`, {
+        stackId: target.id,
+        order: write.position ?? nextOrder(target),
+      }, { allowEmpty: true });
+    } else {
+      const owner = hit.raw.owner;
+      await client.sendJson('PUT', base, {
+        title: write.changes.title ?? hit.raw.title ?? '',
+        description: hit.raw.description ?? '',
+        type: hit.raw.type ?? 'plain',
+        owner: typeof owner === 'string' ? owner : (owner?.uid ?? owner?.primaryKey ?? (await whoAmI()).id),
+        order: hit.raw.order ?? 0,
+        duedate: write.changes.due === undefined ? (hit.raw.duedate ?? null) : toDeckDue(write.changes.due),
+        archived: hit.raw.archived ?? false,
+        done: hit.raw.done ?? null,
+      }, { allowEmpty: true });
+    }
+    return readBack(board, write.ref.id);
+  }
+
   return {
     describe() {
       return { ...info };
     },
     whoAmI,
+    writeCard,
     async listBoards() {
       const result = await client.getJson<unknown>('boards');
       if (result.status === 'unchanged') return [];
