@@ -50,7 +50,8 @@ export function sampleColumns(now: Date = new Date(), emptyDone = false): BoardC
 
 const META: StoryMeta = {
   title: 'Adwaita Extended/KanbanBoard',
-  description: 'Columns of cards: one at a time under a switcher (compact), a snapping strip (medium), all side by side (wide). Read-only: cards activate, they do not drag.',
+  description:
+    'Columns of cards: one at a time under a switcher (compact), a snapping strip (medium), all side by side (wide). Writable: drag a card to another column, or focus one and press Shift+Left/Right. The board only ASKS — this story plays the host and moves the card in its own data.',
   controls: [
     {
       name: 'sizeClass',
@@ -64,11 +65,33 @@ const META: StoryMeta = {
       defaultValue: 'wide',
     },
     { name: 'emptyDone', label: 'Empty last column', type: ControlType.BOOLEAN, defaultValue: false },
+    { name: 'writable', label: 'Writable', type: ControlType.BOOLEAN, defaultValue: true },
   ],
 };
 
+/**
+ * What the host does with `card-move-requested`: takes the card out of the column it is in and
+ * puts it back at `position` in `columnId`. Pure, so the story's "server" is one function.
+ */
+export function movedColumns(
+  columns: readonly BoardColumnData[],
+  cardId: string,
+  columnId: string,
+  position: number,
+): BoardColumnData[] {
+  const card = columns.flatMap((column) => column.cards).find((c) => c.id === cardId);
+  if (!card) return columns.map((column) => ({ ...column, cards: [...column.cards] }));
+  return columns.map((column) => {
+    const cards = column.cards.filter((c) => c.id !== cardId);
+    if (column.id !== columnId) return { ...column, cards };
+    const at = Math.min(Math.max(position, 0), cards.length);
+    return { ...column, cards: [...cards.slice(0, at), card, ...cards.slice(at)] };
+  });
+}
+
 export class KanbanBoardStory extends StoryWidget {
   private board: KanbanBoard | null = null;
+  private columns: BoardColumnData[] = [];
   private readonly log = new Gtk.Label({ label: 'No card activated yet', xalign: 0 });
 
   static {
@@ -87,6 +110,11 @@ export class KanbanBoardStory extends StoryWidget {
     this.board = new KanbanBoard();
     this.board.set_size_request(360, 420);
     onSignal(this.board, 'card-activated', (id: string) => this.log.set_label(`card-activated(${id})`));
+    onSignal(this.board, 'card-move-requested', (id: string, columnId: string, position: number) => {
+      this.log.set_label(`card-move-requested(${id}, ${columnId}, ${position})`);
+      this.columns = movedColumns(this.columns, id, columnId, position);
+      this.board?.setColumns(this.columns);
+    });
     this.log.add_css_class('dim-label');
     const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 8 });
     this.board.set_vexpand(true);
@@ -103,7 +131,9 @@ export class KanbanBoardStory extends StoryWidget {
   private refresh(): void {
     if (!this.board) return;
     this.board.setSizeClass(String(this.args.sizeClass) as SizeClass);
-    this.board.setColumns(sampleColumns(new Date(), Boolean(this.args.emptyDone)));
+    this.board.writable = Boolean(this.args.writable);
+    this.columns = sampleColumns(new Date(), Boolean(this.args.emptyDone));
+    this.board.setColumns(this.columns);
   }
 }
 

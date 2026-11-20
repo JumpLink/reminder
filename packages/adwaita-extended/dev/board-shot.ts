@@ -2,8 +2,11 @@
 // Build: gjsify build dev/board-shot.ts --app gjs --outfile dist/board-shot.gjs.mjs
 import Adw from '@girs/adw-1';
 import GLib from '@girs/glib-2.0';
+import GObject from '@girs/gobject-2.0';
 import system from 'system';
 
+import type { BoardCard } from '../src/board-card.ts';
+import type { BoardColumn } from '../src/board-column.ts';
 import { KanbanBoard } from '../src/kanban-board.ts';
 import { sampleColumns } from '../src/kanban-board.story.ts';
 import type { SizeClass } from '../src/size-class.ts';
@@ -11,12 +14,37 @@ import type { SizeClass } from '../src/size-class.ts';
 const width = Number(GLib.getenv('BOARD_SHOT_WIDTH') ?? '800');
 const height = Number(GLib.getenv('BOARD_SHOT_HEIGHT') ?? '640');
 const sizeClass: SizeClass = width < 600 ? 'compact' : width < 1024 ? 'medium' : 'wide';
+/** `BOARD_SHOT_DROP="<column index> <card index>"` paints the drop indicator a drag would show. */
+const drop = (GLib.getenv('BOARD_SHOT_DROP') ?? '').split(' ').filter(Boolean).map(Number);
+
+/**
+ * A pointer drag cannot be synthesised in a headless session, so the indicator is painted through
+ * the same `markDrop` a drop motion calls, reaching the columns through the `decorateCard` seam.
+ */
+class ShotBoard extends KanbanBoard {
+  static {
+    GObject.registerClass({ GTypeName: 'GjsifyAdwBoardShotBoard' }, ShotBoard);
+  }
+
+  private readonly seen: BoardColumn[] = [];
+
+  protected override decorateCard(card: BoardCard, column: BoardColumn): void {
+    super.decorateCard(card, column);
+    if (!this.seen.includes(column)) this.seen.push(column);
+  }
+
+  markDropAt(column: number, index: number): void {
+    this.seen[column]?.markDrop(index);
+  }
+}
 
 const app = new Adw.Application({ applicationId: 'org.gjsify.AdwaitaExtended.BoardShot' });
 app.connect('activate', () => {
-  const board = new KanbanBoard();
+  const board = new ShotBoard();
   board.setSizeClass(sizeClass);
+  board.writable = true;
   board.setColumns(sampleColumns());
+  if (drop.length === 2) board.markDropAt(drop[0], drop[1]);
   const view = new Adw.ToolbarView();
   view.add_top_bar(new Adw.HeaderBar());
   view.set_content(board);

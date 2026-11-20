@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 11:31+0100\n"
+"POT-Creation-Date: 2026-11-20 12:35+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -176,14 +176,14 @@ msgstr ""
 #: ../packages/core/src/board/vtodo-source.ts:355
 #: ../packages/deck/src/deck-source.ts:309
 #: ../packages/openproject/src/openproject-source.ts:344
-#: ../packages/zenkit/src/source.ts:440
+#: ../packages/zenkit/src/source.ts:440 src/core/demo/board-source.ts:262
 msgid "no card {id} on this board"
 msgstr "Dieses Board kennt keine Karte {id}"
 
 #: ../packages/core/src/board/vtodo-source.ts:357
 #: ../packages/deck/src/deck-source.ts:311
 #: ../packages/openproject/src/openproject-source.ts:273
-#: ../packages/zenkit/src/source.ts:442
+#: ../packages/zenkit/src/source.ts:442 src/core/demo/board-source.ts:264
 msgid "card {id} changed since it was read"
 msgstr "Die Karte {id} hat sich geändert, seit sie gelesen wurde"
 
@@ -673,15 +673,15 @@ msgstr "Keine Spalte gehört zur Lane „{lane}“ — die Spalten sind: {column
 msgid "several columns map onto lane \"{lane}\" — name one: {columns}"
 msgstr "Mehrere Spalten gehören zur Lane „{lane}“ — nenne eine: {columns}"
 
-#: src/core/board-sources.ts:228
+#: src/core/board-sources.ts:230
 msgid "this build has no board support for \"{type}\""
 msgstr "Dieser Build unterstützt keine Boards vom Typ „{type}“"
 
-#: src/core/board-sources.ts:246
+#: src/core/board-sources.ts:248
 msgid "source \"{id}\": no credential — store it as {ref}"
 msgstr "Quelle „{id}“: Keine Zugangsdaten — als {ref} speichern"
 
-#: src/core/board-sources.ts:254
+#: src/core/board-sources.ts:256
 msgid "source \"{id}\": {message}"
 msgstr "Quelle „{id}“: {message}"
 
@@ -736,6 +736,10 @@ msgstr "Das passwordSecret wurde noch nicht aufgelöst"
 #: src/core/context.ts:167
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
+
+#: src/core/demo/board-source.ts:252
+msgid "this board has no column \"{column}\""
+msgstr "Dieses Board hat keine Spalte „{column}“"
 
 #: src/core/demo/index.ts:41
 msgid "Demo mode — invented data, nothing is saved."
@@ -1050,32 +1054,32 @@ msgstr "Eine Erinnerung als erledigt markieren"
 msgid "Mark a done reminder as open again"
 msgstr "Eine erledigte Erinnerung wieder als offen markieren"
 
-#: src/frontends/gui/board-view-model.ts:97
+#: src/frontends/gui/board-view-model.ts:100
 #: src/frontends/gui/views/preferences/board-controller.ts:129
 msgid "Backlog"
 msgstr "Backlog"
 
-#: src/frontends/gui/board-view-model.ts:99
+#: src/frontends/gui/board-view-model.ts:102
 msgid "To do"
 msgstr "Zu tun"
 
-#: src/frontends/gui/board-view-model.ts:101
+#: src/frontends/gui/board-view-model.ts:104
 #: src/frontends/gui/views/preferences/board-controller.ts:133
 #: src/frontends/gui/views/tasks.ts:43
 msgid "In progress"
 msgstr "In Bearbeitung"
 
-#: src/frontends/gui/board-view-model.ts:103
+#: src/frontends/gui/board-view-model.ts:106
 #: src/frontends/gui/views/preferences/board-controller.ts:135
 msgid "Done"
 msgstr "Fertig"
 
-#: src/frontends/gui/board-view-model.ts:105
+#: src/frontends/gui/board-view-model.ts:108
 msgid "Unsorted"
 msgstr "Unsortiert"
 
-#: src/frontends/gui/board-view-model.ts:153
-#: src/frontends/gui/board-view-model.ts:200
+#: src/frontends/gui/board-view-model.ts:161
+#: src/frontends/gui/board-view-model.ts:208
 #: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:171
 #: src/frontends/gui/view-model.ts:121
 #: src/frontends/gui/views/preferences/controller.ts:112
@@ -1084,26 +1088,68 @@ msgstr "Unsortiert"
 msgid "Untitled"
 msgstr "Ohne Titel"
 
-#: src/frontends/gui/board-view-model.ts:292
+#: src/frontends/gui/board-view-model.ts:314
 #: src/frontends/gui/views/preferences/board-controller.ts:144
 msgid "Assigned to me"
 msgstr "Mir zugewiesen"
 
-#: src/frontends/gui/board-view-model.ts:294
+#: src/frontends/gui/board-view-model.ts:316
 msgid "I am watching"
 msgstr "Von mir beobachtet"
 
-#: src/frontends/gui/board-view-model.ts:296
+#: src/frontends/gui/board-view-model.ts:318
 msgid "Everyone"
 msgstr "Alle"
 
-#: src/frontends/gui/board-view-model.ts:310
+#: src/frontends/gui/board-view-model.ts:332
 msgid "Without done"
 msgstr "Ohne Fertige"
 
-#: src/frontends/gui/board-view-model.ts:356
+#: src/frontends/gui/board-view-model.ts:378
 msgid "Some boards are missing — {sources}"
 msgstr "Einige Boards fehlen — {sources}"
+
+#: src/frontends/gui/board-write.ts:111
+msgid "{board} cannot be changed from here."
+msgstr "„{board}“ lässt sich von hier aus nicht ändern."
+
+#: src/frontends/gui/board-write.ts:114
+msgid ""
+"Moving cards on {board} is not allowed yet — allow \"Move board cards\" for "
+"it first."
+msgstr ""
+"Karten auf „{board}“ zu verschieben ist noch nicht erlaubt — erlaube dafür "
+"zuerst „Board-Karten verschieben“."
+
+#: src/frontends/gui/board-write.ts:141
+msgid "That card is no longer on the board."
+msgstr "Diese Karte liegt nicht mehr auf dem Board."
+
+#: src/frontends/gui/board-write.ts:145
+msgid "{lane} is not a column to move a card into."
+msgstr "„{lane}“ ist keine Spalte, in die sich eine Karte verschieben lässt."
+
+#: src/frontends/gui/board-write.ts:156
+msgid "{board} has no column for {lane}."
+msgstr "„{board}“ hat keine Spalte für „{lane}“."
+
+#: src/frontends/gui/board-write.ts:165
+msgid ""
+"{lane} is several columns of {board} — choose one under Board in the "
+"preferences."
+msgstr ""
+"„{lane}“ sind mehrere Spalten von „{board}“ — wähle eine davon in den "
+"Einstellungen unter „Board“."
+
+#: src/frontends/gui/board-write.ts:187
+msgid "Someone else changed \"{title}\" — refresh to see where it is."
+msgstr ""
+"Jemand anderes hat „{title}“ geändert — aktualisiere, um zu sehen, wo die "
+"Karte liegt."
+
+#: src/frontends/gui/board-write.ts:190
+msgid "Could not move the card: {message}"
+msgstr "Die Karte konnte nicht verschoben werden: {message}"
 
 #: src/frontends/gui/calendar-view-model.ts:262
 msgid "Time zone {zone} unknown — shown as entered"
@@ -1146,7 +1192,7 @@ msgid "Overdue"
 msgstr "Überfällig"
 
 #: src/frontends/gui/view-model.ts:101 src/frontends/gui/views/calendar.ts:175
-#: src/frontends/gui/window.ts:307
+#: src/frontends/gui/window.ts:314
 msgid "Today"
 msgstr "Heute"
 
@@ -1182,93 +1228,101 @@ msgstr "nicht lesbar"
 msgid "could not be updated"
 msgstr "konnte nicht aktualisiert werden"
 
-#: src/frontends/gui/views/board.ts:72
+#: src/frontends/gui/views/board.ts:88
 msgid "Could not open the card: {message}"
 msgstr "Die Karte konnte nicht geöffnet werden: {message}"
 
-#: src/frontends/gui/views/board.ts:86 src/frontends/gui/views/board.ts:169
-#: src/frontends/gui/views/board.ts:295
+#: src/frontends/gui/views/board.ts:110
+msgid "Move to"
+msgstr "Verschieben nach"
+
+#: src/frontends/gui/views/board.ts:144 src/frontends/gui/views/board.ts:251
+#: src/frontends/gui/views/board.ts:409
 #: src/frontends/gui/views/preferences/board.ts:31
 #: src/frontends/gui/window.ts:92
 msgid "Board"
 msgstr "Board"
 
-#: src/frontends/gui/views/board.ts:88
+#: src/frontends/gui/views/board.ts:146
 msgid "Lane"
 msgstr "Spalte"
 
-#: src/frontends/gui/views/board.ts:90
+#: src/frontends/gui/views/board.ts:148
 msgid "Column"
 msgstr "Spalte in der Quelle"
 
-#: src/frontends/gui/views/board.ts:92 src/frontends/gui/views/tasks.ts:77
+#: src/frontends/gui/views/board.ts:150 src/frontends/gui/views/tasks.ts:77
 msgid "Due"
 msgstr "Fällig"
 
-#: src/frontends/gui/views/board.ts:93
+#: src/frontends/gui/views/board.ts:151
 msgid "Assigned to"
 msgstr "Zugewiesen an"
 
-#: src/frontends/gui/views/board.ts:94
+#: src/frontends/gui/views/board.ts:152
 msgid "Labels"
 msgstr "Labels"
 
-#: src/frontends/gui/views/board.ts:100
+#: src/frontends/gui/views/board.ts:160
 msgid "Open in original"
 msgstr "Im Original öffnen"
 
-#: src/frontends/gui/views/board.ts:108
+#: src/frontends/gui/views/board.ts:168
 msgid "This source has no page of its own."
 msgstr "Diese Quelle hat keine eigene Seite."
 
-#: src/frontends/gui/views/board.ts:136
+#: src/frontends/gui/views/board.ts:218
 #: src/frontends/gui/views/preferences/board.ts:35
 msgid "Cards"
 msgstr "Karten"
 
-#: src/frontends/gui/views/board.ts:140
+#: src/frontends/gui/views/board.ts:222
 msgid "Show done"
 msgstr "Fertige anzeigen"
 
-#: src/frontends/gui/views/board.ts:141
+#: src/frontends/gui/views/board.ts:223
 msgid "The last {days} days"
 msgstr "Die letzten {days} Tage"
 
-#: src/frontends/gui/views/board.ts:155
+#: src/frontends/gui/views/board.ts:237
 msgid "Filter"
 msgstr "Filter"
 
-#: src/frontends/gui/views/board.ts:170
+#: src/frontends/gui/views/board.ts:252
 msgid "Your cards will appear here."
 msgstr "Ihre Karten erscheinen hier."
 
-#: src/frontends/gui/views/board.ts:182
+#: src/frontends/gui/views/board.ts:264
 msgid "Loading boards…"
 msgstr "Boards werden geladen …"
 
-#: src/frontends/gui/views/board.ts:295 src/frontends/gui/views/board.ts:329
+#: src/frontends/gui/views/board.ts:294 src/frontends/gui/window.ts:305
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: src/frontends/gui/views/board.ts:409 src/frontends/gui/views/board.ts:453
 msgid "Cannot load the board"
 msgstr "Das Board konnte nicht geladen werden"
 
-#: src/frontends/gui/views/board.ts:300
+#: src/frontends/gui/views/board.ts:414
 msgid "Connect an account with task lists or boards to see cards here."
 msgstr ""
 "Verbinden Sie ein Konto mit Aufgabenlisten oder Boards, damit hier Karten "
 "erscheinen."
 
-#: src/frontends/gui/views/board.ts:301
+#: src/frontends/gui/views/board.ts:415
 msgid "No card matches the filters."
 msgstr "Keine Karte passt zu den Filtern."
 
-#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:308
+#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:315
 msgid "Month"
 msgstr "Monat"
 
-#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:309
+#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:316
 msgid "Week"
 msgstr "Woche"
 
-#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:310
+#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:317
 msgid "Day"
 msgstr "Tag"
 
@@ -1287,7 +1341,7 @@ msgstr "Wo"
 #: src/frontends/gui/views/calendar.ts:114
 #: src/frontends/gui/views/calendar.ts:190
 #: src/frontends/gui/views/preferences/account-detail.ts:19
-#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:304
+#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:311
 msgid "Calendar"
 msgstr "Kalender"
 
@@ -1299,11 +1353,11 @@ msgstr "Zeitzone"
 msgid "Open the original"
 msgstr "Im Original öffnen"
 
-#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:305
+#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:312
 msgid "Previous"
 msgstr "Zurück"
 
-#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:306
+#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:313
 msgid "Next"
 msgstr "Weiter"
 
@@ -1749,7 +1803,7 @@ msgid "Saturday"
 msgstr "Samstag"
 
 #: src/frontends/gui/views/preferences/general.ts:51
-#: src/frontends/gui/window.ts:294
+#: src/frontends/gui/window.ts:301
 msgid "General"
 msgstr "Allgemein"
 
@@ -1855,27 +1909,23 @@ msgstr "Aufgaben konnten nicht geladen werden"
 msgid "Your reminders as cards will appear here."
 msgstr "Ihre Erinnerungen als Karten erscheinen hier."
 
-#: src/frontends/gui/window.ts:138 src/frontends/gui/window.ts:299
+#: src/frontends/gui/window.ts:145 src/frontends/gui/window.ts:306
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: src/frontends/gui/window.ts:139 src/frontends/gui/window.ts:300
+#: src/frontends/gui/window.ts:146 src/frontends/gui/window.ts:307
 msgid "Keyboard Shortcuts"
 msgstr "Tastenkürzel"
 
-#: src/frontends/gui/window.ts:140
+#: src/frontends/gui/window.ts:147
 msgid "About reminder"
 msgstr "Über reminder"
 
-#: src/frontends/gui/window.ts:141
+#: src/frontends/gui/window.ts:148
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/frontends/gui/window.ts:298
-msgid "Refresh"
-msgstr "Aktualisieren"
-
-#: src/frontends/gui/window.ts:301
+#: src/frontends/gui/window.ts:308
 msgid "Quit"
 msgstr "Beenden"
 

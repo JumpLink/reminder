@@ -13,7 +13,16 @@ export { AgendaList, firstAgendaDate } from './agenda-list.ts';
 export { groupByDay, type AgendaDay, type AgendaEntry, type AgendaOptions } from './agenda-rules.ts';
 export { BoardCard, MAX_AVATARS, type BoardCardData } from './board-card.ts';
 export { BoardColumn, type BoardColumnData } from './board-column.ts';
-export { boardPresentation, visibleColumns, type BoardPresentation } from './board-rules.ts';
+export {
+  boardPresentation,
+  canDrag,
+  dropIndex,
+  dropPlacement,
+  moveColumn,
+  visibleColumns,
+  type BoardPresentation,
+  type CardExtent,
+} from './board-rules.ts';
 export type { CalendarEvent, CalendarEventData } from './calendar-event.ts';
 export {
   dayHeading,

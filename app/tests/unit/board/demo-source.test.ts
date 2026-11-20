@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@gjsify/unit';
 import {
   boardSourceContract,
+  boardSourceWriteContract,
   classifyCard,
   classifyColumn,
   createVtodoBoardSource,
@@ -36,12 +37,43 @@ export default async () => {
       });
     }
 
-    await it('is read-only and knows who watches a card', async () => {
+    for (const check of boardSourceWriteContract(() => createDemoBoardSource(NOW))) {
+      await it(check.name, async () => {
+        await check.run();
+      });
+    }
+
+    await it('writes and knows who watches a card', async () => {
       const info = createDemoBoardSource(NOW).describe();
       expect(info.id).toBe(DEMO_BOARD_SOURCE_ID);
-      expect(info.canWrite).toBe(false);
+      expect(info.canWrite).toBe(true);
       expect(info.hasWatchers).toBe(true);
       expect(info.changeToken).toBe(true);
+    });
+
+    await it('keeps a move to itself: another instance has the fixture again', async () => {
+      const source = createDemoBoardSource(NOW);
+      const board = (await source.listBoards())[0];
+      const page = await source.listCards(board, { mine: 'all', includeClosed: true });
+      const card = page.kind === 'changed' ? page.cards[0] : null;
+      expect(card).toBeDefined();
+      if (!card) return;
+      await source.writeCard?.({ kind: 'move', ref: card.ref, version: card.version, toColumn: 'Done' });
+      const again = await createDemoBoardSource(NOW).listCards(board, { mine: 'all', includeClosed: true });
+      const fresh = again.kind === 'changed' ? again.cards.find((c) => c.ref.id === card.ref.id) : null;
+      expect(fresh?.sourceColumn).toBe(card.sourceColumn);
+    });
+
+    await it('hands out a new token after a write, so the next read sees the move', async () => {
+      const source = createDemoBoardSource(NOW);
+      const board = (await source.listBoards())[0];
+      const first = await source.listCards(board, { mine: 'all', includeClosed: true });
+      const token = first.kind === 'changed' ? first.token : null;
+      const card = first.kind === 'changed' ? first.cards[0] : null;
+      if (!card) return;
+      await source.writeCard?.({ kind: 'move', ref: card.ref, version: card.version, toColumn: 'Done' });
+      const after = await source.listCards(board, { mine: 'all', includeClosed: true }, token);
+      expect(after.kind).toBe('changed');
     });
 
     await it('fills all four lanes and leaves one column unassigned', async () => {

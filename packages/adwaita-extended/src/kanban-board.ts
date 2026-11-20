@@ -8,11 +8,15 @@ import type { BoardCard } from './board-card.ts';
 import { BoardColumn, cardCountText, type BoardColumnData } from './board-column.ts';
 import {
   boardPresentation,
+  canDrag,
   clampColumn,
   columnOffset,
   columnWidth,
   COLUMN_GAP,
+  dropIndex,
+  dropPlacement,
   MIN_COLUMN_WIDTH,
+  moveColumn,
   neighbourFocus,
   snapColumn,
   type BoardPresentation,
@@ -21,6 +25,9 @@ import { emitSignal, onSignal } from './signals.ts';
 import type { SizeClass } from './size-class.ts';
 import { ensureStyles } from './styles.ts';
 
+/** Dims the card that is being dragged, so the one under the pointer is the one that counts. */
+const DRAGGING = 'gjsify-board-dragging';
+
 /**
  * A kanban board, laid out by size class (rules in `board-rules.ts`): compact pages one column at
  * a time under a switcher of column names with counts, medium scrolls a strip of columns that
@@ -28,13 +35,26 @@ import { ensureStyles } from './styles.ts';
  * between the three containers, so scroll position inside a column survives a resize.
  *
  * Arrow keys move focus between cards (up/down within a column, left/right to the next column
- * that has cards). Read-only in Phase 2: `writable` stays false and no card is draggable.
- * Phase 4 hooks in at {@link decorateCard}. Signal `card-activated(id)`.
+ * that has cards); Shift+Left/Right moves the focused card itself, which is the same move without
+ * a pointer. While `writable` is false nothing drags and nothing moves, and a read-only card never
+ * drags whatever the board.
+ *
+ * The board never moves a card itself. A drop ASKS — `card-move-requested(id, columnId, position)`
+ * — and the host writes, re-renders and decides what a failure looks like: the widget knows
+ * nothing about sources, grants or conflicts (ADR 0012 §3). Also `card-activated(id)`.
  */
 export class KanbanBoard extends Gtk.Box {
   static {
     GObject.registerClass(
-      { GTypeName: 'GjsifyAdwKanbanBoard', Signals: { 'card-activated': { param_types: [GObject.TYPE_STRING] } } },
+      {
+        GTypeName: 'GjsifyAdwKanbanBoard',
+        Signals: {
+          'card-activated': { param_types: [GObject.TYPE_STRING] },
+          'card-move-requested': {
+            param_types: [GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_INT],
+          },
+        },
+      },
       KanbanBoard,
     );
   }
@@ -48,6 +68,8 @@ export class KanbanBoard extends Gtk.Box {
   private lastWidth = 0;
   private snapTimer = 0;
   private animation: Adw.TimedAnimation | null = null;
+  /** The card a pointer is dragging, with the column it came from, or `null` between drags. */
+  private dragging: { card: BoardCard; column: BoardColumn } | null = null;
   private readonly switcher = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 6 });
   private readonly switcherScroll = new Gtk.ScrolledWindow({
     hscrollbarPolicy: Gtk.PolicyType.EXTERNAL,
@@ -104,12 +126,18 @@ export class KanbanBoard extends Gtk.Box {
     });
 
     const keys = new Gtk.EventControllerKey();
-    keys.connect('key-pressed', (_k: Gtk.EventControllerKey, keyval: number) => this.onKey(keyval));
+    keys.connect(
+      'key-pressed',
+      (_k: Gtk.EventControllerKey, keyval: number, _code: number, state: Gdk.ModifierType) => this.onKey(keyval, state),
+    );
     this.add_controller(keys);
     this.place();
   }
 
-  /** Phase 2 boards are read-only; Phase 4 sets this when the board's sources can be written. */
+  /**
+   * Whether this board's cards may be moved at all. Asked afresh at the start of every drag, so a
+   * board that becomes writable needs no rebuild.
+   */
   get writable(): boolean {
     return this.isWritable;
   }
@@ -133,11 +161,13 @@ export class KanbanBoard extends Gtk.Box {
   }
 
   setColumns(data: readonly BoardColumnData[], now: Date = new Date()): void {
+    this.dragging = null;
     this.detach();
     this.columns = data.map((column) => {
       const widget = new BoardColumn();
       widget.setColumn(column, now);
       onSignal(widget, 'card-activated', (id: string) => emitSignal(this, 'card-activated', id));
+      this.acceptDrops(widget);
       for (const card of widget.cards) this.decorateCard(card, widget);
       return widget;
     });
@@ -147,11 +177,80 @@ export class KanbanBoard extends Gtk.Box {
   }
 
   /**
-   * The Phase 4 seam: called once per card after it is built. Dragging attaches here
-   * (`Gtk.DragSource` on the card, `Gtk.DropTarget` on `column.dropArea`), guarded by `canDrag`
-   * from `board-rules.ts`; on touch the card detail offers "Move to …" instead.
+   * Called once per card after it is built: gives it a `Gtk.DragSource` that carries the card id.
+   * `canDrag` is asked in `prepare`, not here, so the answer is the one that holds when the drag
+   * actually starts. A subclass that overrides this and does not chain up has no dragging.
+   *
+   * There is no touch gesture here on purpose: a long-press drag fights the column's own scroll,
+   * so on a phone the card detail's "Move to …" is the way, and it is there at every size.
    */
-  protected decorateCard(_card: BoardCard, _column: BoardColumn): void {}
+  protected decorateCard(card: BoardCard, column: BoardColumn): void {
+    const source = new Gtk.DragSource({ actions: Gdk.DragAction.MOVE, propagationPhase: Gtk.PropagationPhase.CAPTURE });
+    source.connect('prepare', (_s: Gtk.DragSource, x: number, y: number) => {
+      if (!canDrag(card.readOnly, this.isWritable)) return null;
+      this.dragging = { card, column };
+      source.set_icon(new Gtk.WidgetPaintable({ widget: card }), x, y);
+      return Gdk.ContentProvider.new_for_value(card.id);
+    });
+    source.connect('drag-begin', () => card.add_css_class(DRAGGING));
+    source.connect('drag-end', () => this.endDrag(card));
+    source.connect('drag-cancel', () => {
+      this.endDrag(card);
+      return false;
+    });
+    card.add_controller(source);
+  }
+
+  /** Lets a column take a card dropped on it, anywhere in the column — not just over its cards. */
+  private acceptDrops(column: BoardColumn): void {
+    const target = Gtk.DropTarget.new(GObject.TYPE_STRING, Gdk.DragAction.MOVE);
+    target.connect('motion', (_t: Gtk.DropTarget, _x: number, y: number) => {
+      if (!this.dragging) return Gdk.DragAction.NONE;
+      column.markDrop(dropIndex(y, column.cardExtents));
+      return Gdk.DragAction.MOVE;
+    });
+    target.connect('leave', () => column.markDrop(null));
+    target.connect('drop', (_t: Gtk.DropTarget, _value: unknown, _x: number, y: number) => this.onDrop(column, y));
+    column.dropArea.add_controller(target);
+  }
+
+  /**
+   * A drop landed: work out the position it asks for and ask the host for it. A drop back onto the
+   * place the card already has is accepted and asks for nothing — the person did nothing, and a
+   * write that changes nothing is still a write that can fail.
+   */
+  private onDrop(column: BoardColumn, y: number): boolean {
+    const dragging = this.dragging;
+    for (const c of this.columns) c.markDrop(null);
+    if (!dragging) return false;
+    const from = dragging.column.cards.indexOf(dragging.card);
+    const position = dropPlacement(dragging.column === column, from, dropIndex(y, column.cardExtents));
+    if (position === null) return true;
+    emitSignal(this, 'card-move-requested', dragging.card.id, column.id, position);
+    return true;
+  }
+
+  private endDrag(card: BoardCard): void {
+    card.remove_css_class(DRAGGING);
+    this.dragging = null;
+    for (const c of this.columns) c.markDrop(null);
+  }
+
+  /**
+   * Shift+Left/Right: asks for the focused card at the end of the next column. It is the same
+   * request a drop makes, so someone who cannot drag — a keyboard, a screen reader — reaches every
+   * column the pointer reaches.
+   */
+  private moveFocused(column: number, index: number, dx: number): void {
+    const card = this.columns[column]?.cards[index];
+    if (!card || !canDrag(card.readOnly, this.isWritable)) return;
+    const next = moveColumn(column, dx, this.columns.length);
+    if (next === null) return;
+    const target = this.columns[next];
+    if (!target) return;
+    this.scrollTo(next);
+    emitSignal(this, 'card-move-requested', card.id, target.id, target.cards.length);
+  }
 
   /** The column shown first on a phone, or last visited. */
   showColumn(index: number): void {
@@ -295,7 +394,7 @@ export class KanbanBoard extends Gtk.Box {
     });
   }
 
-  private onKey(keyval: number): boolean {
+  private onKey(keyval: number, state: Gdk.ModifierType): boolean {
     const focus = (this.get_root() as Gtk.Window | null)?.get_focus();
     if (!focus) return false;
     let column = -1;
@@ -309,6 +408,11 @@ export class KanbanBoard extends Gtk.Box {
     });
     if (column < 0) return false;
     const sizes = this.columns.map((c) => c.cards.length);
+    const shift = (state & Gdk.ModifierType.SHIFT_MASK) !== 0;
+    if (shift && (keyval === Gdk.KEY_Left || keyval === Gdk.KEY_Right)) {
+      this.moveFocused(column, index, keyval === Gdk.KEY_Left ? -1 : 1);
+      return true;
+    }
     if (keyval === Gdk.KEY_Left || keyval === Gdk.KEY_Right) {
       const next = neighbourFocus(column, index, keyval === Gdk.KEY_Left ? -1 : 1, sizes);
       if (!next) return true;

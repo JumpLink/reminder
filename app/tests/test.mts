@@ -67,6 +67,7 @@ import guiSettings from './unit/gui/settings.test.ts';
 import guiModel from './unit/gui/model.test.ts';
 import guiBoardViewModel from './unit/gui/board-view-model.test.ts';
 import guiBoardModel from './unit/gui/board-model.test.ts';
+import guiBoardWrite from './unit/gui/board-write.test.ts';
 import guiSync from './unit/gui/sync.test.ts';
 import guiDemo from './unit/gui/demo.test.ts';
 import guiPreferences from './unit/gui/preferences.test.ts';
@@ -136,6 +137,7 @@ run({
   guiModel,
   guiBoardViewModel,
   guiBoardModel,
+  guiBoardWrite,
   guiSync,
   guiDemo,
   guiPreferences,

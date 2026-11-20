@@ -105,6 +105,7 @@ src/frontends/cli/update.ts
 src/frontends/gui/board-model.ts
 src/frontends/gui/board-sync.ts
 src/frontends/gui/board-view-model.ts
+src/frontends/gui/board-write.ts
 src/frontends/gui/calendar-model.ts
 src/frontends/gui/calendar-view-model.ts
 src/frontends/gui/constants.ts

@@ -50,7 +50,10 @@ export const MIN_HEIGHT = 294;
 /** `REMINDER_APP_PREFS=1` opens the preferences at start, for screenshots; a page name opens that page. */
 export const PREFS_HOOK = `${DEV_HOOK_PREFIX}_PREFS`;
 
-/** `REMINDER_APP_CARD=1` opens the first card's detail on the board, so a screenshot shows the pane. */
+/**
+ * `REMINDER_APP_CARD=1` opens the first card's detail on the board, so a screenshot shows the pane;
+ * `=move` also scrolls it to "Move to", which a compact sheet keeps below the fold.
+ */
 export const CARD_HOOK = `${DEV_HOOK_PREFIX}_CARD`;
 
 /** `REMINDER_APP_CALENDAR_MODE=month|week|day`: the calendar mode a screenshot wants. */
