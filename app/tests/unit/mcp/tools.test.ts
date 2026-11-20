@@ -315,6 +315,26 @@ export default async () => {
       expect(reminders.reminders[0].summary).toBe('Reply');
     });
 
+    await it('events_list returns the series by default and instances with expand', async () => {
+      const series = createFakeBackend([calendar('cal-r', 'event', 'Work')], {
+        'cal-r': [vevent('r1', ['DTSTART:20261012T080000Z', 'SUMMARY:Stand-up', 'RRULE:FREQ=DAILY'])],
+      });
+      const r = createRecorder();
+      registerTools(r.server, staticContext(series, emptyConfig()));
+      const window = { from: '2026-10-12', to: '2026-10-14' };
+      const plain = JSON.parse((await r.call('events_list', window)).content[0].text);
+      expect('p' + plain.events.length).toBe('p1');
+      expect(plain.occurrences === undefined).toBe(true);
+      const expanded = JSON.parse((await r.call('events_list', { ...window, expand: true })).content[0].text);
+      expect(expanded.occurrences.length + ':' + expanded.omitted).toBe('3:0');
+      expect(expanded.events === undefined).toBe(true);
+      expect(expanded.omitted).toBe(0);
+      const capped = JSON.parse(
+        (await r.call('events_list', { ...window, expand: true, limit: 2 })).content[0].text,
+      );
+      expect(capped.occurrences.length + ':' + capped.omitted).toBe('2:1');
+    });
+
     await it('priorities_list ranks the configured list, and says so when none is configured', async () => {
       const withList = createFakeBackend([calendar('prio', 'reminder')], {
         prio: [

@@ -8,6 +8,7 @@ import { mcpErrorFrom, mcpSuccess } from '@gjsify/mcp';
 import {
   EVENT_LIMIT,
   EVENT_WINDOW_DAYS,
+  EXPAND_WINDOW_MAX_DAYS,
   listEvents,
   listPriorities,
   listReminders,
@@ -17,6 +18,7 @@ import {
 import { z } from 'zod';
 
 import type { Context } from '../../../core/context.ts';
+import { expandEvents } from '../../../core/expand-events.ts';
 
 export function registerReadTools(server: McpServer, context: Context): void {
   server.registerTool(
@@ -47,17 +49,22 @@ export function registerReadTools(server: McpServer, context: Context): void {
     'events_list',
     {
       title: 'List events in a time window',
-      description: `Events with an occurrence in [from, to], sorted by start. A recurring event comes back once, as its series definition. Times: YYYY-MM-DD is all-day, a trailing Z is UTC, no zone is floating local time. Default window: today (UTC) + ${EVENT_WINDOW_DAYS} days. \`omitted\` counts matches beyond the limit.`,
+      description: `Events with an occurrence in [from, to], sorted by start. A recurring event comes back once, as its series definition, unless \`expand\` is true: then every instance in the window is listed (\`occurrences\`, with overrides and EXDATE applied), the window is clamped to ${EXPAND_WINDOW_MAX_DAYS} days (\`clamped\`), \`cuts\` names series that hit the per-series cap and \`unresolvedZones\` lists TZIDs that could not be resolved (their times are floating, not guessed). Times: YYYY-MM-DD is all-day, a trailing Z is UTC, no zone is floating local time. Default window: today (UTC) + ${EVENT_WINDOW_DAYS} days. \`omitted\` counts matches beyond the limit.`,
       inputSchema: {
         from: z.string().optional().describe('YYYY-MM-DD or ISO-8601 time; default today (UTC)'),
         to: z.string().optional().describe('YYYY-MM-DD (inclusive) or ISO-8601 time'),
         calendar: z.string().optional().describe('One calendar uid from calendars_list'),
         limit: z.number().int().min(1).max(EVENT_LIMIT.max).optional(),
+        expand: z
+          .boolean()
+          .optional()
+          .describe('List every instance of recurring events instead of the series definition'),
       },
       annotations: { readOnlyHint: true, openWorldHint: false },
     },
-    async (params) => {
+    async ({ expand, ...params }) => {
       try {
+        if (expand === true) return mcpSuccess(await expandEvents(context.backend(), params));
         return mcpSuccess(await listEvents(context.backend(), params));
       } catch (err) {
         return mcpErrorFrom(err);

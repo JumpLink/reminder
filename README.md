@@ -38,6 +38,7 @@ The bundle is `app/dist/reminder.gjs.mjs`; run it with `gjsify run app/dist/remi
 ```sh
 reminder calendars                        # calendars and task lists, with their uids
 reminder events --from 2026-10-12 --to 2026-10-18
+reminder events --from 2026-10-12 --to 2026-10-18 --expand   # every instance of recurring events
 reminder todos                            # open reminders, by due date
 reminder todos --all --calendar <uid>
 reminder update <uid> --summary 'Call back' --due 2026-11-03 --priority 2
@@ -63,7 +64,7 @@ Every command takes `--json`. Times print in their own shape: `2026-10-12` is al
 }
 ```
 
-Tools: `calendars_list`, `events_list`, `reminders_list`, `priorities_list`, `boards_list`, `cards_list`
+Tools: `calendars_list`, `events_list` (`expand: true` lists every instance of recurring events in a window clamped to 92 days, capped by `limit`, with `omitted`, `clamped`, `cuts` and `unresolvedZones` reported), `reminders_list`, `priorities_list`, `boards_list`, `cards_list`
 are read-only and always served (the board tools cap their answers and report `omitted`; hidden-in-the-window
 sources are served, disabled ones are not). `events_create`, `reminders_create` and `reminders_update` appear only when the config grants
 `calendar.create`, `reminder.create` respectively `reminder.update` for a calendar; each call must

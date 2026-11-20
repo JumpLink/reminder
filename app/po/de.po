@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 06:57+0100\n"
+"POT-Creation-Date: 2026-11-20 06:52+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -623,11 +623,11 @@ msgstr "Das passwordSecret wurde noch nicht aufgelöst"
 msgid "export the CalDAV password as {name}"
 msgstr "Exportiere das CalDAV-Passwort als {name}"
 
-#: src/core/demo/index.ts:41
+#: src/core/demo/index.ts:34
 msgid "Demo mode — invented data, nothing is saved."
 msgstr "Demomodus – erfundene Daten, nichts wird gespeichert."
 
-#: src/core/expand-events.ts:102
+#: src/core/expand-events.ts:96
 msgid "window ends before it starts: {from} – {to}"
 msgstr "Das Fenster endet vor seinem Beginn: {from} – {to}"
 
@@ -738,44 +738,64 @@ msgstr ""
 msgid "none"
 msgstr "keine"
 
-#: src/frontends/cli/events.ts:14
+#: src/frontends/cli/events.ts:15
 msgid "List events in a time window"
 msgstr "Termine in einem Zeitfenster auflisten"
 
-#: src/frontends/cli/events.ts:17
+#: src/frontends/cli/events.ts:18
 msgid "YYYY-MM-DD or ISO time (default: today, UTC)"
 msgstr "JJJJ-MM-TT oder ISO-Zeit (Standard: heute, UTC)"
 
-#: src/frontends/cli/events.ts:20
+#: src/frontends/cli/events.ts:21
 msgid "YYYY-MM-DD (inclusive) or ISO time (default: from + {days} days)"
 msgstr ""
 "JJJJ-MM-TT (einschließlich) oder ISO-Zeit (Standard: Beginn + {days} Tage)"
 
-#: src/frontends/cli/events.ts:24
+#: src/frontends/cli/events.ts:25
 msgid "One calendar uid (see `reminder calendars`)"
 msgstr "Eine Kalender-UID (siehe `reminder calendars`)"
 
-#: src/frontends/cli/events.ts:27
+#: src/frontends/cli/events.ts:28
 msgid "Max events (default {default}, max {max})"
 msgstr "Höchstzahl Termine (Standard {default}, Maximum {max})"
 
-#: src/frontends/cli/events.ts:47
+#: src/frontends/cli/events.ts:37
+msgid "List every instance of recurring events (window clamped to {days} days)"
+msgstr "Jede Wiederholung wiederkehrender Termine auflisten (Zeitraum auf {days} Tage begrenzt)"
+
+#: src/frontends/cli/events.ts:58
+msgid "Window clamped to {days} days, ending {to}."
+msgstr "Zeitraum auf {days} Tage begrenzt, endet {to}."
+
+#: src/frontends/cli/events.ts:61 src/frontends/cli/events.ts:86
 msgid "No events between {from} and {to}."
 msgstr "Keine Termine zwischen {from} und {to}."
 
-#: src/frontends/cli/events.ts:50
+#: src/frontends/cli/events.ts:64 src/frontends/cli/events.ts:89
 msgid "all day"
 msgstr "ganztägig"
 
-#: src/frontends/cli/events.ts:50
-msgid "recurring"
-msgstr "wiederkehrend"
+#: src/frontends/cli/events.ts:65
+msgid "moved"
+msgstr "verschoben"
 
-#: src/frontends/cli/events.ts:54 src/frontends/cli/output.ts:48
-#: src/frontends/cli/priorities.ts:53 src/frontends/cli/priorities.ts:60
-#: src/frontends/gui/views/tasks.ts:154
+#: src/frontends/cli/events.ts:66
+msgid "time zone {zone} unknown"
+msgstr "Zeitzone {zone} unbekannt"
+
+#: src/frontends/cli/events.ts:70 src/frontends/cli/events.ts:93
+#: src/frontends/cli/output.ts:48 src/frontends/cli/priorities.ts:53
+#: src/frontends/cli/priorities.ts:60 src/frontends/gui/views/tasks.ts:154
 msgid "(no title)"
 msgstr "(ohne Titel)"
+
+#: src/frontends/cli/events.ts:73
+msgid "{uid}: {cut} more instances cut"
+msgstr "{uid}: {cut} weitere Wiederholungen abgeschnitten"
+
+#: src/frontends/cli/events.ts:89
+msgid "recurring"
+msgstr "wiederkehrend"
 
 #: src/frontends/cli/gui.ts:14
 msgid "Open the graphical interface"
@@ -937,7 +957,7 @@ msgstr "Unsortiert"
 
 #: src/frontends/gui/board-view-model.ts:153
 #: src/frontends/gui/board-view-model.ts:200 src/frontends/gui/model.ts:171
-#: src/frontends/gui/view-model.ts:121
+#: src/frontends/gui/view-model.ts:119
 #: src/frontends/gui/views/preferences/controller.ts:108
 #: src/frontends/gui/views/preferences/controller.ts:146
 #: src/frontends/gui/views/tasks.ts:59 src/frontends/gui/views/tasks.ts:133
@@ -986,51 +1006,51 @@ msgstr "Aufgabenlisten"
 msgid "All day"
 msgstr "Ganztägig"
 
-#: src/frontends/gui/view-model.ts:92
+#: src/frontends/gui/view-model.ts:91
 msgid "{time} (time zone {zone} unknown)"
 msgstr "{time} (Zeitzone {zone} unbekannt)"
 
-#: src/frontends/gui/view-model.ts:99
+#: src/frontends/gui/view-model.ts:97
 msgid "Overdue"
 msgstr "Überfällig"
 
-#: src/frontends/gui/view-model.ts:101
+#: src/frontends/gui/view-model.ts:99
 msgid "Today"
 msgstr "Heute"
 
-#: src/frontends/gui/view-model.ts:103
+#: src/frontends/gui/view-model.ts:101
 msgid "Upcoming"
 msgstr "Demnächst"
 
-#: src/frontends/gui/view-model.ts:105
+#: src/frontends/gui/view-model.ts:103
 msgid "Later"
 msgstr "Später"
 
-#: src/frontends/gui/view-model.ts:107
+#: src/frontends/gui/view-model.ts:105
 msgid "No date"
 msgstr "Ohne Datum"
 
-#: src/frontends/gui/view-model.ts:134
+#: src/frontends/gui/view-model.ts:132
 msgid "sign-in rejected"
 msgstr "Anmeldung abgelehnt"
 
-#: src/frontends/gui/view-model.ts:136
+#: src/frontends/gui/view-model.ts:134
 msgid "no access"
 msgstr "kein Zugriff"
 
-#: src/frontends/gui/view-model.ts:138
+#: src/frontends/gui/view-model.ts:136
 msgid "rate limited"
 msgstr "Anfragen begrenzt"
 
-#: src/frontends/gui/view-model.ts:140
+#: src/frontends/gui/view-model.ts:138
 msgid "cannot be read"
 msgstr "nicht lesbar"
 
-#: src/frontends/gui/view-model.ts:142
+#: src/frontends/gui/view-model.ts:140
 msgid "could not be updated"
 msgstr "konnte nicht aktualisiert werden"
 
-#: src/frontends/gui/view-model.ts:158
+#: src/frontends/gui/view-model.ts:156
 msgid "Not up to date — {sources}"
 msgstr "Nicht aktuell — {sources}"
 
@@ -1558,12 +1578,12 @@ msgstr "Liste"
 msgid "Status"
 msgstr "Status"
 
-#: src/frontends/gui/views/tasks.ts:98 src/frontends/gui/views/tasks.ts:210
+#: src/frontends/gui/views/tasks.ts:98 src/frontends/gui/views/tasks.ts:203
 #: src/frontends/gui/window.ts:82
 msgid "Tasks"
 msgstr "Aufgaben"
 
-#: src/frontends/gui/views/tasks.ts:99 src/frontends/gui/views/tasks.ts:212
+#: src/frontends/gui/views/tasks.ts:99 src/frontends/gui/views/tasks.ts:205
 #: src/frontends/gui/window.ts:83
 msgid "Your reminders will appear here."
 msgstr "Deine Erinnerungen erscheinen hier."
@@ -1580,15 +1600,15 @@ msgstr "Diese Liste darf nicht geändert werden."
 msgid "Could not save: {message}"
 msgstr "Speichern fehlgeschlagen: {message}"
 
-#: src/frontends/gui/views/tasks.ts:202
+#: src/frontends/gui/views/tasks.ts:195
 msgid "Completed ({count})"
 msgstr "Erledigt ({count})"
 
-#: src/frontends/gui/views/tasks.ts:212
+#: src/frontends/gui/views/tasks.ts:205
 msgid "Every list is hidden."
 msgstr "Alle Listen sind ausgeblendet."
 
-#: src/frontends/gui/views/tasks.ts:232
+#: src/frontends/gui/views/tasks.ts:225
 msgid "Cannot load tasks"
 msgstr "Aufgaben konnten nicht geladen werden"
 
