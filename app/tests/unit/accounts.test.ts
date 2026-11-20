@@ -181,6 +181,14 @@ export default async () => {
       const one = parseConfig({ accounts: [{ id: 'home' }], defaults: { reminder: 'list-1' } });
       expect(one.defaults.reminder).toBe('list-1');
     });
+
+    await it('takes a board grant with several accounts: its target names a board source', async () => {
+      const config = parseConfig({
+        accounts: [{ id: 'home' }, caldavAccount],
+        grants: [{ capability: 'board.move', target: 'team-board:42' }],
+      });
+      expect(config.grants[0].target).toBe('team-board:42');
+    });
   });
 
   await describe('multi backend', async () => {
