@@ -17,6 +17,8 @@ record that links back; the old one stays.
 | [0010](0010-cache-and-synchronisation.md) | Cache and synchronisation: raw responses with a version marker, derived and deletable | accepted |
 | [0011](0011-credentials-through-a-secret-store-port.md) | Credentials through a `SecretStore` port: the config holds a reference | accepted |
 | [0012](0012-one-interaction-concept-three-size-classes.md) | One interaction concept, three size classes | accepted |
+| [0013](0013-writing-to-boards.md) | Writing to boards: `board.move` / `board.update` / `board.create` per board, a conflict check per source | accepted |
+| [0014](0014-the-internal-board-as-vtodo.md) | The internal board as VTODO: `STATUS` + `X-STATUS`, order by `X-APPLE-SORT-ORDER`, vdir backend | accepted |
 | [0016](0016-gjsify-pim-incubates-here.md) | `@gjsify/pim`: the backend port and its drivers incubate here, MIT, moving to gjsify when complete | accepted |
 | [0017](0017-sync-schedule-and-states.md) | Sync schedule and states: one core service, states as values, cache first | accepted |
 | [0018](0018-caldav-delta-sync.md) | CalDAV delta sync: opaque ctag/sync-token marker, fallback chain, raw texts as cache body | accepted |
