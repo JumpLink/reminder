@@ -17,6 +17,12 @@ export const MIN_DAY_WIDTH = 96;
 export const EVENT_GAP = 2;
 /** A week is the widest the grid goes; more days belong in the month grid. */
 export const MAX_DAYS = 7;
+/**
+ * The most slots a day column is ever split into. 60 divides by 1…6, 10, 12, 15, 20 and 30, so the
+ * usual cluster sizes come out exact; a rarer size (7, 8, 9) loses a few slots at the right edge,
+ * which is cheaper than the hundreds of columns an exact common multiple would need.
+ */
+export const MAX_UNITS = 60;
 
 /** 1 to {@link MAX_DAYS} day columns; anything else lands on the nearest end. */
 export function clampDays(days: number): number {
@@ -58,14 +64,38 @@ export function nowOffset(minute: number, startHour: number, endHour: number): n
   return offsetForMinute(minute, range.startHour);
 }
 
-/** The slice of a day column's width an item in overlap column `column` of `columns` gets. */
-export function columnBounds(column: number, columns: number, width: number): { x: number; width: number } {
+/**
+ * How many equal slots a day column is split into so that every cluster in it divides evenly:
+ * the least common multiple of the cluster sizes, capped at {@link MAX_UNITS}.
+ *
+ * A day with a lone item and a pair of overlapping ones needs 2 slots; add a cluster of three and
+ * it needs 6. The widget builds that many grid columns once and gives each item a span.
+ */
+export function columnUnits(counts: Iterable<number>): number {
+  let units = 1;
+  for (const raw of counts) {
+    if (!Number.isFinite(raw)) continue;
+    const count = Math.max(1, Math.min(MAX_UNITS, Math.floor(raw)));
+    units = (units / greatestCommonDivisor(units, count)) * count;
+    if (units >= MAX_UNITS) return MAX_UNITS;
+  }
+  return units;
+}
+
+/** The slots an item in overlap column `column` of `columns` covers, out of `units`. */
+export function gridSlot(column: number, columns: number, units: number): { start: number; span: number } {
   const total = Math.max(1, Math.floor(columns));
+  const whole = Math.max(1, Math.floor(units));
   const index = Math.max(0, Math.min(total - 1, Math.floor(column)));
-  const x = Math.round((index / total) * width);
-  const next = Math.round(((index + 1) / total) * width);
-  const gap = total > 1 ? EVENT_GAP : 0;
-  return { x, width: Math.max(1, next - x - gap) };
+  const span = Math.max(1, Math.floor(whole / total));
+  return { start: Math.min(whole - span, index * span), span };
+}
+
+function greatestCommonDivisor(a: number, b: number): number {
+  let left = a;
+  let right = b;
+  while (right !== 0) [left, right] = [right, left % right];
+  return left;
 }
 
 /** The scroll position that brings `hour` to the top of a viewport `viewportHeight` px tall. */

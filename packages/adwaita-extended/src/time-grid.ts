@@ -19,12 +19,14 @@ import { emitSignal } from './signals.ts';
 import { ELLIPSIZE_END, ensureStyles } from './styles.ts';
 import { Tint } from './tint.ts';
 import {
+  EVENT_GAP,
   GUTTER_WIDTH,
   HOUR_HEIGHT,
   MIN_DAY_WIDTH,
   clampDays,
-  columnBounds,
+  columnUnits,
   gridHeight,
+  gridSlot,
   minuteAtOffset,
   nowOffset,
   offsetForMinute,
@@ -36,9 +38,11 @@ import {
  * One to seven day columns over an hour gutter: the day, the week, or anything between.
  *
  * `@gjsify/calendar-layout` decides which item sits in which overlap column; `time-grid-rules`
- * turns minutes and columns into pixels. This widget places the children at those coordinates in a
- * `Gtk.Fixed` per day, because a timed grid has no row structure a box could express — two items
- * at 09:00 and 09:15 overlap by a quarter of their heights.
+ * turns minutes into pixels and an overlap column into grid slots. A day is a `Gtk.Overlay`: the
+ * hour lines and every item lie over one canvas, each pushed down by its own `margin-top`, because
+ * a timed grid has no row structure a box could express — two items at 09:00 and 09:15 overlap by
+ * a quarter of their heights. Widths stay in GTK's hands rather than being measured here: a
+ * `Gtk.Fixed` child cannot follow the column's width, and GTK4 has no `width` property to watch.
  *
  * All-day and multi-day items never reach the columns (`layoutTimeGrid` drops them); they go into
  * the strip above, which is why the strip exists rather than being the host's problem.
@@ -70,6 +74,13 @@ export class TimeGrid extends Gtk.Box {
   private todayKey: number | null = null;
   private nowMinute: number | null = null;
 
+  // The three day rows are homogeneous: a header, an all-day bar and the column under it must
+  // share one edge, and a plain box sizes each child by its own content instead — a long title in
+  // the strip would push Monday's bar into Tuesday.
+  private readonly headerDays = dayRow();
+  private readonly stripDays = dayRow();
+  private readonly columns = dayRow();
+
   private readonly headerRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0 });
   private readonly stripRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0 });
   private readonly stripLabel = new Gtk.Label({
@@ -79,9 +90,19 @@ export class TimeGrid extends Gtk.Box {
     valign: Gtk.Align.START,
   });
   private readonly gutter = new Gtk.Fixed({ widthRequest: GUTTER_WIDTH });
-  private readonly columns = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0, hexpand: true });
   private readonly body = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0 });
-  private readonly scroller = new Gtk.ScrolledWindow({ hscrollbarPolicy: Gtk.PolicyType.AUTOMATIC, vexpand: true });
+
+  // One scroller per axis, and the three horizontal ones share an adjustment: below
+  // {@link MIN_DAY_WIDTH} per day the columns scroll sideways, and the header and the strip have
+  // to travel with them or they would label the wrong days.
+  private readonly headerScroller = sideways();
+  private readonly stripScroller = sideways();
+  private readonly daysScroller = sideways();
+  private readonly scroller = new Gtk.ScrolledWindow({ hscrollbarPolicy: Gtk.PolicyType.NEVER, vexpand: true });
+  // The sideways scrollbar lives at the bottom of the widget, not inside the scroller: inside, it
+  // would sit under thirteen hours of grid and only appear once you had scrolled past them.
+  private readonly hscrollbar = new Gtk.Scrollbar({ orientation: Gtk.Orientation.HORIZONTAL, hexpand: true });
+  private readonly hscrollRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0 });
 
   constructor() {
     super({ orientation: Gtk.Orientation.VERTICAL, spacing: 0, hexpand: true, vexpand: true });
@@ -91,12 +112,31 @@ export class TimeGrid extends Gtk.Box {
     this.stripLabel.set_margin_end(6);
     this.stripLabel.set_margin_top(4);
     this.stripRow.add_css_class('gjsify-time-strip');
+
+    this.headerScroller.set_child(this.headerDays);
+    this.stripScroller.set_child(this.stripDays);
+    this.daysScroller.set_child(this.columns);
+    const sync = this.daysScroller.get_hadjustment();
+    this.headerScroller.set_hadjustment(sync);
+    this.stripScroller.set_hadjustment(sync);
+    this.hscrollbar.set_adjustment(sync);
+    const follow = (): void => this.hscrollbar.set_visible(sync.get_upper() > sync.get_page_size() + 1);
+    sync.connect('changed', follow);
+    follow();
+
+    this.headerRow.append(new Gtk.Box({ widthRequest: GUTTER_WIDTH }));
+    this.headerRow.append(this.headerScroller);
+    this.stripRow.append(this.stripLabel);
+    this.stripRow.append(this.stripScroller);
+    this.hscrollRow.append(new Gtk.Box({ widthRequest: GUTTER_WIDTH }));
+    this.hscrollRow.append(this.hscrollbar);
     this.body.append(this.gutter);
-    this.body.append(this.columns);
+    this.body.append(this.daysScroller);
     this.scroller.set_child(this.body);
     this.append(this.headerRow);
     this.append(this.stripRow);
     this.append(this.scroller);
+    this.append(this.hscrollRow);
     this.refresh();
   }
 
@@ -171,14 +211,10 @@ export class TimeGrid extends Gtk.Box {
     });
     const height = gridHeight(this.startHour, this.endHour);
 
-    clear(this.headerRow);
-    clear(this.stripRow);
+    clear(this.headerDays);
+    clear(this.stripDays);
     clear(this.columns);
     clearFixed(this.gutter);
-
-    const headerSpacer = new Gtk.Box({ widthRequest: GUTTER_WIDTH });
-    this.headerRow.append(headerSpacer);
-    this.stripRow.append(this.stripLabel);
 
     for (let hour = this.startHour; hour < this.endHour; hour++) {
       const label = new Gtk.Label({ label: hourLabel(hour, this.localeName), xalign: 1, widthRequest: GUTTER_WIDTH - 6 });
@@ -191,8 +227,8 @@ export class TimeGrid extends Gtk.Box {
 
     for (let index = 0; index < this.dayCount; index++) {
       const date = dateFromDayNumber(start + index);
-      this.headerRow.append(this.buildHeader(date));
-      this.stripRow.append(this.buildStrip(date));
+      this.headerDays.append(this.buildHeader(date));
+      this.stripDays.append(this.buildStrip(date));
       this.columns.append(this.buildColumn(date, days[index], height, index > 0));
     }
   }
@@ -203,6 +239,7 @@ export class TimeGrid extends Gtk.Box {
       hexpand: true,
       singleLineMode: true,
       ellipsize: ELLIPSIZE_END,
+      widthRequest: MIN_DAY_WIDTH,
     });
     label.add_css_class('caption-heading');
     label.set_margin_top(4);
@@ -216,6 +253,8 @@ export class TimeGrid extends Gtk.Box {
   private buildStrip(date: LocalDate): Gtk.Widget {
     const key = dayNumber(date);
     const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 2, hexpand: true });
+    // The same floor as a day column, so the three rows ask for the same width and stay aligned.
+    box.set_size_request(MIN_DAY_WIDTH, -1);
     box.set_margin_start(1);
     box.set_margin_end(1);
     box.set_margin_top(2);
@@ -230,61 +269,61 @@ export class TimeGrid extends Gtk.Box {
   }
 
   private buildColumn(date: LocalDate, day: TimeGridDay<unknown> | undefined, height: number, border: boolean): Gtk.Widget {
-    const fixed = new Gtk.Fixed({ hexpand: true, widthRequest: MIN_DAY_WIDTH });
-    fixed.set_size_request(MIN_DAY_WIDTH, height);
-    if (border) fixed.add_css_class('gjsify-time-column');
+    const column = new Gtk.Overlay({ hexpand: true });
+    const canvas = new Gtk.Box({ hexpand: true });
+    canvas.set_size_request(MIN_DAY_WIDTH, height);
+    column.set_child(canvas);
+    if (border) column.add_css_class('gjsify-time-column');
 
     for (let hour = this.startHour + 1; hour < this.endHour; hour++) {
-      const line = new Gtk.Box({ heightRequest: 1 });
-      line.add_css_class('gjsify-time-hour');
-      fixed.put(line, 0, offsetForMinute(hour * 60, this.startHour));
-      // Hour lines have to follow the column's width, which `Gtk.Fixed` does not do for a child.
-      fixed.connect('notify::width', () => line.set_size_request(Math.max(1, fixed.get_width()), 1));
+      column.add_overlay(rule('gjsify-time-hour', 1, offsetForMinute(hour * 60, this.startHour)));
     }
 
     const placements = day?.placements ?? [];
-    for (const placement of placements) fixed.put(this.buildPlacement(placement, fixed), 0, 0);
+    const units = columnUnits(placements.map((placement) => placement.columns));
+    for (const placement of placements) column.add_overlay(this.buildPlacement(placement, units));
 
     if (this.nowMinute !== null && dayNumber(date) === this.todayKey) {
       const offset = nowOffset(this.nowMinute, this.startHour, this.endHour);
-      if (offset !== null) {
-        const line = new Gtk.Box({ heightRequest: 2 });
-        line.add_css_class('gjsify-time-now');
-        line.set_can_target(false);
-        fixed.put(line, 0, offset);
-        fixed.connect('notify::width', () => line.set_size_request(Math.max(1, fixed.get_width()), 2));
-      }
+      if (offset !== null) column.add_overlay(rule('gjsify-time-now', 2, offset));
     }
 
     const click = new Gtk.GestureClick();
-    click.connect('released', (_g: Gtk.GestureClick, _presses: number, _x: number, y: number) => {
+    click.connect('released', (_g: Gtk.GestureClick, _presses: number, x: number, y: number) => {
+      if (hitsButton(column, x, y)) return;
       emitSignal(this, 'slot-activated', isoDate(date), minuteAtOffset(y, this.startHour));
     });
-    fixed.add_controller(click);
-    return fixed;
+    column.add_controller(click);
+    return column;
   }
 
-  private buildPlacement(placement: TimePlacement<unknown>, parent: Gtk.Fixed): Gtk.Widget {
+  /**
+   * One item as a band across the column: `margin-top` carries the minute, and a homogeneous
+   * `Gtk.Grid` of `units` slots carries the overlap column, because a fraction of a width nobody
+   * has measured yet is something only a layout can know. An empty slot needs a spacer that
+   * expands, or the grid collapses it to nothing and the item takes the whole width.
+   */
+  private buildPlacement(placement: TimePlacement<unknown>, units: number): Gtk.Widget {
     const data = (placement.item as CalendarEvent).payload;
     const name = `${timeRangeLabel(placement.start, placement.end, this.localeName)} ${data.title}`;
     const button = this.buildItem(placement.id, data.title, data.colour ?? null, name, 'time-event');
-    const height = Math.max(
-      HOUR_HEIGHT / 4,
-      offsetForMinute(placement.end, this.startHour) - offsetForMinute(placement.start, this.startHour) - 1,
-    );
-    button.set_size_request(MIN_DAY_WIDTH, height);
-    // The slice a `Gtk.Fixed` child gets depends on the column's width, which is only known once
-    // it is allocated — and changes with every resize, so this follows rather than measures once.
-    const place = (): void => {
-      const width = parent.get_width();
-      if (width <= 0) return;
-      const bounds = columnBounds(placement.column, placement.columns, width);
-      button.set_size_request(bounds.width, height);
-      parent.move(button, bounds.x, offsetForMinute(placement.start, this.startHour));
-    };
-    parent.connect('notify::width', place);
-    button.connect('map', place);
-    return button;
+    const top = offsetForMinute(placement.start, this.startHour);
+    const height = Math.max(HOUR_HEIGHT / 4, offsetForMinute(placement.end, this.startHour) - top - 1);
+    button.set_halign(Gtk.Align.FILL);
+    button.set_valign(Gtk.Align.START);
+    button.set_size_request(-1, height);
+    if (placement.columns > 1) button.set_margin_end(EVENT_GAP);
+
+    const band = new Gtk.Grid({ columnHomogeneous: true, halign: Gtk.Align.FILL, valign: Gtk.Align.START });
+    band.set_margin_top(top);
+    for (let unit = 0; unit < units; unit++) {
+      const spacer = new Gtk.Box({ hexpand: true });
+      spacer.set_can_target(false);
+      band.attach(spacer, unit, 1, 1, 1);
+    }
+    const slot = gridSlot(placement.column, placement.columns, units);
+    band.attach(button, slot.start, 0, slot.span, 1);
+    return band;
   }
 
   private buildItem(id: string, title: string, colour: string | null, name: string, kind: string): Gtk.Button {
@@ -313,6 +352,47 @@ export class TimeGrid extends Gtk.Box {
 function today(): LocalDate {
   const now = new Date();
   return { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
+}
+
+/** One cell per day, every cell the same width — the row header, strip and columns all use it. */
+function dayRow(): Gtk.Box {
+  return new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0, homogeneous: true, hexpand: true });
+}
+
+/**
+ * A scroller that only ever moves sideways. It reports its child's natural height so the header
+ * and the strip keep the height of what is in them, and it shows no scrollbar of its own — the
+ * three share one, below the grid.
+ */
+function sideways(): Gtk.ScrolledWindow {
+  return new Gtk.ScrolledWindow({
+    hscrollbarPolicy: Gtk.PolicyType.EXTERNAL,
+    vscrollbarPolicy: Gtk.PolicyType.NEVER,
+    propagateNaturalHeight: true,
+    hexpand: true,
+  });
+}
+
+/** A full-width line at `top` px, out of the way of the pointer so it never eats a slot click. */
+function rule(cssClass: string, thickness: number, top: number): Gtk.Widget {
+  const line = new Gtk.Box({ halign: Gtk.Align.FILL, valign: Gtk.Align.START, heightRequest: thickness });
+  line.add_css_class(cssClass);
+  line.set_margin_top(top);
+  line.set_can_target(false);
+  return line;
+}
+
+/**
+ * Whether the pointer is over an item rather than free space. A button handles its own click, but
+ * the empty slots of its band are widgets too, and those must still open a slot.
+ */
+function hitsButton(column: Gtk.Widget, x: number, y: number): boolean {
+  let target = column.pick(x, y, Gtk.PickFlags.DEFAULT);
+  while (target !== null && target !== column) {
+    if (target instanceof Gtk.Button) return true;
+    target = target.get_parent();
+  }
+  return false;
 }
 
 function clear(widget: Gtk.Box): void {

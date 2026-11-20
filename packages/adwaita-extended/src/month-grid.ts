@@ -280,7 +280,13 @@ export class MonthGrid extends Gtk.Box {
     });
     label.add_css_class('caption');
     button.set_child(label);
-    button.update_property([Gtk.AccessibleProperty.LABEL], [data.title]);
+    // A squared edge says "this runs on" to the eye; the label has to say it to a screen reader.
+    const name =
+      segment.continuesLeft || segment.continuesRight
+        ? `${data.title} — ${_('Continues on another day')}`
+        : data.title;
+    button.update_property([Gtk.AccessibleProperty.LABEL], [name]);
+    button.set_tooltip_text(name);
     const tint = new Tint(button, 'cal-bar', (cls, c) => `.${cls} { background-color: color-mix(in srgb, ${c} 28%, transparent); }`);
     tint.set(data.colour ?? null);
     button.connect('clicked', () => emitSignal(this, 'item-activated', segment.id));

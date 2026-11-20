@@ -46,10 +46,12 @@ export { TimeGrid } from './time-grid.ts';
 export {
   GUTTER_WIDTH,
   HOUR_HEIGHT,
+  MAX_UNITS,
   SLOT_MINUTES,
   clampDays,
-  columnBounds,
+  columnUnits,
   gridHeight,
+  gridSlot,
   minuteAtOffset,
   nowOffset,
   offsetForMinute,

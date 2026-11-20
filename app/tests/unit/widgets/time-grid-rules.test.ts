@@ -1,12 +1,13 @@
 import { describe, expect, it } from '@gjsify/unit';
 import {
-  EVENT_GAP,
   HOUR_HEIGHT,
   MAX_DAYS,
+  MAX_UNITS,
   SLOT_MINUTES,
   clampDays,
-  columnBounds,
+  columnUnits,
   gridHeight,
+  gridSlot,
   minuteAtOffset,
   nowOffset,
   offsetForMinute,
@@ -58,15 +59,28 @@ export default async () => {
       expect(nowOffset(21 * 60, 8, 20)).toBeNull();
     });
 
-    await it('splits a day column between the items that overlap', async () => {
-      expect(columnBounds(0, 1, 200)).toStrictEqual({ x: 0, width: 200 });
-      expect(columnBounds(0, 2, 200)).toStrictEqual({ x: 0, width: 100 - EVENT_GAP });
-      expect(columnBounds(1, 2, 200)).toStrictEqual({ x: 100, width: 100 - EVENT_GAP });
-      expect(columnBounds(2, 3, 201).x).toBe(134);
+    await it('splits a day column into slots every cluster divides', async () => {
+      expect(columnUnits([])).toBe(1);
+      expect(columnUnits([1, 1])).toBe(1);
+      expect(columnUnits([1, 2])).toBe(2);
+      expect(columnUnits([2, 3])).toBe(6);
+      expect(columnUnits([2, 3, 4])).toBe(12);
+      // Nonsense counts round into the range rather than poisoning the multiple.
+      expect(columnUnits([0, -4, Number.NaN, 3])).toBe(3);
+      // Beyond the cap the slots stop growing; an item then loses a few at the right edge.
+      expect(columnUnits([7, 8, 9])).toBe(MAX_UNITS);
+    });
+
+    await it('gives an item the slots of its overlap column', async () => {
+      expect(gridSlot(0, 1, 6)).toStrictEqual({ start: 0, span: 6 });
+      expect(gridSlot(0, 2, 6)).toStrictEqual({ start: 0, span: 3 });
+      expect(gridSlot(1, 2, 6)).toStrictEqual({ start: 3, span: 3 });
+      expect(gridSlot(2, 3, 6)).toStrictEqual({ start: 4, span: 2 });
+      // 60 slots do not divide by 7, so the last column keeps its span and stops short.
+      expect(gridSlot(6, 7, 60)).toStrictEqual({ start: 48, span: 8 });
       // A column index outside the cluster lands on its last column rather than off the grid.
-      expect(columnBounds(5, 2, 200).x).toBe(100);
-      expect(columnBounds(0, 0, 200)).toStrictEqual({ x: 0, width: 200 });
-      expect(columnBounds(0, 40, 10).width).toBe(1);
+      expect(gridSlot(9, 2, 6)).toStrictEqual({ start: 3, span: 3 });
+      expect(gridSlot(0, 0, 6)).toStrictEqual({ start: 0, span: 6 });
     });
 
     await it('scrolls an hour to the top, as far as the content allows', async () => {
