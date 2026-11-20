@@ -8,6 +8,8 @@ import {
 
 import { staticContext } from '../../../src/core/context.ts';
 import { createDemoContext } from '../../../src/core/demo/index.ts';
+import type { Context } from '../../../src/core/context.ts';
+import { createFakeBoardSource, type FakeBoardSource } from '../board/fake-board-source.ts';
 import { registerTools } from '../../../src/frontends/mcp/server.ts';
 import { calendar, createFakeBackend, vevent, vtodo } from '../fake-backend.ts';
 import { createRecorder } from './recorder.ts';
@@ -22,7 +24,7 @@ const READ_ONLY_TOOLS = [
   'priorities_list',
   'reminders_list',
 ];
-const WRITE_TOOLS = ['events_create', 'reminders_create', 'reminders_update'];
+const WRITE_TOOLS = ['events_create', 'reminders_create', 'reminders_update', 'cards_move'];
 
 function withGrants(...grants: ReminderConfig['grants']): ReminderConfig {
   return { ...emptyConfig(), grants };
@@ -395,7 +397,9 @@ export default async () => {
       const payload = JSON.parse(res.content[0].text);
       expect(payload.cards.length).toBe(2);
       expect(payload.omitted > 0).toBe(true);
-      expect(Object.keys(payload.cards[0]).sort().join(',')).toBe('assignees,column,due,id,lane,title,url');
+      expect(Object.keys(payload.cards[0]).sort().join(',')).toBe(
+        'assignees,column,due,id,lane,title,url,version',
+      );
     });
 
     await it('cards_list refuses an unknown board with an error result', async () => {
@@ -424,6 +428,123 @@ export default async () => {
       const left = JSON.parse((await disabled.call('boards_list')).content[0].text);
       expect(left.boards.map((b: { id: string }) => b.id).join(',')).toBe('shown');
       expect((await disabled.call('cards_list', { board: 'off' })).isError).toBe(true);
+    });
+  });
+
+  await describe('MCP cards_move', async () => {
+    const GRANT = { capability: 'board.move' as const, target: 'fake:b-workshop' };
+
+    function setup(grants: ReminderConfig['grants']) {
+      const source: FakeBoardSource = createFakeBoardSource({ writable: true });
+      const base = staticContext(createFakeBackend([]), withGrants(...grants));
+      const context: Context = {
+        ...base,
+        extraBoardSources: () => [{ source, info: source.describe(), kind: 'deck', host: 'boards.invalid' }],
+      };
+      const rec = createRecorder();
+      registerTools(rec.server, context);
+      return { source, rec };
+    }
+
+    const cardOf = async (rec: ReturnType<typeof createRecorder>, id: string) => {
+      const list = JSON.parse(
+        (
+          await rec.call('cards_list', {
+            board: 'b-workshop',
+            source: 'fake',
+            mine: 'all',
+            includeDone: true,
+          })
+        ).content[0].text,
+      );
+      return list.cards.find((c: { id: string }) => c.id === id);
+    };
+
+    await it('is not served without a board.move grant', async () => {
+      const { rec } = setup([]);
+      expect(rec.names().includes('cards_move')).toBe(false);
+      const other = setup([{ capability: 'reminder.update', target: 'list' }]);
+      expect(other.rec.names().includes('cards_move')).toBe(false);
+    });
+
+    await it('is served, annotated as a write, with a grant', async () => {
+      const { rec } = setup([GRANT]);
+      const tool = rec.tools.find((t) => t.name === 'cards_move');
+      expect(tool?.annotations?.readOnlyHint).toBe(false);
+    });
+
+    await it('moves a card by column and answers the stored card', async () => {
+      const { rec } = setup([GRANT]);
+      const before = await cardOf(rec, 'c1');
+      expect(typeof before.version).toBe('string');
+      const res = await rec.call('cards_move', {
+        source: 'fake',
+        board: 'b-workshop',
+        id: 'c1',
+        version: before.version,
+        column: 'doing',
+      });
+      expect(res.isError).toBeFalsy();
+      const out = JSON.parse(res.content[0].text);
+      expect(out.card.column).toBe('Doing');
+      expect(out.card.lane).toBe('in-progress');
+      expect((await cardOf(rec, 'c1')).column).toBe('Doing');
+    });
+
+    await it('moves a card by lane when one column maps onto it', async () => {
+      const { rec } = setup([GRANT]);
+      const before = await cardOf(rec, 'c1');
+      const res = await rec.call('cards_move', {
+        source: 'fake',
+        board: 'b-workshop',
+        id: 'c1',
+        version: before.version,
+        lane: 'done',
+      });
+      expect(JSON.parse(res.content[0].text).card.column).toBe('Done');
+    });
+
+    await it('refuses a stale version and writes nothing', async () => {
+      const { rec, source } = setup([GRANT]);
+      const before = await cardOf(rec, 'c1');
+      source.move('c1', 'Backlog');
+      const writes = source.calls.filter((c) => c.startsWith('writeCard')).length;
+      const res = await rec.call('cards_move', {
+        source: 'fake',
+        board: 'b-workshop',
+        id: 'c1',
+        version: before.version,
+        column: 'Doing',
+      });
+      expect(res.isError).toBe(true);
+      expect(source.calls.filter((c) => c.startsWith('writeCard')).length).toBe(writes + 1);
+      expect((await cardOf(rec, 'c1')).column).toBe('Backlog');
+    });
+
+    await it('refuses a board the grant does not name, without a source call', async () => {
+      const { rec, source } = setup([GRANT]);
+      const before = source.calls.length;
+      const res = await rec.call('cards_move', {
+        source: 'fake',
+        board: 'b-garden',
+        id: 'c5',
+        version: 'v1',
+        column: 'Doing',
+      });
+      expect(res.isError).toBe(true);
+      expect(res.content[0].text).toContain('board.move');
+      expect(source.calls.length).toBe(before);
+    });
+
+    await it('answers an unknown card, column or both targets with an error result', async () => {
+      const { rec } = setup([GRANT]);
+      const base = { source: 'fake', board: 'b-workshop', version: 'v1' };
+      expect((await rec.call('cards_move', { ...base, id: 'nope', column: 'Doing' })).isError).toBe(true);
+      expect((await rec.call('cards_move', { ...base, id: 'c1', column: 'Nowhere' })).isError).toBe(true);
+      expect((await rec.call('cards_move', { ...base, id: 'c1' })).isError).toBe(true);
+      expect(
+        (await rec.call('cards_move', { ...base, id: 'c1', column: 'Doing', lane: 'done' })).isError,
+      ).toBe(true);
     });
   });
 };
