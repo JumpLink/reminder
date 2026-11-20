@@ -103,6 +103,8 @@ src/frontends/cli/update.ts
 src/frontends/gui/board-model.ts
 src/frontends/gui/board-sync.ts
 src/frontends/gui/board-view-model.ts
+src/frontends/gui/calendar-model.ts
+src/frontends/gui/calendar-view-model.ts
 src/frontends/gui/constants.ts
 src/frontends/gui/main.ts
 src/frontends/gui/model.ts
@@ -112,6 +114,7 @@ src/frontends/gui/sync-sources.ts
 src/frontends/gui/sync.ts
 src/frontends/gui/view-model.ts
 src/frontends/gui/views/board.ts
+src/frontends/gui/views/calendar.ts
 src/frontends/gui/views/overview.ts
 src/frontends/gui/views/preferences/account-add.ts
 src/frontends/gui/views/preferences/account-detail.ts
