@@ -15,6 +15,7 @@
 ../packages/core/src/board/sources-config.ts
 ../packages/core/src/board/types.ts
 ../packages/core/src/board/vtodo-source.ts
+../packages/core/src/board/write.ts
 ../packages/core/src/cache.ts
 ../packages/core/src/compare.ts
 ../packages/core/src/config.ts

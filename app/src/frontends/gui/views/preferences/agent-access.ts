@@ -6,7 +6,7 @@
 import Adw from '@girs/adw-1';
 import Gtk from '@girs/gtk-4.0';
 
-import { _, CAPABILITIES, errorMessage } from '@reminder/core';
+import { _, CAPABILITIES, errorMessage, isBoardCapability } from '@reminder/core';
 
 import {
   addGrant,
@@ -17,6 +17,10 @@ import {
   type TargetChoice,
 } from './controller.ts';
 import type { PageContext, PrefsPage } from './page-context.ts';
+
+// Board grants need a `<source>:<board>` target, which this page cannot offer yet; listing them
+// here would only lead to "Nothing to choose from". Existing board grants still show below.
+const GRANTABLE = CAPABILITIES.filter((c) => !isBoardCapability(c));
 
 export function createAgentAccessPage(ctx: PageContext): PrefsPage {
   const page = new Adw.PreferencesPage({
@@ -34,7 +38,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
 
   const capability = new Adw.ComboRow({
     title: _('May'),
-    model: Gtk.StringList.new(CAPABILITIES.map(capabilityLabel)),
+    model: Gtk.StringList.new(GRANTABLE.map(capabilityLabel)),
   });
   const target = new Adw.ComboRow({ title: _('In') });
   const submit = new Adw.ButtonRow({ title: _('Grant access') });
@@ -52,7 +56,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
 
   const updateTargets = (): void => {
     try {
-      choices = targetChoices(ctx.env.store.read(), ctx.env.lists(), CAPABILITIES[capability.selected]);
+      choices = targetChoices(ctx.env.store.read(), ctx.env.lists(), GRANTABLE[capability.selected]);
     } catch {
       choices = [];
     }
@@ -65,7 +69,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
   submit.connect('activated', () => {
     const chosen = choices[target.selected];
     if (!chosen) return;
-    void addGrant(ctx.env, CAPABILITIES[capability.selected], chosen.target).then((outcome) => {
+    void addGrant(ctx.env, GRANTABLE[capability.selected], chosen.target).then((outcome) => {
       if (!outcome.ok) ctx.toast(outcome.message);
       ctx.reload();
     });
@@ -111,6 +115,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
       const row = new Adw.ActionRow({
         title: _('The configuration cannot be read'),
         subtitle: errorMessage(err),
+        useMarkup: false,
       });
       granted.add(row);
       rows.push(row);
@@ -120,7 +125,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
       preselected = true;
       try {
         const config = ctx.env.store.read();
-        const first = CAPABILITIES.findIndex((c) => targetChoices(config, ctx.env.lists(), c).length > 0);
+        const first = GRANTABLE.findIndex((c) => targetChoices(config, ctx.env.lists(), c).length > 0);
         if (first > 0) capability.set_selected(first);
       } catch {
         // The error row above already says the configuration cannot be read.

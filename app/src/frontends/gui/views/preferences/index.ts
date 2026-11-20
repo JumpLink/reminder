@@ -26,7 +26,7 @@ export function presentPreferences(
     dialog,
     env,
     demo,
-    toast: (message) => dialog.add_toast(new Adw.Toast({ title: message })),
+    toast: (message) => dialog.add_toast(new Adw.Toast({ useMarkup: false, title: message })),
     reload: () => {
       for (const listener of Array.from(listeners)) listener();
     },

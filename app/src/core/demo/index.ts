@@ -18,7 +18,7 @@ import {
 
 import type { BoardSourceEntry } from '../board-sources.ts';
 import type { Context } from '../context.ts';
-import { createDemoBoardSource } from './board-source.ts';
+import { createDemoBoardSource, DEMO_BOARD_ID, DEMO_BOARD_SOURCE_ID } from './board-source.ts';
 import {
   DEMO_ACCOUNTS,
   DEMO_IDENTITY,
@@ -43,12 +43,15 @@ export const demoNotice = (): string => _('Demo mode — invented data, nothing 
 export function demoConfig(): ReminderConfig {
   return parseConfig({
     accounts: DEMO_ACCOUNTS.map((a) => ({ id: a.id, backend: 'eds' })),
-    grants: DEMO_LISTS.filter((l) => !l.readOnly).flatMap((l) =>
-      (['reminder.create', 'reminder.update'] as const).map((capability) => ({
-        capability,
-        target: `${l.account}:${l.uid}`,
-      })),
-    ),
+    grants: [
+      ...DEMO_LISTS.filter((l) => !l.readOnly).flatMap((l) =>
+        (['reminder.create', 'reminder.update'] as const).map((capability) => ({
+          capability,
+          target: `${l.account}:${l.uid}`,
+        })),
+      ),
+      { capability: 'board.move', target: `${DEMO_BOARD_SOURCE_ID}:${DEMO_BOARD_ID}` },
+    ],
   });
 }
 

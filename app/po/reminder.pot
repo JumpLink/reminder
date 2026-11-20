@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 09:48+0100\n"
+"POT-Creation-Date: 2026-11-20 10:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,8 +145,40 @@ msgstr ""
 msgid "boardSources[{index}]: id \"{id}\" is used twice"
 msgstr ""
 
-#: ../packages/core/src/board/types.ts:150
+#: ../packages/core/src/board/types.ts:177
 msgid "no board {id} in this source"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:69 src/core/config-write.ts:285
+msgid "no board source \"{id}\""
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:71
+msgid "source \"{id}\" is read-only"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:79
+msgid "a board write needs the version of the card as it was read"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:84
+msgid "a column name must not be empty"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:89
+msgid "unparseable due date {due}"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:94
+msgid "a card title must not be empty"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:103
+msgid "a position must be a non-negative integer"
+msgstr ""
+
+#: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:205
+msgid "nothing to change"
 msgstr ""
 
 #: ../packages/core/src/config.ts:153
@@ -263,24 +295,29 @@ msgstr ""
 msgid "no grant for {capability} on \"{target}\" — add {snippet} to grants"
 msgstr ""
 
-#: ../packages/core/src/grants.ts:27
+#: ../packages/core/src/grants.ts:53
 msgid "grants must be a list"
 msgstr ""
 
-#: ../packages/core/src/grants.ts:29
+#: ../packages/core/src/grants.ts:55
 msgid "grants[{index}] must be an object"
 msgstr ""
 
-#: ../packages/core/src/grants.ts:33
+#: ../packages/core/src/grants.ts:59
 msgid "grants[{index}]: unknown capability {capability}"
 msgstr ""
 
-#: ../packages/core/src/grants.ts:37
+#: ../packages/core/src/grants.ts:63
 msgid "grants[{index}]: target must be a non-empty string"
 msgstr ""
 
-#: ../packages/core/src/grants.ts:40
+#: ../packages/core/src/grants.ts:66
 msgid "grants[{index}]: wildcards are not allowed in a target"
+msgstr ""
+
+#: ../packages/core/src/grants.ts:69
+msgid ""
+"grants[{index}]: {capability} needs a target of the form \"<source>:<board>\""
 msgstr ""
 
 #: ../packages/core/src/ical.ts:51
@@ -328,10 +365,6 @@ msgstr ""
 
 #: ../packages/core/src/rewrite.ts:192
 msgid "cannot set status \"{value}\""
-msgstr ""
-
-#: ../packages/core/src/rewrite.ts:205
-msgid "nothing to change"
 msgstr ""
 
 #: ../packages/core/src/routing.ts:36
@@ -550,10 +583,6 @@ msgstr ""
 
 #: src/core/config-write.ts:274
 msgid "\"{id}\" is already in use"
-msgstr ""
-
-#: src/core/config-write.ts:285
-msgid "no board source \"{id}\""
 msgstr ""
 
 #: src/core/config.ts:38
@@ -922,8 +951,8 @@ msgstr ""
 #: src/frontends/gui/board-view-model.ts:200
 #: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:171
 #: src/frontends/gui/view-model.ts:121
-#: src/frontends/gui/views/preferences/controller.ts:111
-#: src/frontends/gui/views/preferences/controller.ts:149
+#: src/frontends/gui/views/preferences/controller.ts:112
+#: src/frontends/gui/views/preferences/controller.ts:158
 #: src/frontends/gui/views/tasks.ts:59 src/frontends/gui/views/tasks.ts:133
 msgid "Untitled"
 msgstr ""
@@ -1389,7 +1418,7 @@ msgid "Enter the server address, e.g. https://cloud.example.org/"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/board-controller.ts:212
-#: src/frontends/gui/views/preferences/controller.ts:230
+#: src/frontends/gui/views/preferences/controller.ts:239
 msgid "Enter the user name."
 msgstr ""
 
@@ -1497,47 +1526,59 @@ msgstr ""
 msgid "No board sources yet"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:82
+#: src/frontends/gui/views/preferences/controller.ts:83
 msgid "Local lists"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:82
+#: src/frontends/gui/views/preferences/controller.ts:83
 msgid "System calendars"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:122
+#: src/frontends/gui/views/preferences/controller.ts:123
 msgid "Create events"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:124
+#: src/frontends/gui/views/preferences/controller.ts:125
 msgid "Create reminders"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:126
+#: src/frontends/gui/views/preferences/controller.ts:127
 msgid "Change reminders"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:226
+#: src/frontends/gui/views/preferences/controller.ts:129
+msgid "Move board cards"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:131
+msgid "Edit board cards"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:133
+msgid "Add board cards"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/controller.ts:235
 msgid "The address must start with https://"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:228
+#: src/frontends/gui/views/preferences/controller.ts:237
 msgid "Enter the server address, e.g. https://dav.example.org/"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:231
+#: src/frontends/gui/views/preferences/controller.ts:240
 msgid "Enter the password."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:299
+#: src/frontends/gui/views/preferences/controller.ts:308
 msgid "The account is removed, but cleaning up failed: {message}"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:317
+#: src/frontends/gui/views/preferences/controller.ts:326
 msgid "Enter a name for the list."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:318
+#: src/frontends/gui/views/preferences/controller.ts:328
 msgid "The colour must look like #3584e4."
 msgstr ""
 

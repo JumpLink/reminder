@@ -20,7 +20,7 @@ import {
 import { ConfigError } from './errors.ts';
 import { parseSecretRef } from './secrets.ts';
 import { parseDisabled } from './visibility.ts';
-import { parseGrants, type Grant } from './grants.ts';
+import { isBoardCapability, parseGrants, type Grant } from './grants.ts';
 import { parseDefaults, parseRoutes, type RoutingConfig } from './routing.ts';
 import { emptyBoardsConfig, parseBoards, serializeBoards, type BoardsConfig } from './board/config.ts';
 import {
@@ -263,7 +263,8 @@ function parseAccounts(value: unknown): AccountConfig[] {
 /** Everything in the file that names a calendar: what §2 of docs/adr/0005 asks to be qualified. */
 function targetsOf(config: ReminderConfig): string[] {
   return [
-    ...config.grants.map((g) => g.target),
+    // Board targets name a board source, not an account (ADR 0013); parseGrants checks their shape.
+    ...config.grants.filter((g) => !isBoardCapability(g.capability)).map((g) => g.target),
     ...config.routes.map((r) => r.target),
     ...Object.values(config.defaults),
     ...(config.priorities.list ? [config.priorities.list] : []),

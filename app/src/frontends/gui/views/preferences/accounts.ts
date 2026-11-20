@@ -89,6 +89,7 @@ export function createAccountsPage(ctx: PageContext): PrefsPage {
       const row = new Adw.ActionRow({
         title: _('The configuration cannot be read'),
         subtitle: errorMessage(err),
+        useMarkup: false,
       });
       list.add(row);
       rows.push(row);

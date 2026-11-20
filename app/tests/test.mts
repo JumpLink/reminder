@@ -30,6 +30,7 @@ import boardOpenProject from './unit/openproject/openproject-source.test.ts';
 import boardSources from './unit/board/board-sources.test.ts';
 import boardExternalSources from './unit/board/external-sources.test.ts';
 import boardDemoSource from './unit/board/demo-source.test.ts';
+import boardWrite from './unit/board/board-write.test.ts';
 import boardRead from './unit/board/board-read.test.ts';
 import boardCache from './unit/core/board-cache.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
@@ -103,6 +104,7 @@ run({
   boardExternalSources,
   boardDemoSource,
   boardRead,
+  boardWrite,
   boardCache,
   secrets,
   cacheFs,
