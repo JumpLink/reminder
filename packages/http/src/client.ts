@@ -51,6 +51,8 @@ export interface GetJsonOptions {
   readonly headers?: Record<string, string>;
   readonly signal?: AbortSignal;
   readonly timeoutMs?: number;
+  /** A 2xx with an empty body is `ok` with `data` undefined, not a format error (writes that answer "200 Success"). */
+  readonly allowEmpty?: boolean;
 }
 
 export type JsonResult<T> =
@@ -154,6 +156,16 @@ export class HttpClient {
     return this.#requestJson<T>('POST', path, JSON.stringify(body), options);
   }
 
+  /** A JSON body with PUT or PATCH (board writes); like `postJson`, no ETag revalidation. */
+  async sendJson<T>(
+    method: 'PUT' | 'PATCH' | 'POST',
+    path: string,
+    body: unknown,
+    options: GetJsonOptions = {},
+  ): Promise<JsonResult<T>> {
+    return this.#requestJson<T>(method, path, JSON.stringify(body), options);
+  }
+
   async #requestJson<T>(
     method: string,
     path: string,
@@ -179,6 +191,9 @@ export class HttpClient {
     if (reply.status < 200 || reply.status > 299) throw this.#failure(method, reply, where);
 
     if (reply.text.trim() === '') {
+      if (options.allowEmpty) {
+        return { status: 'ok', data: undefined as T, etag: reply.headers.get('etag') ?? undefined, headers: reply.headers };
+      }
       throw new ResponseFormatError(`${method} ${where} answered HTTP ${reply.status} with an empty body`, {
         status: reply.status,
         url: where,
