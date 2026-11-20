@@ -76,6 +76,24 @@ declares a granted capability, so a forgotten annotation is a missing tool, not 
 stored task stays as it is. There is no delete tool: `status: "cancelled"` is how a reminder goes
 away.
 
+## Desktop app
+
+`reminder gui` opens the GTK4/libadwaita window. Three views on the same data: **Calendar**
+(month, week or day), **Tasks** and **Board**. The window adapts from a phone to a desktop —
+below desktop width the week shows the days that still fit, and the whole week stays one step
+away in the month.
+
+The calendar is read-only: activating an item opens its details, with a link to the original
+where the event carries one. An event whose time zone could not be resolved keeps the clock it
+was written with and says so (`⏱`) — nothing is silently converted.
+
+| | |
+|---|---|
+| Previous / next period | `Alt`+`←` / `Alt`+`→`, or `Ctrl`+`Page Up` / `Ctrl`+`Page Down` |
+| Today | `Ctrl`+`T` |
+| Month / week / day | `Ctrl`+`Shift`+`M` / `W` / `D` |
+| Calendar / Tasks / Board | `Ctrl`+`1` / `2` / `3` |
+
 ## Configuration
 
 `$XDG_CONFIG_HOME/reminder/config.json` (or `REMINDER_CONFIG`). Reading needs none. Writing needs a

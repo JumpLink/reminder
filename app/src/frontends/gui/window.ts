@@ -1,12 +1,13 @@
 /**
- * The main window: a view switcher over three pages (tasks and the board are real, the calendar is
- * still a placeholder), wrapped by the sources overview. Content is built once; the
- * breakpoint ladder only changes the container around it (ADR 0012) — the switcher sits in a bar
- * at the bottom while compact and in the header from medium up.
+ * The main window: a view switcher over the calendar, the tasks and the board, wrapped by the
+ * sources overview. Content is built once; the breakpoint ladder only changes the container around
+ * it (ADR 0012) — the switcher sits in a bar at the bottom while compact and in the header from
+ * medium up.
  */
 
 import Adw from '@girs/adw-1';
 import Gio from '@girs/gio-2.0';
+import GLib from '@girs/glib-2.0';
 import GObject from '@girs/gobject-2.0';
 import Gtk from '@girs/gtk-4.0';
 import { createSwitcherShell } from '@gjsify/adwaita-app';
@@ -26,8 +27,11 @@ import {
 } from './constants.ts';
 import type { GuiSettings } from './settings.ts';
 import type { BoardModel } from './board-model.ts';
+import type { CalendarModel } from './calendar-model.ts';
+import { CALENDAR_MODES, isCalendarMode } from './calendar-view-model.ts';
 import type { TasksModel } from './model.ts';
 import { createBoardView, type BoardView } from './views/board.ts';
+import { createCalendarView, type CalendarView } from './views/calendar.ts';
 import { createOverview, type Overview } from './views/overview.ts';
 import { createTasksView, type TasksView } from './views/tasks.ts';
 import Template, { type Children, GTypeName, InternalChildren } from './window.blp';
@@ -35,14 +39,11 @@ import Template, { type Children, GTypeName, InternalChildren } from './window.b
 // oxlint-disable-next-line no-unsafe-declaration-merging -- GJS installs the internal children
 export interface MainWindow extends Children {}
 
-function placeholder(title: string, description: string, icon: string): Adw.StatusPage {
-  return new Adw.StatusPage({ title, description, iconName: icon, vexpand: true });
-}
-
 /** What the window needs once its services are up; they start after the window is on screen. */
 export interface WindowServices {
   model: TasksModel;
   board: BoardModel;
+  calendar: CalendarModel;
   settings: GuiSettings;
   service: SyncService;
   problems: readonly string[];
@@ -58,6 +59,7 @@ export class MainWindow extends Adw.ApplicationWindow {
   private readonly toasts = new Adw.ToastOverlay();
   private readonly tasks: TasksView;
   private readonly board: BoardView;
+  private readonly calendar: CalendarView;
   private readonly overview: Overview;
   private model: TasksModel | null = null;
   private settings: GuiSettings | null = null;
@@ -68,7 +70,10 @@ export class MainWindow extends Adw.ApplicationWindow {
   /** Set by `main.ts`, which owns what the preferences need. */
   onPreferences: (() => void) | null = null;
 
-  constructor(app: Adw.Application, hooks: { view?: string; size?: [number, number]; demo?: boolean } = {}) {
+  constructor(
+    app: Adw.Application,
+    hooks: { view?: string; size?: [number, number]; demo?: boolean; calendarMode?: string } = {},
+  ) {
     super({ application: app, title: APP_NAME });
     if (hooks.size) this.set_default_size(hooks.size[0], hooks.size[1]);
 
@@ -93,11 +98,13 @@ export class MainWindow extends Adw.ApplicationWindow {
     const toast = (message: string): void => this.toasts.add_toast(new Adw.Toast({ title: message }));
     this.tasks = createTasksView(toast);
     this.board = createBoardView(toast);
+    this.calendar = createCalendarView(toast);
+    if (hooks.calendarMode && isCalendarMode(hooks.calendarMode)) this.calendar.setMode(hooks.calendarMode);
 
     const pageWidget = (name: ViewName): Gtk.Widget => {
       if (name === 'tasks') return this.tasks.widget;
       if (name === 'board') return this.board.widget;
-      return placeholder(views[name].title, views[name].description, views[name].icon);
+      return this.calendar.widget;
     };
     const shell = createSwitcherShell(this, {
       narrowWidth: COMPACT_MAX_SP,
@@ -164,13 +171,14 @@ export class MainWindow extends Adw.ApplicationWindow {
     this.overview.setSizeClass(next);
     this.tasks.setSizeClass(next);
     this.board.setSizeClass(next);
+    this.calendar.setSizeClass(next);
   }
 
   /**
    * Called when the config is read and the sync service built, and again after every rebuild the
    * preferences ask for: the previous model's subscription ends and its service has been stopped.
    */
-  attach({ model, board, settings, service, problems }: WindowServices): void {
+  attach({ model, board, calendar, settings, service, problems }: WindowServices): void {
     this.unsubscribe?.();
     this.model = model;
     this.settings = settings;
@@ -178,6 +186,7 @@ export class MainWindow extends Adw.ApplicationWindow {
     this.hidden = settings.hidden();
     this.tasks.setModel(model, this.hidden);
     this.board.setModel(board);
+    this.calendar.setModel(calendar, settings, this.hidden);
     this.unsubscribe = model.subscribe(() => {
       this.overview.setSources(model.calendars(), this.hidden);
       this.overview.setBanner(this.tasks.syncProblems());
@@ -199,6 +208,7 @@ export class MainWindow extends Adw.ApplicationWindow {
   showError(message: string): void {
     this.tasks.setError(message);
     this.board.setError(message);
+    this.calendar.setError(message);
   }
 
   /** `REMINDER_APP_CARD=1`: the board's first card detail, so a screenshot shows the pane. */
@@ -210,6 +220,7 @@ export class MainWindow extends Adw.ApplicationWindow {
     if (!this.settings) return;
     this.hidden = this.settings.setHidden(target, !visible);
     this.tasks.setHidden(this.hidden);
+    this.calendar.setHidden(this.hidden);
   }
 
   private installActions(views: Record<ViewName, { title: string }>): void {
@@ -221,9 +232,13 @@ export class MainWindow extends Adw.ApplicationWindow {
       app?.set_accels_for_action(`win.view-${name}`, [`<primary>${index + 1}`]);
     });
     const refresh = new Gio.SimpleAction({ name: 'refresh' });
-    refresh.connect('activate', () => this.model?.refresh());
+    refresh.connect('activate', () => {
+      this.model?.refresh();
+      this.calendar.reload();
+    });
     this.add_action(refresh);
     app?.set_accels_for_action('win.refresh', ['<primary>r', 'F5']);
+    this.installCalendarActions(app);
     const preferences = new Gio.SimpleAction({ name: 'preferences' });
     preferences.connect('activate', () => this.onPreferences?.());
     this.add_action(preferences);
@@ -232,6 +247,44 @@ export class MainWindow extends Adw.ApplicationWindow {
     shortcuts.connect('activate', () => this.showShortcuts(views));
     this.add_action(shortcuts);
     app?.set_accels_for_action('win.shortcuts', ['<primary>question']);
+  }
+
+  /**
+   * Moving around the calendar from the keyboard. `<alt>Left/Right` is what a page of anything
+   * steps with in GNOME; `<primary>Page_Up/Page_Down` is the same step for anyone whose Alt arrows
+   * belong to the window manager. The mode takes `<primary><shift>`, because `<primary>1..3`
+   * already switches the three views.
+   */
+  private installCalendarActions(app: Gtk.Application | null): void {
+    const previous = new Gio.SimpleAction({ name: 'calendar-previous' });
+    previous.connect('activate', () => this.calendar.step(-1));
+    this.add_action(previous);
+    app?.set_accels_for_action('win.calendar-previous', ['<alt>Left', '<primary>Page_Up']);
+
+    const next = new Gio.SimpleAction({ name: 'calendar-next' });
+    next.connect('activate', () => this.calendar.step(1));
+    this.add_action(next);
+    app?.set_accels_for_action('win.calendar-next', ['<alt>Right', '<primary>Page_Down']);
+
+    const today = new Gio.SimpleAction({ name: 'calendar-today' });
+    today.connect('activate', () => this.calendar.goToday());
+    this.add_action(today);
+    app?.set_accels_for_action('win.calendar-today', ['<primary>t']);
+
+    const mode = Gio.SimpleAction.new_stateful(
+      'calendar-mode',
+      GLib.VariantType.new('s'),
+      GLib.Variant.new_string('month'),
+    );
+    mode.connect('activate', (_self, parameter) => {
+      const name = parameter?.get_string()[0];
+      if (name !== undefined && isCalendarMode(name)) this.calendar.setMode(name);
+    });
+    this.add_action(mode);
+    this.calendar.onModeChanged = (next) => mode.set_state(GLib.Variant.new_string(next));
+    for (const name of CALENDAR_MODES) {
+      app?.set_accels_for_action(`win.calendar-mode('${name}')`, [`<primary><shift>${name.charAt(0)}`]);
+    }
   }
 
   private showShortcuts(views: Record<ViewName, { title: string }>): void {
@@ -244,8 +297,19 @@ export class MainWindow extends Adw.ApplicationWindow {
     section.add(Adw.ShortcutsItem.new_from_action(_('Preferences'), 'win.preferences'));
     section.add(Adw.ShortcutsItem.new_from_action(_('Keyboard Shortcuts'), 'win.shortcuts'));
     section.add(Adw.ShortcutsItem.new_from_action(_('Quit'), 'app.quit'));
+
+    const calendar = new Adw.ShortcutsSection();
+    calendar.title = _('Calendar');
+    calendar.add(Adw.ShortcutsItem.new_from_action(_('Previous'), 'win.calendar-previous'));
+    calendar.add(Adw.ShortcutsItem.new_from_action(_('Next'), 'win.calendar-next'));
+    calendar.add(Adw.ShortcutsItem.new_from_action(_('Today'), 'win.calendar-today'));
+    calendar.add(Adw.ShortcutsItem.new_from_action(_('Month'), "win.calendar-mode('month')"));
+    calendar.add(Adw.ShortcutsItem.new_from_action(_('Week'), "win.calendar-mode('week')"));
+    calendar.add(Adw.ShortcutsItem.new_from_action(_('Day'), "win.calendar-mode('day')"));
+
     const dialog = new Adw.ShortcutsDialog();
     dialog.add(section);
+    dialog.add(calendar);
     dialog.present(this);
   }
 }

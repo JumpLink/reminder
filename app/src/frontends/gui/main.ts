@@ -23,14 +23,17 @@ import {
   APP_ID,
   APP_NAME,
   APP_VERSION,
+  CALENDAR_MODE_HOOK,
   CARD_HOOK,
   DEV_HOOK_PREFIX,
   PREFS_HOOK,
+  SCHEME_HOOK,
   SIZE_HOOK,
 } from './constants.ts';
 import { createBoardModel } from './board-model.ts';
+import { createCalendarModel } from './calendar-model.ts';
 import { createTasksModel } from './model.ts';
-import { createGuiSettings, createMemorySettings } from './settings.ts';
+import { COLOR_SCHEMES, createGuiSettings, createMemorySettings, type ColorScheme } from './settings.ts';
 import { createGuiSync, type GuiSync } from './sync.ts';
 import { applyColorScheme, presentPreferences } from './views/preferences/index.ts';
 import type { PreferencesEnv } from './views/preferences/controller.ts';
@@ -38,6 +41,12 @@ import { MainWindow } from './window.ts';
 
 // Pin GTK 4 before libadwaita pulls it in; keep the import referenced.
 void Gtk;
+
+/** The colour scheme the dev hook asks for, or null when it names none the app knows. */
+function schemeHook(): ColorScheme | null {
+  const value = process.env[SCHEME_HOOK];
+  return COLOR_SCHEMES.includes(value as ColorScheme) ? (value as ColorScheme) : null;
+}
 
 function readSize(): [number, number] | undefined {
   const [w, h] = (process.env[SIZE_HOOK] ?? '').split(/\s+/).map(Number);
@@ -78,7 +87,15 @@ function createServices(window: MainWindow) {
       problems: sync.boardProblems,
       hidden: settings.hidden(),
     });
-    window.attach({ model, board, settings, service: sync.service, problems: sync.problems });
+    const calendar = createCalendarModel({ backend: sync.backend });
+    window.attach({
+      model,
+      board,
+      calendar,
+      settings,
+      service: sync.service,
+      problems: sync.problems,
+    });
     await model.load();
     await sync.service.start();
   };
@@ -95,7 +112,7 @@ function createServices(window: MainWindow) {
     rebuild: start,
   };
   window.onPreferences = () => presentPreferences(window, env, demo);
-  applyColorScheme(settings.colorScheme());
+  applyColorScheme(schemeHook() ?? settings.colorScheme());
   return { start, open: (page?: string) => presentPreferences(window, env, demo, page) };
 }
 
@@ -129,7 +146,12 @@ export async function runGui(): Promise<number> {
       comments: _('Calendar events and reminders from your existing calendars.'),
     },
     createWindow: (app) => {
-      const window = new MainWindow(app, { view: hooks.view, size: readSize(), demo: demoActive() });
+      const window = new MainWindow(app, {
+        view: hooks.view,
+        size: readSize(),
+        demo: demoActive(),
+        calendarMode: process.env[CALENDAR_MODE_HOOK],
+      });
       void startServices(window);
       return window;
     },

@@ -54,6 +54,10 @@ export interface Occurrence {
   /** The TZID exactly as the item wrote it, kept even when it did not resolve. */
   tzid: string | null;
   summary: string | null;
+  /** `LOCATION`, when the instance or its master names one. */
+  location: string | null;
+  /** `URL` — the page the item came from, for an "open the original" link. */
+  url: string | null;
   /** True when a `RECURRENCE-ID` component replaced what the rule would have produced. */
   override: boolean;
 }
@@ -234,6 +238,12 @@ function summaryOf(component: ICAL.Component): string | null {
   return typeof summary === 'string' ? summary : null;
 }
 
+/** A text property of the instance, or null where it is absent or empty. */
+function textOf(component: ICAL.Component, name: string): string | null {
+  const value = component.getFirstPropertyValue(name);
+  return typeof value === 'string' && value !== '' ? value : null;
+}
+
 /**
  * Overlap, not containment: an instance that starts before the window and reaches into it belongs
  * to the answer, or a week-long event would vanish from every day view but the first. A zero-length
@@ -377,6 +387,8 @@ function expandSeries(
     floating: isFloating(instance.start),
     tzid: propertyTzid(instance.component, 'dtstart') ?? propertyTzid(instance.component, 'recurrence-id'),
     summary: summaryOf(instance.component) ?? (series.master ? summaryOf(series.master) : null),
+    location: textOf(instance.component, 'location') ?? (series.master ? textOf(series.master, 'location') : null),
+    url: textOf(instance.component, 'url') ?? (series.master ? textOf(series.master, 'url') : null),
     override: instance.override,
   }));
 

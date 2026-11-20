@@ -16,6 +16,7 @@ OUT="$ROOT/docs/screenshots"
 MOTIFS=(
   "tasks|1000x700|tasks|en de"
   "tasks-narrow|400x760|tasks|en de"
+  "calendar|1000x700|calendar|en de"
 )
 
 if [ "${1:-}" = "--check" ]; then

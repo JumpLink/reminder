@@ -103,6 +103,8 @@ export class TimeGrid extends Gtk.Box {
   // would sit under thirteen hours of grid and only appear once you had scrolled past them.
   private readonly hscrollbar = new Gtk.Scrollbar({ orientation: Gtk.Orientation.HORIZONTAL, hexpand: true });
   private readonly hscrollRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 0 });
+  /** An hour asked for before the scroller had a height; applied as soon as it has one. */
+  private pendingHour: number | null = null;
 
   constructor() {
     super({ orientation: Gtk.Orientation.VERTICAL, spacing: 0, hexpand: true, vexpand: true });
@@ -124,15 +126,29 @@ export class TimeGrid extends Gtk.Box {
     sync.connect('changed', follow);
     follow();
 
-    this.headerRow.append(new Gtk.Box({ widthRequest: GUTTER_WIDTH }));
+    const headerSpacer = new Gtk.Box({ widthRequest: GUTTER_WIDTH });
+    const scrollSpacer = new Gtk.Box({ widthRequest: GUTTER_WIDTH });
+    this.headerRow.append(headerSpacer);
     this.headerRow.append(this.headerScroller);
     this.stripRow.append(this.stripLabel);
     this.stripRow.append(this.stripScroller);
-    this.hscrollRow.append(new Gtk.Box({ widthRequest: GUTTER_WIDTH }));
+    this.hscrollRow.append(scrollSpacer);
     this.hscrollRow.append(this.hscrollbar);
+    // The strip label is the widest thing in the gutter in some languages ("Ganztägig"); the size
+    // group lets the gutter grow to it everywhere at once, so the four rows stay aligned.
+    const gutterWidth = new Gtk.SizeGroup({ mode: Gtk.SizeGroupMode.HORIZONTAL });
+    for (const widget of [headerSpacer, this.stripLabel, scrollSpacer, this.gutter]) gutterWidth.add_widget(widget);
+    // A gap after the last day, so its items do not run into the edge of the window.
+    for (const row of [this.headerDays, this.stripDays, this.columns]) row.set_margin_end(6);
     this.body.append(this.gutter);
     this.body.append(this.daysScroller);
     this.scroller.set_child(this.body);
+    this.scroller.get_vadjustment().connect('notify::page-size', () => {
+      if (this.pendingHour === null) return;
+      const hour = this.pendingHour;
+      this.pendingHour = null;
+      this.scrollToHour(hour);
+    });
     this.append(this.headerRow);
     this.append(this.stripRow);
     this.append(this.scroller);
@@ -194,11 +210,20 @@ export class TimeGrid extends Gtk.Box {
     this.refresh();
   }
 
-  /** Brings `hour` to the top of the viewport, as far as the content allows. */
+  /**
+   * Brings `hour` to the top of the viewport, as far as the content allows.
+   *
+   * Before the first allocation the viewport has no height, and every position is then clamped to
+   * the top — so an hour asked for that early is kept and applied once the scroller is measured.
+   */
   scrollToHour(hour: number): void {
     const adjustment = this.scroller.get_vadjustment();
-    const target = scrollTarget(hour, this.startHour, this.endHour, adjustment.get_page_size());
-    adjustment.set_value(target);
+    const viewport = adjustment.get_page_size();
+    if (viewport <= 0) {
+      this.pendingHour = hour;
+      return;
+    }
+    adjustment.set_value(scrollTarget(hour, this.startHour, this.endHour, viewport));
   }
 
   private refresh(): void {
@@ -342,7 +367,7 @@ export class TimeGrid extends Gtk.Box {
     button.set_child(label);
     button.update_property([Gtk.AccessibleProperty.LABEL], [name]);
     button.set_tooltip_text(name);
-    const tint = new Tint(button, 'cal-bar', (cls, c) => `.${cls} { background-color: color-mix(in srgb, ${c} 28%, transparent); }`);
+    const tint = new Tint(button, 'cal-bar', (cls, c) => `.${cls} { background-color: color-mix(in srgb, ${c} 28%, @window_bg_color); }`);
     tint.set(colour);
     button.connect('clicked', () => emitSignal(this, 'item-activated', id));
     return button;
