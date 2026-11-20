@@ -281,7 +281,7 @@ export function demoEvents(account: string, now: Date): Record<string, string[]>
     'BEGIN:VEVENT',
     'UID:demo-e02',
     stamp,
-    'SUMMARY:Piano lesson (moved)',
+    'SUMMARY:Piano lesson, room 2',
     `RECURRENCE-ID:${day(now, 0)}T170000`,
     `DTSTART:${day(now, 0)}T183000`,
     `DTEND:${day(now, 0)}T193000`,

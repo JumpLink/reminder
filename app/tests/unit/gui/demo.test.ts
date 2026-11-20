@@ -47,7 +47,7 @@ export default async () => {
           .map((o) => o.summary)
           .sort()
           .join('|'),
-      ).toBe('Morning stand-up|Piano lesson (moved)');
+      ).toBe('Morning stand-up|Piano lesson, room 2');
       expect(today.occurrences.some((o) => o.override)).toBe(true);
       const next = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() + 1);
       const tomorrow = await expandEvents(backend, { from: ymd(next), to: ymd(next) }, NOW);
