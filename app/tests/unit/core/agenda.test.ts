@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@gjsify/unit';
-import { buildAgenda, dueDayNumber, type ReminderItem } from '@reminder/core';
+import { buildAgenda, dueDayNumber, type AgendaOccurrence, type ReminderItem } from '@reminder/core';
 
 // Local time on purpose: sections are calendar days of the reader's zone.
 const NOW = new Date(2026, 10, 18, 14, 30);
@@ -21,6 +21,22 @@ function task(uid: string, extra: Partial<ReminderItem> = {}): ReminderItem {
     created: null,
     url: null,
     parent: null,
+    ...extra,
+  };
+}
+
+function occ(uid: string, extra: Partial<AgendaOccurrence> = {}): AgendaOccurrence {
+  return {
+    uid,
+    calendarUid: 'cal',
+    summary: uid,
+    start: '2026-11-18T09:00:00',
+    end: '2026-11-18T10:00:00',
+    allDay: false,
+    floating: true,
+    tzid: null,
+    override: false,
+    zoneUnresolved: false,
     ...extra,
   };
 }
@@ -104,6 +120,31 @@ export default async () => {
       const forward = buildAgenda(items, NOW);
       const backward = buildAgenda([...items].reverse(), NOW);
       expect(JSON.stringify(forward)).toBe(JSON.stringify(backward));
+    });
+
+    await it("keeps only today's occurrences, all-day first, then by time", async () => {
+      const agenda = buildAgenda([], NOW, [
+        occ('late', { start: '2026-11-18T17:00:00', end: '2026-11-18T18:00:00' }),
+        occ('early'),
+        occ('allday', { allDay: true, floating: false, start: '2026-11-18', end: '2026-11-19' }),
+        occ('tomorrow', { start: '2026-11-19T09:00:00', end: '2026-11-19T10:00:00' }),
+        occ('yesterday', { start: '2026-11-17T09:00:00', end: '2026-11-17T10:00:00' }),
+      ]);
+      expect(agenda.events.map((e) => e.uid).join(',')).toBe('allday,early,late');
+    });
+
+    await it('makes today a section when only events fall on it', async () => {
+      const agenda = buildAgenda([], NOW, [occ('early')]);
+      expect(agenda.sections.map((s) => s.id).join(',')).toBe('today');
+      expect(buildAgenda([], NOW).sections.length).toBe(0);
+    });
+
+    await it('counts a multi-day instance that began earlier', async () => {
+      const agenda = buildAgenda([], NOW, [
+        occ('trip', { allDay: true, floating: false, start: '2026-11-16', end: '2026-11-20' }),
+        occ('over', { allDay: true, floating: false, start: '2026-11-17', end: '2026-11-18' }),
+      ]);
+      expect(agenda.events.map((e) => e.uid).join(',')).toBe('trip');
     });
   });
 };

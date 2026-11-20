@@ -17,6 +17,12 @@ export const CARD_LIMIT: LimitSpec = { default: 100, max: 500 };
 /** Default event window when the caller gives no `to`. */
 export const EVENT_WINDOW_DAYS = 31;
 
+/**
+ * Longest window `events_list` expands. Expansion multiplies the answer (a daily series is 31
+ * rows a month), so the window is clamped — and the clamp is reported, never silent.
+ */
+export const EXPAND_WINDOW_MAX_DAYS = 92;
+
 /** A 0 or negative limit would `.slice(0, n)` into an empty answer that looks like "none". */
 export function capLimit(value: number | undefined, spec: LimitSpec): number {
   if (value === undefined || !Number.isFinite(value)) return spec.default;

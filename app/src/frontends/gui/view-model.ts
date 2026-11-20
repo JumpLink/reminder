@@ -8,6 +8,7 @@ import {
   buildAgenda,
   fmt,
   type Agenda,
+  type AgendaOccurrence,
   type AgendaSectionId,
   type CalendarInfo,
   type ReminderItem,
@@ -71,8 +72,25 @@ export function buildVisibleAgenda(
   items: readonly ReminderItem[],
   hidden: ReadonlySet<string>,
   now: Date,
+  occurrences: readonly AgendaOccurrence[] = [],
 ): Agenda {
-  return buildAgenda(visibleReminders(items, hidden), now);
+  return buildAgenda(
+    visibleReminders(items, hidden),
+    now,
+    occurrences.filter((o) => !hidden.has(o.calendarUid)),
+  );
+}
+
+const hhmm = (d: Date): string =>
+  `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+/** The time line of an event row: all day, a clock, or — when the zone did not resolve — a flag. */
+export function occurrenceTime(o: AgendaOccurrence): string {
+  if (o.allDay) return _('All day');
+  const clock = o.floating ? o.start.slice(11, 16) : hhmm(new Date(o.start));
+  return o.zoneUnresolved
+    ? fmt(_('{time} (time zone {zone} unknown)'), { time: clock, zone: o.tzid ?? '' })
+    : clock;
 }
 
 export function sectionTitle(id: AgendaSectionId): string {

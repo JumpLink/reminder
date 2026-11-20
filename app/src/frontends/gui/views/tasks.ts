@@ -9,7 +9,7 @@ import Adw from '@girs/adw-1';
 import Gtk from '@girs/gtk-4.0';
 import { AdaptivePane, TaskRow } from '@gjsify/adwaita-extended';
 
-import { _, fmt, type ReminderItem, type ReminderStatus } from '@reminder/core';
+import { _, fmt, type AgendaOccurrence, type ReminderItem, type ReminderStatus } from '@reminder/core';
 
 import type { SizeClass } from '../constants.ts';
 import type { TasksModel, WriteOutcome } from '../model.ts';
@@ -19,9 +19,13 @@ import {
   colourFor,
   describeSyncProblems,
   dueDate,
+  occurrenceTime,
   sectionTitle,
   toRowData,
 } from '../view-model.ts';
+
+const escapeMarkup = (text: string): string =>
+  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export interface TasksView {
   widget: Gtk.Widget;
@@ -144,13 +148,30 @@ export function createTasksView(toast: (message: string) => void): TasksView {
     return row;
   };
 
-  const buildSection = (title: string, items: readonly ReminderItem[], now: Date): Gtk.Widget => {
+  const buildEventRow = (o: AgendaOccurrence): Adw.ActionRow => {
+    const calendar = model?.calendar(o.calendarUid);
+    const row = new Adw.ActionRow({
+      title: escapeMarkup(o.summary ?? _('(no title)')),
+      subtitle: escapeMarkup([occurrenceTime(o), calendar?.name].filter(Boolean).join(' · ')),
+      activatable: false,
+    });
+    row.add_prefix(new Gtk.Image({ iconName: 'x-office-calendar-symbolic' }));
+    return row;
+  };
+
+  const buildSection = (
+    title: string,
+    items: readonly ReminderItem[],
+    now: Date,
+    events: readonly AgendaOccurrence[] = [],
+  ): Gtk.Widget => {
     const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 6 });
     const heading = new Gtk.Label({ label: title, xalign: 0 });
     heading.add_css_class('heading');
     heading.set_margin_start(12);
     const list = new Gtk.ListBox({ selectionMode: Gtk.SelectionMode.NONE });
     list.add_css_class('boxed-list');
+    for (const o of events) list.append(buildEventRow(o));
     for (const item of items) list.append(buildRow(item, now));
     box.append(heading);
     box.append(list);
@@ -165,9 +186,16 @@ export function createTasksView(toast: (message: string) => void): TasksView {
     banner.set_revealed(problems !== null);
 
     clear();
-    const agenda = buildVisibleAgenda(model.reminders(), hidden, now);
+    const agenda = buildVisibleAgenda(model.reminders(), hidden, now, model.occurrences());
     for (const section of agenda.sections) {
-      sections.append(buildSection(sectionTitle(section.id), section.items, now));
+      sections.append(
+        buildSection(
+          sectionTitle(section.id),
+          section.items,
+          now,
+          section.id === 'today' ? agenda.events : [],
+        ),
+      );
     }
     if (agenda.completed.length > 0) {
       const expander = new Gtk.Expander({
