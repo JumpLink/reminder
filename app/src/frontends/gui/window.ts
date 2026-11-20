@@ -95,8 +95,15 @@ export class MainWindow extends Adw.ApplicationWindow {
       },
     };
 
-    const toast = (message: string): void =>
-      this.toasts.add_toast(new Adw.Toast({ useMarkup: false, title: message }));
+    // The optional button is what a conflict needs: the message, and the refresh that resolves it.
+    const toast = (message: string, action?: { label: string; run(): void }): void => {
+      const item = new Adw.Toast({ useMarkup: false, title: message });
+      if (action) {
+        item.set_button_label(action.label);
+        item.connect('button-clicked', () => action.run());
+      }
+      this.toasts.add_toast(item);
+    };
     this.tasks = createTasksView(toast);
     this.board = createBoardView(toast);
     this.calendar = createCalendarView(toast);

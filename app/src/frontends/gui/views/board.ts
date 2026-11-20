@@ -1,11 +1,15 @@
 /**
  * The board view: the cards of every board source in the four lanes (plus the unsorted one), laid
- * out by size class by `KanbanBoard`. Read-only in Phase 2 — a card opens its detail in an
- * `AdaptivePane` (inspector, dialog or bottom sheet), and "Open in original" hands the card's own
- * page to the browser, which is the only write path a reader has for now (ADR 0007 §3, §6).
+ * out by size class by `KanbanBoard`. A card opens its detail in an `AdaptivePane` (inspector,
+ * dialog or bottom sheet), where "Move to …" names the lanes and "Open in original" hands the
+ * card's own page to the browser (ADR 0007 §6).
  *
- * What is shown is decided in `board-view-model.ts`; this file only paints it. The filters are
- * local to the view and change no request: every board is read with one wide query
+ * What is shown is decided in `board-view-model.ts` and every write goes through
+ * `board-write.ts`; this file only paints the two and reports what they answered. The pointer
+ * drag belongs to the widget, which asks rather than moves (ADR 0012 §3) — "Move to …" is the
+ * same request from a list, and the only one a touch screen or a compact window has.
+ *
+ * The filters are local to the view and change no request: every board is read with one wide query
  * (`BOARD_QUERY`), so flipping a chip costs no round trip.
  */
 
@@ -18,6 +22,7 @@ import { _, errorMessage, fmt, MINE_FILTERS, type MineFilter } from '@reminder/c
 import type { BoardModel } from '../board-model.ts';
 import {
   activeBoardChips,
+  anyWritable,
   boardCardDetail,
   boardSourceOptions,
   boardStatus,
@@ -26,14 +31,25 @@ import {
   DEFAULT_BOARD_FILTERS,
   DONE_WINDOW_DAYS,
   findBoardCard,
+  laneTitle,
   mineLabel,
   showsSource,
   withoutBoardChip,
   type BoardCardDetail,
   type BoardFilters,
+  type BoardViewLane,
 } from '../board-view-model.ts';
-import type { SizeClass } from '../constants.ts';
+import { columnPosition, createBoardWriter, MOVE_TARGET_LANES, type BoardWriter } from '../board-write.ts';
+import { CARD_HOOK, type SizeClass } from '../constants.ts';
 import { onSignal } from '../signals.ts';
+
+/** A toast's one button — the conflict message offers a refresh (ADR 0013 §7). */
+export interface ToastAction {
+  label: string;
+  run(): void;
+}
+
+export type BoardToast = (message: string, action?: ToastAction) => void;
 
 export interface BoardView {
   widget: Gtk.Widget;
@@ -74,7 +90,49 @@ function openUri(uri: string, parent: Gtk.Widget, onFailure: (message: string) =
   });
 }
 
-function buildDetail(detail: BoardCardDetail, toast: (message: string) => void): Gtk.Widget {
+/** What the detail offers as a move. Null for a card whose lane cannot be a write target at all. */
+interface MoveOffer {
+  /** Why the lanes are insensitive, as a sentence; null when the move is offered. */
+  blocked: string | null;
+  /** Where the card is now — the one lane the list does not offer. */
+  lane: BoardViewLane;
+  run(lane: BoardViewLane): void;
+}
+
+/**
+ * "Move to …": the lanes as a list, always there, whatever the size class. The pointer drag is the
+ * shortcut for a mouse; this is the path a touch screen and a compact window have, so it is never
+ * hidden behind a hover or a width (plan §6.8). A board that cannot take the write keeps the rows
+ * visible and insensitive, with the reason underneath — a card that vanishes explains nothing.
+ */
+function buildMove(move: MoveOffer): Gtk.Widget {
+  const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 6 });
+  const heading = new Gtk.Label({ label: _('Move to'), xalign: 0 });
+  heading.add_css_class('heading');
+  box.append(heading);
+
+  const lanes = new Gtk.ListBox({ selectionMode: Gtk.SelectionMode.NONE });
+  lanes.add_css_class('boxed-list');
+  for (const lane of MOVE_TARGET_LANES) {
+    if (lane === move.lane) continue;
+    const row = new Adw.ActionRow({ title: laneTitle(lane), activatable: true });
+    row.add_suffix(new Gtk.Image({ iconName: 'go-next-symbolic' }));
+    row.connect('activated', () => move.run(lane));
+    lanes.append(row);
+  }
+  lanes.set_sensitive(move.blocked === null);
+  box.append(lanes);
+
+  if (move.blocked !== null) {
+    const why = new Gtk.Label({ label: move.blocked, wrap: true, xalign: 0 });
+    why.add_css_class('dim-label');
+    why.add_css_class('caption');
+    box.append(why);
+  }
+  return box;
+}
+
+function buildDetail(detail: BoardCardDetail, toast: BoardToast, move: MoveOffer | null): Gtk.Widget {
   const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 12 });
   for (const side of ['start', 'end', 'top', 'bottom'] as const) box[`set_margin_${side}`](18);
   const title = new Gtk.Label({ label: detail.title, wrap: true, xalign: 0, selectable: true });
@@ -94,6 +152,8 @@ function buildDetail(detail: BoardCardDetail, toast: (message: string) => void):
   if (detail.labels.length > 0) rows.append(detailRow(_('Labels'), detail.labels.join(', ')));
   box.append(rows);
 
+  if (move !== null) box.append(buildMove(move));
+
   const url = detail.url;
   if (url !== null) {
     const open = new Gtk.Button({
@@ -110,12 +170,34 @@ function buildDetail(detail: BoardCardDetail, toast: (message: string) => void):
     note.add_css_class('caption');
     box.append(note);
   }
-  return new Gtk.ScrolledWindow({ hscrollbarPolicy: Gtk.PolicyType.NEVER, vexpand: true, child: box });
+  const scroller = new Gtk.ScrolledWindow({
+    hscrollbarPolicy: Gtk.PolicyType.NEVER,
+    vexpand: true,
+    child: box,
+  });
+  // On a phone-sized sheet "Move to" sits below the fold, where no screenshot can see it.
+  if (move !== null && process.env[CARD_HOOK] === 'move') scrollToEnd(scroller);
+  return scroller;
 }
 
-export function createBoardView(toast: (message: string) => void): BoardView {
+/** `REMINDER_APP_CARD=move`: once the detail has been laid out, show its end. Screenshots only. */
+function scrollToEnd(scroller: Gtk.ScrolledWindow): void {
+  const adjustment = scroller.get_vadjustment();
+  const handler = { id: 0 };
+  handler.id = adjustment.connect('changed', () => {
+    // Before the first allocation there is nothing to scroll, and `changed` comes again.
+    if (adjustment.upper <= adjustment.pageSize) return;
+    adjustment.value = adjustment.upper - adjustment.pageSize;
+    adjustment.disconnect(handler.id);
+  });
+}
+
+export function createBoardView(toast: BoardToast): BoardView {
   let model: BoardModel | null = null;
+  let writer: BoardWriter | null = null;
   let filters: BoardFilters = { ...DEFAULT_BOARD_FILTERS };
+  /** The lanes as they were last drawn, so a drop index inside one can be read back. */
+  let drawn: readonly BoardColumnData[] = [];
   /** The card whose detail is open, so a re-render keeps it current instead of closing it. */
   let open: string | null = null;
   let building = false;
@@ -199,6 +281,20 @@ export function createBoardView(toast: (message: string) => void): BoardView {
     render();
   };
 
+  /**
+   * One move, from the drag or from the list, and what the person hears about it. The card is
+   * already in the new lane by the time this returns — `move` put it there before it called the
+   * source, and took it back if the source refused.
+   */
+  const requestMove = async (key: string, lane: BoardViewLane, position?: number): Promise<void> => {
+    const outcome = await writer?.move(key, lane, position);
+    if (outcome === undefined || outcome.kind !== 'refused') return;
+    toast(
+      outcome.message,
+      outcome.conflict ? { label: _('Refresh'), run: () => model?.refresh() } : undefined,
+    );
+  };
+
   /** The detail of the card that is open, refreshed from the current snapshot. */
   const showDetail = (key: string): void => {
     const snapshot = model?.snapshot();
@@ -206,10 +302,25 @@ export function createBoardView(toast: (message: string) => void): BoardView {
     if (!found) return;
     open = key;
     const detail = boardCardDetail(found.card, found.board);
-    pane.present(buildDetail(detail, toast), detail.title);
+    const board = found.board;
+    const offer: MoveOffer | null =
+      writer === null
+        ? null
+        : {
+            blocked: writer.blocked(board),
+            // The dropped lane while the write is in flight, so the list agrees with the board.
+            lane: writer.pending().get(key) ?? detail.lane,
+            run: (lane) => void requestMove(key, lane),
+          };
+    pane.present(buildDetail(detail, toast, offer), detail.title);
   };
 
   onSignal(board, 'card-activated', (id: string) => showDetail(id));
+  onSignal(board, 'card-move-requested', (id: string, columnId: string, position: number) => {
+    const lane = columnId as BoardViewLane;
+    const keys = (drawn.find((column) => column.id === columnId)?.cards ?? []).map((card) => card.id);
+    void requestMove(id, lane, columnPosition(keys, id, position));
+  });
 
   const openFirstOf = (columns: readonly BoardColumnData[]): boolean => {
     const first = columns.flatMap((column) => column.cards)[0];
@@ -274,7 +385,8 @@ export function createBoardView(toast: (message: string) => void): BoardView {
     if (model === null) return;
     const snapshot = model.snapshot();
     const now = new Date();
-    const columns = buildBoardColumns(snapshot, filters, now);
+    const columns = buildBoardColumns(snapshot, filters, now, writer?.pending());
+    drawn = columns;
     const state = boardStatus(snapshot, columns);
 
     // A source that failed while others answered is a line over the cards, not a state.
@@ -282,6 +394,8 @@ export function createBoardView(toast: (message: string) => void): BoardView {
     banner.set_title(line ?? '');
     banner.set_revealed(line !== null);
 
+    // A board the adapter cannot write to at all gets no drag at all; the grant is asked at the drop.
+    board.writable = anyWritable(snapshot.boards);
     board.setColumns(columns, now);
     switch (state.kind) {
       case 'cards':
@@ -322,7 +436,17 @@ export function createBoardView(toast: (message: string) => void): BoardView {
     },
     setModel(next) {
       model = next;
-      next.subscribe(render);
+      writer = createBoardWriter({
+        snapshot: () => next.snapshot(),
+        write: () => next.write(),
+        refresh: (card) => next.refresh(card),
+        changed: render,
+      });
+      next.subscribe(() => {
+        // A new snapshot may be the one that carries the card into the lane it was dropped in.
+        writer?.reconcile();
+        render();
+      });
       render();
     },
     setError(message) {
@@ -333,7 +457,8 @@ export function createBoardView(toast: (message: string) => void): BoardView {
     },
     openFirstCard() {
       const snapshot = model?.snapshot();
-      if (snapshot && openFirstOf(buildBoardColumns(snapshot, filters, new Date()))) return true;
+      if (snapshot && openFirstOf(buildBoardColumns(snapshot, filters, new Date(), writer?.pending())))
+        return true;
       // The first sync has not landed yet: remember the wish and open the card when it does.
       wantsFirstCard = true;
       return false;

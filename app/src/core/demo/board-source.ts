@@ -277,11 +277,7 @@ export function createDemoBoardSource(now: Date = new Date()): BoardSource {
     const anchor = inColumn[index];
     const last = inColumn[inColumn.length - 1];
     const at =
-      anchor !== undefined
-        ? rest.indexOf(anchor)
-        : last === undefined
-          ? rest.length
-          : rest.indexOf(last) + 1;
+      anchor !== undefined ? rest.indexOf(anchor) : last === undefined ? rest.length : rest.indexOf(last) + 1;
     rest.splice(at, 0, card);
     cards.length = 0;
     cards.push(...rest);

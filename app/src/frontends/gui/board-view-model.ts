@@ -47,7 +47,10 @@ export interface LoadedBoard {
   cards: readonly Card[];
   /** The person's lane overrides for this board (`overridesFor`). */
   overrides: ColumnOverrides;
-  /** False: no card of this board gets a drag grip (Phase 4). */
+  /**
+   * What the adapter can do, never a permission (ADR 0013 §2): false means no card of this board
+   * can be dragged at all. True still needs a `board.move` grant, which is asked for at the drop.
+   */
   writable: boolean;
 }
 
@@ -138,13 +141,18 @@ export function boardColour(board: Pick<LoadedBoard, 'source' | 'board'>): strin
   return colourFor(`${board.source}:${board.board.id}`);
 }
 
+/** Whether any board on screen can be written to at all — the board widget's drag switch. */
+export function anyWritable(boards: readonly LoadedBoard[]): boolean {
+  return boards.some((board) => board.writable);
+}
+
 /**
  * The lock a read-only card carries says "this one you cannot move, the others you can" — it is
- * only worth drawing where the board holds both kinds. While nothing is writable (the board is
- * read-only until Phase 4, ADR 0007 §3) a lock on every card marks no difference, so it stays off.
+ * only worth drawing where the board holds both kinds. With nothing writable a lock on every card
+ * marks no difference, so it stays off.
  */
 export function marksReadOnly(boards: readonly LoadedBoard[]): boolean {
-  return boards.some((board) => board.writable);
+  return anyWritable(boards);
 }
 
 export function toBoardCard(card: Card, board: LoadedBoard, markReadOnly = true): BoardCardData {
@@ -217,6 +225,19 @@ export function laneOf(card: Card, board: LoadedBoard): BoardViewLane | null {
   return target;
 }
 
+/**
+ * Cards whose move is in flight, by {@link cardKey}: the lane the person dropped them in. A card
+ * that silently stays where it was dropped is a card they believe they moved (ADR 0013 §7), so the
+ * dropped lane wins over the one the cache still reports until the source has answered and the
+ * board has been read again.
+ */
+export type PendingMoves = ReadonlyMap<string, BoardViewLane>;
+
+/** The lane a card is drawn in: the one it was dropped in while that write is in flight. */
+export function displayLane(card: Card, board: LoadedBoard, pending?: PendingMoves): BoardViewLane | null {
+  return pending?.get(cardKey(card.ref)) ?? laneOf(card, board);
+}
+
 /** Due date first (a card with none sorts last), then the title by code unit. */
 function compareCards(a: BoardCardData, b: BoardCardData): number {
   const left = a.due?.getTime() ?? Number.POSITIVE_INFINITY;
@@ -247,6 +268,7 @@ export function buildBoardColumns(
   snapshot: BoardSnapshot,
   filters: BoardFilters = DEFAULT_BOARD_FILTERS,
   now: Date = new Date(),
+  pending?: PendingMoves,
 ): BoardColumnData[] {
   const byLane = new Map<BoardViewLane, BoardCardData[]>(BOARD_VIEW_LANES.map((lane) => [lane, []]));
   const marks = marksReadOnly(snapshot.boards);
@@ -254,7 +276,7 @@ export function buildBoardColumns(
     if (!showsSource(filters, board.source)) continue;
     for (const card of board.cards) {
       if (!matchesMine(card, filters.mine)) continue;
-      const lane = laneOf(card, board);
+      const lane = displayLane(card, board, pending);
       if (lane === null) continue;
       if (lane === 'done' && (!filters.includeDone || !withinDoneWindow(card, now))) continue;
       byLane.get(lane)?.push(toBoardCard(card, board, marks));

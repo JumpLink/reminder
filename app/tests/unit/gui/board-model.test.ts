@@ -44,7 +44,7 @@ async function setup(options: { wrap?: (base: SyncFetch) => SyncFetch } = {}) {
   const model = createBoardModel({
     boards: bound.bindings,
     service,
-    config: { boards: emptyBoardsConfig() },
+    config: { boards: emptyBoardsConfig(), grants: [] },
     problems: bound.problems,
   });
   return { source, bound, service, model };
@@ -95,7 +95,11 @@ export default async () => {
     });
 
     await it('has nothing to load when no source is configured', async () => {
-      const model = createBoardModel({ boards: [], service: null, config: { boards: emptyBoardsConfig() } });
+      const model = createBoardModel({
+        boards: [],
+        service: null,
+        config: { boards: emptyBoardsConfig(), grants: [] },
+      });
       expect(model.snapshot().loading).toBe(false);
       expect(model.snapshot().configured).toBe(false);
     });
