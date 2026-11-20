@@ -49,9 +49,13 @@ onSignal(grid, 'day-activated', (date: string) => open(date)); // "2024-01-17"
   `AdaptivePane` with an `AgendaList` for the selected day is the pairing this was built for.
   `monthDensity(sizeClass)` is that decision, as a pure function. Arrow keys, Home and End move
   between days (`moveGridFocus`), Enter activates.
-- **`TimeGrid`** places items in a `Gtk.Fixed` per day because a timed grid has no row structure a
-  box could express: 09:00 and 09:15 overlap by a quarter of their heights. All-day and multi-day
-  items never reach the columns (`layoutTimeGrid` drops them) and go to the strip above.
+- **`TimeGrid`** stacks each day in a `Gtk.Overlay`: a timed grid has no row structure a box could
+  express, since 09:00 and 09:15 overlap by a quarter of their heights. Vertical position is a
+  `margin-top` in pixels; sideways position is a homogeneous `Gtk.Grid` per item band, so an item
+  in an overlap cluster keeps its share of the column at any width — a `Gtk.Fixed` child cannot
+  follow its parent's width. Header, all-day strip and columns are three homogeneous rows sharing
+  one horizontal adjustment, so a long all-day title can never push a day out of line. All-day and
+  multi-day items never reach the columns (`layoutTimeGrid` drops them) and go to the strip above.
   `setNow(null)` removes the now line; the widget never reads the clock itself, so a story and a
   screenshot stay reproducible.
 - **`AgendaList`** repeats a multi-day item under every day it touches, with an arrow saying where
