@@ -136,6 +136,12 @@ export interface ReminderChanges {
   /** 1 (highest) to 9; 0 removes the PRIORITY, which is what an undefined priority is. */
   priority?: number;
   status?: ReminderStatus;
+  /**
+   * Raw line edits for a caller that owns a property this model does not carry — the board's
+   * `X-STATUS` and `X-APPLE-SORT-ORDER` (ADR 0014). Applied after the fields above, through the
+   * same line rewrite, so nothing else in the stored task moves.
+   */
+  properties?: PropertyEdit[];
 }
 
 /** Statuses a caller may set. `unknown` is something a foreign client wrote, not a target. */
@@ -201,6 +207,8 @@ export function buildReminderUpdate(ical: string, changes: ReminderChanges, now:
       if (changes.status === 'needs-action') edits.push({ name: 'PERCENT-COMPLETE', line: null });
     }
   }
+
+  if (changes.properties !== undefined) edits.push(...changes.properties);
 
   if (edits.length === 0) throw new InputError(_('nothing to change'));
 

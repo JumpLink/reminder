@@ -15,6 +15,8 @@ export interface CalendarInfo {
   backend: string;
   /** Display name of the collection/account it belongs to, when the backend knows one. */
   account: string | null;
+  /** The collection refuses writes (a subscribed or shared-read-only list). Absent: unknown, assume writable. */
+  readOnly?: boolean;
 }
 
 /** One raw component as a backend returns it: iCalendar text plus where it came from. */

@@ -96,6 +96,11 @@ export interface Card {
   labels: CardLabel[];
   /** The card in its own web UI, or null for a source that has no page. */
   url: string | null;
+  /**
+   * The card's place inside its column, ascending, for a source that stores one (a VTODO's
+   * `X-APPLE-SORT-ORDER`, ADR 0014). Absent or null: the source has none.
+   */
+  order?: number | null;
   /** Opaque, like the etag of ADR 0003: handed back, never compared. */
   version: string | null;
   updated: string | null;
