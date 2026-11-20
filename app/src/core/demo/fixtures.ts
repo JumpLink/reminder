@@ -239,10 +239,87 @@ export function demoReminders(account: string, now: Date): Record<string, string
   return out;
 }
 
+interface DemoEvent {
+  uid: string;
+  summary: string;
+  /** Whole days from today. */
+  day: number;
+  /** Local start and end as `HHMM`; without them the event is all-day. */
+  from?: string;
+  to?: string;
+  /** All-day length in days; 1 unless a trip spans more. */
+  days?: number;
+  location?: string;
+  /** `URL` — what "Open the original" opens. */
+  url?: string;
+  /** Written as the event's TZID. `Europe/Nowhere` resolves nowhere, on purpose (ADR 0009). */
+  tzid?: string;
+}
+
 /**
- * Two invented recurring events, in floating local time so they read the same in every zone: a
- * daily stand-up that skips tomorrow (EXDATE), and a weekly lesson whose instance today was moved
- * (a `RECURRENCE-ID` override). Both started before today, so only expansion can show them.
+ * A month around today, so every mode has something to draw: timed events at different hours, an
+ * all-day marker, a trip over several days, and one event whose zone cannot be resolved.
+ */
+const EVENTS: readonly DemoEvent[] = [
+  { uid: 'e10', summary: 'Dentist', day: -6, from: '1115', to: '1200', location: 'Rosenweg 4' },
+  { uid: 'e11', summary: 'Swimming', day: -2, from: '0700', to: '0800', location: 'Stadtbad' },
+  { uid: 'e12', summary: 'Lunch with Ines', day: 0, from: '1230', to: '1330', location: 'Café Hain' },
+  {
+    uid: 'e13',
+    summary: 'Film night',
+    day: 1,
+    from: '2000',
+    to: '2215',
+    location: 'Kino Central',
+    url: 'https://example.org/kino/programm',
+  },
+  { uid: 'e14', summary: 'Bin day', day: 2 },
+  {
+    uid: 'e15',
+    summary: 'Partner call',
+    day: 2,
+    from: '1400',
+    to: '1500',
+    tzid: 'Europe/Nowhere',
+    url: 'https://example.org/meet/partner-call',
+  },
+  { uid: 'e16', summary: 'Trip to the coast', day: 4, days: 3, location: 'Greetsiel' },
+  { uid: 'e17', summary: 'Repair café', day: 9, from: '1500', to: '1800', location: 'Werkstatt Nord' },
+  { uid: 'e18', summary: "Mum's birthday", day: 12 },
+  { uid: 'e19', summary: 'Choir rehearsal', day: 15, from: '1930', to: '2130', location: 'Gemeindehaus' },
+  { uid: 'e20', summary: 'Garden club', day: 21, from: '1000', to: '1200', location: 'Kleingarten 12' },
+];
+
+function vevent(event: DemoEvent, now: Date): string[] {
+  const lines = [
+    'BEGIN:VEVENT',
+    `UID:demo-${event.uid}`,
+    `DTSTAMP:${utcStamp(now)}`,
+    `SUMMARY:${event.summary}`,
+  ];
+  if (event.from && event.to) {
+    const zone = event.tzid ? `;TZID=${event.tzid}` : '';
+    lines.push(
+      `DTSTART${zone}:${day(now, event.day)}T${event.from}00`,
+      `DTEND${zone}:${day(now, event.day)}T${event.to}00`,
+    );
+  } else {
+    lines.push(
+      `DTSTART;VALUE=DATE:${day(now, event.day)}`,
+      `DTEND;VALUE=DATE:${day(now, event.day + (event.days ?? 1))}`,
+    );
+  }
+  if (event.location) lines.push(`LOCATION:${event.location}`);
+  if (event.url) lines.push(`URL:${event.url}`);
+  lines.push('END:VEVENT');
+  return lines;
+}
+
+/**
+ * The invented calendar: a month of single events (see {@link EVENTS}) plus two recurring ones in
+ * floating local time, so they read the same in every zone — a daily stand-up that skips tomorrow
+ * (EXDATE), and a weekly lesson whose instance today was moved (a `RECURRENCE-ID` override). Both
+ * started before today, so only expansion can show them.
  */
 export function demoEvents(account: string, now: Date): Record<string, string[]> {
   if (account !== DEMO_EVENT_CALENDAR.account) return {};
@@ -287,5 +364,11 @@ export function demoEvents(account: string, now: Date): Record<string, string[]>
     `DTEND:${day(now, 0)}T193000`,
     'END:VEVENT',
   ];
-  return { [DEMO_EVENT_CALENDAR.uid]: [wrap(standup), wrap(lesson, moved)] };
+  return {
+    [DEMO_EVENT_CALENDAR.uid]: [
+      wrap(standup),
+      wrap(lesson, moved),
+      ...EVENTS.map((e) => wrap(vevent(e, now))),
+    ],
+  };
 }
