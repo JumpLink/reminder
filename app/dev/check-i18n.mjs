@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // Every msgid the source marks must be translated in every catalogue, completely and not fuzzily.
 //
-// gettext fails SOFT: a missing msgstr shows the English msgid, and nothing says so. For BOTH
-// domains (the app and `gjsify-adwaita-extended`) this runs the same extraction as the domain's
-// extract script into a temporary file and fails when
+// gettext fails SOFT: a missing msgstr shows the English msgid, and nothing says so. For the app's
+// domain this runs the same extraction as `dev/i18n.sh extract` into a temporary file and fails when
 //   · a source file with `_(` / `_n(` or any `.blp` is missing from po/POTFILES.in,
 //   · the committed .pot is stale (a msgid was added or changed without `i18n:extract`),
 //   · a catalogue misses a msgid, leaves it empty or fuzzy,
 //   · a msgstr drops or renames a `{name}` placeholder.
+// @gjsify/pim and @gjsify/adwaita-extended check their own catalogues where they live (gjsify).
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -17,7 +17,6 @@ import { parsePo } from './po.mjs';
 
 const APP = new URL('..', import.meta.url).pathname;
 const PACKAGES = resolve(APP, '../packages');
-const WIDGETS = join(PACKAGES, 'adwaita-extended');
 
 // `root` is the directory POTFILES.in paths are relative to; `scan` lists the source roots that
 // feed the domain, `skip` what the extract script leaves out on purpose.
@@ -28,16 +27,10 @@ const DOMAINS = [
     scan: [
       join(APP, 'src'),
       ...readdirSync(PACKAGES, { withFileTypes: true })
-        .filter((d) => d.isDirectory() && d.name !== 'adwaita-extended')
+        .filter((d) => d.isDirectory())
         .map((d) => join(PACKAGES, d.name, 'src')),
     ],
     skip: () => false,
-  },
-  {
-    name: 'gjsify-adwaita-extended',
-    root: WIDGETS,
-    scan: [join(WIDGETS, 'src')],
-    skip: (file) => file.endsWith('.story.ts'),
   },
 ];
 
@@ -150,4 +143,4 @@ if (problems.length > 0) {
   for (const p of problems.slice(0, 40)) console.error(`  ${p}`);
   process.exit(1);
 }
-console.log('check-i18n: every msgid is translated in every catalogue (app and widgets).');
+console.log('check-i18n: every msgid is translated in every catalogue.');

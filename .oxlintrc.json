@@ -24,29 +24,5 @@
     "**/coverage",
     "**/*.gjs.mjs",
     "**/*.node.mjs"
-  ],
-  "overrides": [
-    {
-      "files": [
-        "packages/adwaita-extended/**"
-      ],
-      "rules": {
-        "eslint/no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": [
-                  "@reminder/*",
-                  "@gjsify/pim",
-                  "@gjsify/pim/*"
-                ],
-                "message": "@gjsify/adwaita-extended moves to gjsify unchanged: it must not know the app core."
-              }
-            ]
-          }
-        ]
-      }
-    }
   ]
 }

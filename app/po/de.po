@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-22 12:58+0100\n"
+"POT-Creation-Date: 2026-11-22 13:16+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -314,12 +314,11 @@ msgstr ""
 msgid "summary must not be empty"
 msgstr "Der Titel darf nicht leer sein"
 
-#: ../packages/core/src/create.ts:70 ../packages/pim/src/eds/driver.gjs.ts:73
+#: ../packages/core/src/create.ts:70
 msgid "no enabled calendar \"{uid}\""
 msgstr "Kein aktivierter Kalender „{uid}“"
 
 #: ../packages/core/src/create.ts:70 ../packages/core/src/update.ts:50
-#: ../packages/pim/src/eds/driver.gjs.ts:73
 msgid "no enabled task list \"{uid}\""
 msgstr "Keine aktivierte Aufgabenliste „{uid}“"
 
@@ -548,67 +547,6 @@ msgstr "Die OpenProject-Adresse muss mit http:// oder https:// beginnen"
 msgid "this card cannot go to \"{column}\"; allowed: {allowed}"
 msgstr "Diese Karte kann nicht nach „{column}“; erlaubt: {allowed}"
 
-#: ../packages/pim/src/caldav/backend.ts:87
-#: ../packages/pim/src/caldav/delta.ts:131
-msgid "no calendar \"{uid}\""
-msgstr "Kein Kalender „{uid}“"
-
-#: ../packages/pim/src/caldav/backend.ts:87
-msgid "no task list \"{uid}\""
-msgstr "Keine Aufgabenliste „{uid}“"
-
-#: ../packages/pim/src/caldav/backend.ts:162
-msgid "createItem: the component has no UID"
-msgstr "createItem: Die Komponente hat keine UID"
-
-#: ../packages/pim/src/caldav/backend.ts:168
-msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
-msgstr "createItem: „{uid}“ existiert in „{calendar}“ bereits"
-
-#: ../packages/pim/src/caldav/backend.ts:174
-msgid "createItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-"createItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
-
-#: ../packages/pim/src/caldav/backend.ts:190
-msgid "updateItem: no \"{uid}\" in \"{calendar}\""
-msgstr "updateItem: Kein „{uid}“ in „{calendar}“"
-
-#: ../packages/pim/src/caldav/backend.ts:197
-msgid "updateItem: \"{uid}\" changed on the server since it was read"
-msgstr ""
-"updateItem: „{uid}“ hat sich auf dem Server geändert, seit es gelesen wurde"
-
-#: ../packages/pim/src/caldav/backend.ts:203
-msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-"updateItem: „{calendar}“ hat das Schreiben verweigert (schreibgeschützt?)"
-
-#: ../packages/pim/src/caldav/errors.ts:13
-msgid "{label}: the server rejected the credentials (401)"
-msgstr "{label}: Der Server hat die Zugangsdaten abgelehnt (401)"
-
-#: ../packages/pim/src/caldav/errors.ts:18
-msgid "{label}: {method} failed with {status}"
-msgstr "{label}: {method} ist mit {status} fehlgeschlagen"
-
-#: ../packages/pim/src/caldav/errors.ts:23
-msgid "{label}: {message}"
-msgstr "{label}: {message}"
-
-#: ../packages/pim/src/eds/driver.gjs.ts:186
-#: ../packages/pim/src/eds/driver.gjs.ts:196
-msgid "\"{calendar}\" is read-only"
-msgstr "„{calendar}“ ist schreibgeschützt"
-
-#: ../packages/pim/src/eds/errors.ts:12
-msgid "{message}: {cause}"
-msgstr "{message}: {cause}"
-
-#: ../packages/pim/src/optional.ts:23
-msgid "{label} typelib not available: {message}"
-msgstr "Typelib {label} nicht verfügbar: {message}"
-
 #: ../packages/secrets-libsecret/src/store.gjs.ts:29
 msgid "secret service not available: {message}"
 msgstr "Geheimnisdienst nicht verfügbar: {message}"
@@ -824,7 +762,9 @@ msgstr "Keine Karten."
 
 #: src/frontends/cli/board.ts:128
 msgid "Move one card to another column (needs a board.move grant)"
-msgstr "Eine Karte in eine andere Spalte verschieben (braucht eine board.move-Freigabe)"
+msgstr ""
+"Eine Karte in eine andere Spalte verschieben (braucht eine board.move-"
+"Freigabe)"
 
 #: src/frontends/cli/board.ts:132 src/frontends/cli/board.ts:184
 msgid "Card id from `reminder board cards --json`"
@@ -836,7 +776,8 @@ msgstr "Zielspalte, wie die Quelle sie nennt"
 
 #: src/frontends/cli/board.ts:153
 msgid "Add a card to a column (needs a board.create grant)"
-msgstr "Eine Karte zu einer Spalte hinzufügen (braucht eine board.create-Freigabe)"
+msgstr ""
+"Eine Karte zu einer Spalte hinzufügen (braucht eine board.create-Freigabe)"
 
 #: src/frontends/cli/board.ts:157
 msgid "Column as the source names it"
@@ -849,7 +790,8 @@ msgstr "Kartentitel"
 #: src/frontends/cli/board.ts:180
 msgid ""
 "Change the title or the due date of one card (needs a board.update grant)"
-msgstr "Titel oder Fälligkeit einer Karte ändern (braucht eine board.update-Freigabe)"
+msgstr ""
+"Titel oder Fälligkeit einer Karte ändern (braucht eine board.update-Freigabe)"
 
 #: src/frontends/cli/board.ts:185 src/frontends/cli/update.ts:53
 msgid "New title"
@@ -1981,6 +1923,3 @@ msgid "Use invented data: no network, no configuration, nothing saved"
 msgstr ""
 "Erfundene Daten nutzen: kein Netzwerk, keine Konfiguration, nichts wird "
 "gespeichert"
-
-#~ msgid "Hosted service"
-#~ msgstr "Gehosteter Dienst"

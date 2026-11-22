@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-22 12:58+0100\n"
+"POT-Creation-Date: 2026-11-22 13:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -291,12 +291,11 @@ msgstr ""
 msgid "summary must not be empty"
 msgstr ""
 
-#: ../packages/core/src/create.ts:70 ../packages/pim/src/eds/driver.gjs.ts:73
+#: ../packages/core/src/create.ts:70
 msgid "no enabled calendar \"{uid}\""
 msgstr ""
 
 #: ../packages/core/src/create.ts:70 ../packages/core/src/update.ts:50
-#: ../packages/pim/src/eds/driver.gjs.ts:73
 msgid "no enabled task list \"{uid}\""
 msgstr ""
 
@@ -507,64 +506,6 @@ msgstr ""
 
 #: ../packages/openproject/src/openproject-source.ts:365
 msgid "this card cannot go to \"{column}\"; allowed: {allowed}"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:87
-#: ../packages/pim/src/caldav/delta.ts:131
-msgid "no calendar \"{uid}\""
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:87
-msgid "no task list \"{uid}\""
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:162
-msgid "createItem: the component has no UID"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:168
-msgid "createItem: \"{uid}\" already exists in \"{calendar}\""
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:174
-msgid "createItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:190
-msgid "updateItem: no \"{uid}\" in \"{calendar}\""
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:197
-msgid "updateItem: \"{uid}\" changed on the server since it was read"
-msgstr ""
-
-#: ../packages/pim/src/caldav/backend.ts:203
-msgid "updateItem: \"{calendar}\" refused the write (read-only?)"
-msgstr ""
-
-#: ../packages/pim/src/caldav/errors.ts:13
-msgid "{label}: the server rejected the credentials (401)"
-msgstr ""
-
-#: ../packages/pim/src/caldav/errors.ts:18
-msgid "{label}: {method} failed with {status}"
-msgstr ""
-
-#: ../packages/pim/src/caldav/errors.ts:23
-msgid "{label}: {message}"
-msgstr ""
-
-#: ../packages/pim/src/eds/driver.gjs.ts:186
-#: ../packages/pim/src/eds/driver.gjs.ts:196
-msgid "\"{calendar}\" is read-only"
-msgstr ""
-
-#: ../packages/pim/src/eds/errors.ts:12
-msgid "{message}: {cause}"
-msgstr ""
-
-#: ../packages/pim/src/optional.ts:23
-msgid "{label} typelib not available: {message}"
 msgstr ""
 
 #: ../packages/secrets-libsecret/src/store.gjs.ts:29
