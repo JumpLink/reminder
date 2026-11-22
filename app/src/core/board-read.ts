@@ -1,6 +1,6 @@
 /**
- * The read-only view of the boards that the CLI and the MCP server share: which boards exist and
- * which cards one of them holds, as plain rows with the lane already decided.
+ * The view of the boards that the CLI and the MCP server share: which boards exist and which cards
+ * one of them holds, as plain rows with the lane already decided, and the writes of docs/adr/0013.
  *
  * Sources come from `createBoardSources` (docs/adr/0007), so every ENABLED source is served and a
  * disabled one never loads (docs/adr/0006 §4). "Hidden" is the window's filter and is not read
@@ -14,9 +14,12 @@ import {
   capLimit,
   classifyCard,
   ConfigError,
+  createCard,
   findSourceColumn,
   moveCard,
   resolveLaneColumn,
+  updateCard,
+  type BoardWriteContext,
   type BoardLane,
   type Card,
   type SourceColumn,
@@ -25,6 +28,7 @@ import {
   mineFor,
   overridesFor,
   type BoardRef,
+  type BoardSourceType,
   type CalendarBackend,
   type MineFilter,
   type TargetColumn,
@@ -146,23 +150,32 @@ export async function listBoards(context: Context, params: { limit?: number } = 
   };
 }
 
-export async function listBoardCards(context: Context, params: CardsParams): Promise<CardsResult> {
-  const config = context.config();
-  const candidates = (await allBoards(await boardEntries(context))).filter(
-    ({ ref }) => ref.id === params.board && (params.source === undefined || ref.source === params.source),
+/** One board by id across the sources; two sources with the same id need `source` to tell them apart. */
+function findBoard(
+  all: { entry: BoardSourceEntry; ref: BoardRef }[],
+  board: string,
+  source: string | undefined,
+): { entry: BoardSourceEntry; ref: BoardRef } {
+  const candidates = all.filter(
+    ({ ref }) => ref.id === board && (source === undefined || ref.source === source),
   );
   if (candidates.length === 0) {
-    throw new InputError(fmt(_('no board "{board}" — list the boards first'), { board: params.board }));
+    throw new InputError(fmt(_('no board "{board}" — list the boards first'), { board }));
   }
   if (candidates.length > 1) {
     throw new InputError(
       fmt(_('several sources have a board "{board}" — name the source ({sources})'), {
-        board: params.board,
+        board,
         sources: candidates.map(({ ref }) => ref.source).join(', '),
       }),
     );
   }
-  const { entry, ref } = candidates[0];
+  return candidates[0];
+}
+
+export async function listBoardCards(context: Context, params: CardsParams): Promise<CardsResult> {
+  const config = context.config();
+  const { entry, ref } = findBoard(await allBoards(await boardEntries(context)), params.board, params.source);
   const includeDone = params.includeDone === true;
   const columns = await entry.source.listColumns(ref);
   const page = await entry.source.listCards(ref, {
@@ -211,6 +224,74 @@ function columnNames(columns: readonly SourceColumn[]): string {
   return columns.map((c) => c.name).join(', ');
 }
 
+/** A column name (case-insensitive) or a lane → the one source column it means on this board. */
+function targetColumn(
+  type: BoardSourceType,
+  columns: readonly SourceColumn[],
+  target: { column?: string; lane?: BoardLane },
+  overrides?: ReturnType<typeof overridesFor>,
+): string {
+  if ((target.column === undefined) === (target.lane === undefined)) {
+    throw new InputError(_('give exactly one of column or lane'));
+  }
+  if (target.column !== undefined) {
+    const found = findSourceColumn(columns, target.column);
+    if (found.length !== 1) {
+      throw new InputError(
+        fmt(_('no single column "{column}" — the columns are: {columns}'), {
+          column: target.column,
+          columns: columnNames(columns),
+        }),
+      );
+    }
+    return found[0].name;
+  }
+  const lane = resolveLaneColumn(type, columns, target.lane as BoardLane, overrides);
+  if (lane.kind === 'none') {
+    throw new InputError(
+      fmt(_('no column maps onto lane "{lane}" — the columns are: {columns}'), {
+        lane: String(target.lane),
+        columns: columnNames(columns),
+      }),
+    );
+  }
+  if (lane.kind === 'ambiguous') {
+    throw new InputError(
+      fmt(_('several columns map onto lane "{lane}" — name one: {columns}'), {
+        lane: String(target.lane),
+        columns: columnNames(lane.candidates),
+      }),
+    );
+  }
+  return lane.column.name;
+}
+
+/** The sources of the boards, writable, and how `moveCard` & co. find one of them again. */
+async function writeContext(
+  context: Context,
+): Promise<{ entries: BoardSourceEntry[]; write: BoardWriteContext }> {
+  const entries = await boardEntries(context, true);
+  return {
+    entries,
+    write: {
+      grants: context.config().grants,
+      source: (id) => entries.find((e) => e.info.id === id)?.source,
+    },
+  };
+}
+
+function rowsAfter(
+  context: Context,
+  entry: BoardSourceEntry,
+  ref: BoardRef,
+  columns: readonly SourceColumn[],
+  card: Card,
+): MoveResult {
+  const type = entry.info.type;
+  const lane = classifyCard(type, card, columns, overridesFor(context.config().boards, ref));
+  return { board: rowOf(type, ref), card: cardRowOf(card, lane) };
+}
+
 /**
  * Moves one card (docs/adr/0013). The grant is checked by `moveCard` before it touches the source
  * and by the MCP gate before this runs; nothing here checks it. Resolving a lane or a column name
@@ -220,8 +301,7 @@ export async function moveBoardCard(context: Context, params: MoveParams): Promi
   if ((params.column === undefined) === (params.lane === undefined)) {
     throw new InputError(_('give exactly one of column or lane'));
   }
-  const config = context.config();
-  const entries = await boardEntries(context, true);
+  const { entries, write } = await writeContext(context);
   const entry = entries.find((e) => e.info.id === params.source);
   if (entry === undefined) throw new InputError(fmt(_('no board source "{id}"'), { id: params.source }));
   const ref = (await entry.source.listBoards()).find((b) => b.id === params.board);
@@ -229,51 +309,97 @@ export async function moveBoardCard(context: Context, params: MoveParams): Promi
     throw new InputError(fmt(_('no board "{board}" — list the boards first'), { board: params.board }));
   }
   const columns = await entry.source.listColumns(ref);
-  const type = entry.info.type;
-  const overrides = overridesFor(config.boards, ref);
-  let toColumn: string;
-  if (params.column !== undefined) {
-    const found = findSourceColumn(columns, params.column);
-    if (found.length !== 1) {
-      throw new InputError(
-        fmt(_('no single column "{column}" — the columns are: {columns}'), {
-          column: params.column,
-          columns: columnNames(columns),
-        }),
-      );
-    }
-    toColumn = found[0].name;
-  } else {
-    const lane = resolveLaneColumn(type, columns, params.lane as BoardLane, overrides);
-    if (lane.kind === 'none') {
-      throw new InputError(
-        fmt(_('no column maps onto lane "{lane}" — the columns are: {columns}'), {
-          lane: String(params.lane),
-          columns: columnNames(columns),
-        }),
-      );
-    }
-    if (lane.kind === 'ambiguous') {
-      throw new InputError(
-        fmt(_('several columns map onto lane "{lane}" — name one: {columns}'), {
-          lane: String(params.lane),
-          columns: columnNames(lane.candidates),
-        }),
-      );
-    }
-    toColumn = lane.column.name;
+  const toColumn = targetColumn(entry.info.type, columns, params, overridesFor(context.config().boards, ref));
+  const moved = await moveCard(write, {
+    ref: { source: params.source, board: params.board, id: params.id },
+    version: params.version,
+    toColumn,
+    ...(params.position === undefined ? {} : { position: params.position }),
+  });
+  return rowsAfter(context, entry, ref, columns, moved);
+}
+
+/** What the CLI names a card by (docs/adr/0013 §8): the board as `board cards` takes it, and the card id. */
+export interface CardByName {
+  board: string;
+  source?: string;
+  card: string;
+}
+
+export interface CliMoveParams extends CardByName {
+  column: string;
+}
+
+export interface CliAddParams {
+  board: string;
+  source?: string;
+  column: string;
+  title: string;
+  due?: string;
+}
+
+export interface CliSetParams extends CardByName {
+  title?: string;
+  /** null clears the due date. */
+  due?: string | null;
+}
+
+/**
+ * The card as the source has it now. The CLI has no version from an earlier read, so it takes the
+ * current one: the conflict check then covers the moment between this read and the write.
+ */
+async function currentCard(entry: BoardSourceEntry, ref: BoardRef, id: string): Promise<Card> {
+  const page = await entry.source.listCards(ref, { mine: 'all', includeClosed: true });
+  const card = (page.kind === 'changed' ? page.cards : []).find((c) => c.ref.id === id);
+  if (card === undefined) {
+    throw new InputError(
+      fmt(_('no card "{card}" on board "{board}" — list its cards first'), { card: id, board: ref.id }),
+    );
   }
-  const moved = await moveCard(
-    {
-      grants: config.grants,
-      source: (id) => entries.find((e) => e.info.id === id)?.source,
+  return card;
+}
+
+/** `reminder board move`: one card to a source column, matched case-insensitively. */
+export async function moveBoardCardByName(context: Context, params: CliMoveParams): Promise<MoveResult> {
+  const { entries, write } = await writeContext(context);
+  const { entry, ref } = findBoard(await allBoards(entries), params.board, params.source);
+  const columns = await entry.source.listColumns(ref);
+  const toColumn = targetColumn(entry.info.type, columns, { column: params.column }, undefined);
+  const card = await currentCard(entry, ref, params.card);
+  const moved = await moveCard(write, { ref: card.ref, version: card.version, toColumn });
+  return rowsAfter(context, entry, ref, columns, moved);
+}
+
+/** `reminder board add`: a new card in a source column. */
+export async function addBoardCard(context: Context, params: CliAddParams): Promise<MoveResult> {
+  const { entries, write } = await writeContext(context);
+  const { entry, ref } = findBoard(await allBoards(entries), params.board, params.source);
+  const columns = await entry.source.listColumns(ref);
+  const column = targetColumn(entry.info.type, columns, { column: params.column }, undefined);
+  const created = await createCard(write, {
+    source: ref.source,
+    board: ref.id,
+    column,
+    title: params.title,
+    ...(params.due === undefined ? {} : { due: params.due }),
+  });
+  return rowsAfter(context, entry, ref, columns, created);
+}
+
+/** `reminder board set`: the title or the due date of one card. */
+export async function updateBoardCard(context: Context, params: CliSetParams): Promise<MoveResult> {
+  if (params.title === undefined && params.due === undefined) throw new InputError(_('nothing to change'));
+  const { entries, write } = await writeContext(context);
+  const { entry, ref } = findBoard(await allBoards(entries), params.board, params.source);
+  const columns = await entry.source.listColumns(ref);
+  const card = await currentCard(entry, ref, params.card);
+  const updated = await updateCard(write, {
+    ref: card.ref,
+    version: card.version,
+    changes: {
+      ...(params.title === undefined ? {} : { title: params.title }),
+      ...(params.due === undefined ? {} : { due: params.due }),
     },
-    {
-      ref: { source: params.source, board: params.board, id: params.id },
-      version: params.version,
-      toColumn,
-      ...(params.position === undefined ? {} : { position: params.position }),
-    },
-  );
-  return { board: rowOf(type, ref), card: cardRowOf(moved, classifyCard(type, moved, columns, overrides)) };
+  });
+  return rowsAfter(context, entry, ref, columns, updated);
 }
