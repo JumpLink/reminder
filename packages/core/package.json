@@ -16,6 +16,6 @@
     "src"
   ],
   "dependencies": {
-    "@gjsify/pim": "0.64.56"
+    "@gjsify/pim": "0.64.57"
   }
 }
