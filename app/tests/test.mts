@@ -33,6 +33,7 @@ import boardExternalSources from './unit/board/external-sources.test.ts';
 import boardDemoSource from './unit/board/demo-source.test.ts';
 import boardWrite from './unit/board/board-write.test.ts';
 import boardRead from './unit/board/board-read.test.ts';
+import boardWriteCli from './unit/board/board-write-cli.test.ts';
 import boardCache from './unit/core/board-cache.test.ts';
 import secrets from './unit/secrets/secrets.test.ts';
 import cacheFs from './unit/cache/cache-fs.test.ts';
@@ -107,6 +108,7 @@ run({
   boardExternalSources,
   boardDemoSource,
   boardRead,
+  boardWriteCli,
   boardWrite,
   boardCache,
   secrets,

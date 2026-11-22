@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-20 12:35+0100\n"
+"POT-Creation-Date: 2026-11-22 12:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,7 +171,7 @@ msgstr ""
 msgid "card {id} changed since it was read"
 msgstr ""
 
-#: ../packages/core/src/board/write.ts:69 src/core/board-read.ts:226
+#: ../packages/core/src/board/write.ts:69 src/core/board-read.ts:306
 #: src/core/config-write.ts:285
 msgid "no board source \"{id}\""
 msgstr ""
@@ -201,6 +201,7 @@ msgid "a position must be a non-negative integer"
 msgstr ""
 
 #: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:213
+#: src/core/board-read.ts:391
 msgid "nothing to change"
 msgstr ""
 
@@ -602,32 +603,36 @@ msgstr ""
 msgid "Zenkit did not return the new entry"
 msgstr ""
 
-#: src/core/board-read.ts:112
+#: src/core/board-read.ts:116
 msgid "boards cannot be read: {problems}"
 msgstr ""
 
-#: src/core/board-read.ts:155 src/core/board-read.ts:229
+#: src/core/board-read.ts:163 src/core/board-read.ts:309
 msgid "no board \"{board}\" — list the boards first"
 msgstr ""
 
-#: src/core/board-read.ts:159
+#: src/core/board-read.ts:167
 msgid "several sources have a board \"{board}\" — name the source ({sources})"
 msgstr ""
 
-#: src/core/board-read.ts:221
+#: src/core/board-read.ts:235 src/core/board-read.ts:302
 msgid "give exactly one of column or lane"
 msgstr ""
 
-#: src/core/board-read.ts:239
+#: src/core/board-read.ts:241
 msgid "no single column \"{column}\" — the columns are: {columns}"
 msgstr ""
 
-#: src/core/board-read.ts:250
+#: src/core/board-read.ts:252
 msgid "no column maps onto lane \"{lane}\" — the columns are: {columns}"
 msgstr ""
 
-#: src/core/board-read.ts:258
+#: src/core/board-read.ts:260
 msgid "several columns map onto lane \"{lane}\" — name one: {columns}"
+msgstr ""
+
+#: src/core/board-read.ts:356
+msgid "no card \"{card}\" on board \"{board}\" — list its cards first"
 msgstr ""
 
 #: src/core/board-sources.ts:230
@@ -720,59 +725,101 @@ msgstr ""
 msgid "{calendars} calendars · {lists} task lists"
 msgstr ""
 
-#: src/frontends/cli/board.ts:22
-msgid "due {time}"
-msgstr ""
-
-#: src/frontends/cli/board.ts:28
-msgid "List the boards of every enabled source"
-msgstr ""
-
-#: src/frontends/cli/board.ts:33
-msgid "Max boards (default {default}, max {max})"
-msgstr ""
-
-#: src/frontends/cli/board.ts:46
-msgid "No boards."
-msgstr ""
-
-#: src/frontends/cli/board.ts:57
-msgid "List the cards of one board (id from `reminder board list`)"
-msgstr ""
-
-#: src/frontends/cli/board.ts:60
-msgid "Board id"
-msgstr ""
-
-#: src/frontends/cli/board.ts:61
+#: src/frontends/cli/board.ts:26
 msgid "Source id, when two sources share a board id"
 msgstr ""
 
-#: src/frontends/cli/board.ts:65
+#: src/frontends/cli/board.ts:27
+msgid "Due date: YYYY-MM-DD or an ISO date-time"
+msgstr ""
+
+#: src/frontends/cli/board.ts:35
+msgid "due {time}"
+msgstr ""
+
+#: src/frontends/cli/board.ts:41
+msgid "List the boards of every enabled source"
+msgstr ""
+
+#: src/frontends/cli/board.ts:46
+msgid "Max boards (default {default}, max {max})"
+msgstr ""
+
+#: src/frontends/cli/board.ts:59
+msgid "No boards."
+msgstr ""
+
+#: src/frontends/cli/board.ts:70
+msgid "List the cards of one board (id from `reminder board list`)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:73 src/frontends/cli/board.ts:131
+#: src/frontends/cli/board.ts:156 src/frontends/cli/board.ts:183
+msgid "Board id"
+msgstr ""
+
+#: src/frontends/cli/board.ts:78
 msgid "Whose cards: assigned, watching or all (default: the configuration)"
 msgstr ""
 
-#: src/frontends/cli/board.ts:67
+#: src/frontends/cli/board.ts:80
 msgid "Same as --mine all"
 msgstr ""
 
-#: src/frontends/cli/board.ts:71
+#: src/frontends/cli/board.ts:84
 msgid "Include cards in the done lane"
 msgstr ""
 
-#: src/frontends/cli/board.ts:75
+#: src/frontends/cli/board.ts:88
 msgid "Max cards (default {default}, max {max})"
 msgstr ""
 
-#: src/frontends/cli/board.ts:97
+#: src/frontends/cli/board.ts:110
 msgid "No cards."
 msgstr ""
 
-#: src/frontends/cli/board.ts:108
-msgid "Read boards and their cards (read-only)"
+#: src/frontends/cli/board.ts:128
+msgid "Move one card to another column (needs a board.move grant)"
 msgstr ""
 
-#: src/frontends/cli/board.ts:113
+#: src/frontends/cli/board.ts:132 src/frontends/cli/board.ts:184
+msgid "Card id from `reminder board cards --json`"
+msgstr ""
+
+#: src/frontends/cli/board.ts:133
+msgid "Target column as the source names it"
+msgstr ""
+
+#: src/frontends/cli/board.ts:153
+msgid "Add a card to a column (needs a board.create grant)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:157
+msgid "Column as the source names it"
+msgstr ""
+
+#: src/frontends/cli/board.ts:158
+msgid "Card title"
+msgstr ""
+
+#: src/frontends/cli/board.ts:180
+msgid ""
+"Change the title or the due date of one card (needs a board.update grant)"
+msgstr ""
+
+#: src/frontends/cli/board.ts:185 src/frontends/cli/update.ts:53
+msgid "New title"
+msgstr ""
+
+#: src/frontends/cli/board.ts:187
+msgid "Remove the due date"
+msgstr ""
+
+#: src/frontends/cli/board.ts:210
+msgid "Read boards and their cards, and write one card at a time"
+msgstr ""
+
+#: src/frontends/cli/board.ts:218
 msgid "Give a board command — `reminder board --help` lists them."
 msgstr ""
 
@@ -970,10 +1017,6 @@ msgstr ""
 #: src/frontends/cli/update.ts:51 src/frontends/cli/update.ts:84
 #: src/frontends/cli/update.ts:95
 msgid "The reminder UID (see `reminder todos --json`)"
-msgstr ""
-
-#: src/frontends/cli/update.ts:53
-msgid "New title"
 msgstr ""
 
 #: src/frontends/cli/update.ts:54
