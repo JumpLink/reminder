@@ -243,6 +243,35 @@ export default async () => {
       expect(order.join(',')).toBe('t1:1024,t2:2048,t4:3072,t3:4096');
     });
 
+    await it('keeps the old reading order when a renumbering stops half way', async () => {
+      const crowded = createFakeBackend([calendar('shop', 'reminder', 'Workshop')], {
+        shop: [
+          wrap('a', ['SUMMARY:First', 'STATUS:NEEDS-ACTION', 'X-APPLE-SORT-ORDER:1']),
+          wrap('b', ['SUMMARY:Second', 'STATUS:NEEDS-ACTION', 'X-APPLE-SORT-ORDER:2']),
+          wrap('c', ['SUMMARY:Third', 'STATUS:NEEDS-ACTION', 'X-APPLE-SORT-ORDER:3']),
+          wrap('m', ['SUMMARY:Moved', 'STATUS:IN-PROCESS']),
+        ],
+      });
+      const update = crowded.updateItem.bind(crowded);
+      let left = 1;
+      crowded.updateItem = async (...args: Parameters<typeof update>) => {
+        if (left-- <= 0) throw new Error('connection lost');
+        return update(...args);
+      };
+      const { source } = writer(crowded);
+      const card = await byId(source, 'm');
+      const write = source.writeCard as NonNullable<typeof source.writeCard>;
+      const err = await rejection(
+        write({ kind: 'move', ref: card.ref, version: card.version, toColumn: 'NEEDS-ACTION', position: 1 }),
+      );
+      expect(err instanceof Error).toBe(true);
+      const column = (await cards(source))
+        .filter((c) => c.sourceColumn === 'NEEDS-ACTION')
+        .sort((x, y) => (x.order as number) - (y.order as number))
+        .map((c) => c.ref.id);
+      expect(column.join(',')).toBe('a,b,c');
+    });
+
     await it('leaves lists without positions unordered until something is placed', async () => {
       const { backend, source } = writer();
       const card = await byId(source, 't5');
