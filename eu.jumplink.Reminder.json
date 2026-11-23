@@ -1,7 +1,7 @@
 {
   "id": "eu.jumplink.Reminder",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "50",
+  "runtime-version": "51",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
     "org.freedesktop.Sdk.Extension.node24"
@@ -47,8 +47,8 @@
         "gjsify-sources.json",
         {
           "type": "file",
-          "url": "https://registry.npmjs.org/@gjsify/cli/-/cli-0.64.48.tgz",
-          "sha512": "61d7beac7f50fc7ca7533ebc64a1bd30274a0f7d6ee51a3e102a920a869a9bd5d970e3091144073e95e1f03ed8d83a8a59ae81f78a8ca648a4ac428c2b654bcf",
+          "url": "https://registry.npmjs.org/@gjsify/cli/-/cli-0.64.57.tgz",
+          "sha512": "491882ac61d0c4b49db47d3a38edfd2f5e8ef26bf6e5d32c8ce18efe19487b572227eb6e10424de074f85394107bd3cc2e5df461b82ad88df2c57010dafd11bf",
           "dest-filename": "gjsify-cli.tgz"
         }
       ]
