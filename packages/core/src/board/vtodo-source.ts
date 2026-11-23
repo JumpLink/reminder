@@ -129,7 +129,11 @@ function inColumn(a: Card, b: Card): number {
 interface OrderPlan {
   /** The moved or new card's position, or null to leave its line alone. */
   self: number | null;
-  /** Neighbours that need a new value, by uid (a renumbering). */
+  /**
+   * Neighbours that need a new value, by uid (a renumbering), in the order they are safe to write:
+   * a renumbering is one write per card, and one that stops half way must still leave the column
+   * in its old reading order.
+   */
   others: Map<string, number>;
 }
 
@@ -154,12 +158,26 @@ function planOrder(others: Card[], index: number | undefined): OrderPlan {
     const fits = (prev === null || value > prev) && (next === null || value < next);
     if (fits && Number.isSafeInteger(value)) return { self: value, others: new Map() };
   }
-  const renumbered = new Map<string, number>();
-  others.forEach((card, i) => {
-    const value = GAP * (i < at ? i + 1 : i + 2);
-    if (card.order !== value) renumbered.set(card.ref.id, value);
+  const moves: { uid: string; index: number; from: number; to: number }[] = [];
+  others.forEach((card, index) => {
+    const to = GAP * (index < at ? index + 1 : index + 2);
+    // An unordered card reads after every ordered one, as if its position were infinite.
+    const from = card.order ?? Number.POSITIVE_INFINITY;
+    if (from !== to) moves.push({ uid: card.ref.id, index, from, to });
   });
-  return { self: GAP * (at + 1), others: renumbered };
+  return { self: GAP * (at + 1), others: new Map(safeWriteOrder(moves).map((m) => [m.uid, m.to])) };
+}
+
+/**
+ * Old and new positions both rise along the column, so writing every card that moves down first
+ * (left to right), then every card that moves up (right to left), puts each card between
+ * neighbours that already hold values below and above it. A stop after any write leaves the
+ * column readable in its old order.
+ */
+function safeWriteOrder<T extends { index: number; from: number; to: number }>(moves: T[]): T[] {
+  const down = moves.filter((m) => m.to < m.from).sort((a, b) => a.index - b.index);
+  const up = moves.filter((m) => m.to > m.from).sort((a, b) => b.index - a.index);
+  return [...down, ...up];
 }
 
 interface LaneEdit {
@@ -193,7 +211,10 @@ function laneEdit(column: string, from: string | null): LaneEdit {
 }
 
 function address(value: string): string {
-  return value.trim().replace(/^mailto:/i, '').toLowerCase();
+  return value
+    .trim()
+    .replace(/^mailto:/i, '')
+    .toLowerCase();
 }
 
 function textOf(line: { value: string } | undefined): string | null {
@@ -221,7 +242,10 @@ function instant(line: Parameters<typeof parseTime>[0] | undefined): string | nu
   }
 }
 
-export function createVtodoBoardSource(backend: CalendarBackend, options: VtodoBoardOptions = {}): BoardSource {
+export function createVtodoBoardSource(
+  backend: CalendarBackend,
+  options: VtodoBoardOptions = {},
+): BoardSource {
   const id = options.id ?? backend.id;
   const me: SourceUser = {
     id: options.identity?.id ?? options.identity?.addresses?.[0] ?? 'me',
@@ -230,7 +254,13 @@ export function createVtodoBoardSource(backend: CalendarBackend, options: VtodoB
   };
   const mine = new Set((options.identity?.addresses ?? []).map(address));
 
-  const info: SourceInfo = { id, type: 'vtodo', canWrite: options.writable === true, hasWatchers: false, changeToken: false };
+  const info: SourceInfo = {
+    id,
+    type: 'vtodo',
+    canWrite: options.writable === true,
+    hasWatchers: false,
+    changeToken: false,
+  };
 
   const boardOf = (calendar: { uid: string; name: string }): BoardRef => ({
     source: id,
@@ -313,7 +343,8 @@ export function createVtodoBoardSource(backend: CalendarBackend, options: VtodoB
   async function writableBoard(boardId: string): Promise<BoardRef> {
     const found = (await backend.listCalendars('reminder')).find((calendar) => calendar.uid === boardId);
     if (!found) throw boardNotFound(boardId);
-    if (found.readOnly === true) throw new InputError(fmt(_('task list "{uid}" is read-only'), { uid: boardId }));
+    if (found.readOnly === true)
+      throw new InputError(fmt(_('task list "{uid}" is read-only'), { uid: boardId }));
     return boardOf(found);
   }
 
@@ -365,7 +396,9 @@ export function createVtodoBoardSource(backend: CalendarBackend, options: VtodoB
       const board = await writableBoard(request.board);
       const lane = laneEdit(request.column, null);
       const now = options.now?.() ?? new Date();
-      const uid = uidForSourceKey(sourceKey('board', `${now.getTime().toString(36)}-${Math.random().toString(36).slice(2, 10)}`));
+      const uid = uidForSourceKey(
+        sourceKey('board', `${now.getTime().toString(36)}-${Math.random().toString(36).slice(2, 10)}`),
+      );
       const plan = planOrder(await cardsInColumn(board, request.column, null), undefined);
       let ical = buildReminder(
         {
@@ -440,7 +473,8 @@ export function createVtodoBoardSource(backend: CalendarBackend, options: VtodoB
       const found = await findBoard(board);
       const known = new Set(COLUMNS.map((column) => column.name));
       const extra = new Set<string>();
-      for (const card of await cardsOf(found)) if (!known.has(card.sourceColumn)) extra.add(card.sourceColumn);
+      for (const card of await cardsOf(found))
+        if (!known.has(card.sourceColumn)) extra.add(card.sourceColumn);
       return [
         ...COLUMNS.map((column) => ({ ...column })),
         ...[...extra].map((name, index) => ({
