@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
-Name=reminder
+Name=Reminder
 Comment=Plan events and tasks
-Comment[de]=Termine und Aufgaben planen
+Comment[de]=Termine und To-dos planen
 Exec=reminder gui
 Icon=eu.jumplink.Reminder
 Terminal=false
 Categories=GNOME;GTK;Office;Calendar;
-Keywords=calendar;events;tasks;reminders;todo;
-Keywords[de]=Kalender;Termine;Aufgaben;Erinnerungen;
+Keywords=calendar;events;tasks;reminders;todo;kanban;board;
+Keywords[de]=Kalender;Termine;Aufgaben;Erinnerungen;Kanban;Board;
 StartupNotify=true
 StartupWMClass=eu.jumplink.Reminder

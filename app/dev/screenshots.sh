@@ -6,7 +6,6 @@
 #
 # Needs a built bundle (`gjsify workspace reminder-cli build`). Runs `gui --demo` with a scratch
 # XDG_CONFIG_HOME, never the real configuration. Output: docs/screenshots/<motif>.<lang>.png.
-# TODO: calendar and board views are still placeholders; add their motifs when they have content.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -17,6 +16,7 @@ MOTIFS=(
   "tasks|1000x700|tasks|en de"
   "tasks-narrow|400x760|tasks|en de"
   "calendar|1000x700|calendar|en de"
+  "board|1000x700|board|en de"
 )
 
 if [ "${1:-}" = "--check" ]; then

@@ -3,19 +3,19 @@
   <id>eu.jumplink.Reminder</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>AGPL-3.0-or-later</project_license>
-  <name>reminder</name>
+  <name>Reminder</name>
   <summary>Plan events and tasks</summary>
-  <summary xml:lang="de">Termine und Aufgaben planen</summary>
+  <summary xml:lang="de">Termine und To-dos planen</summary>
   <developer id="eu.jumplink">
     <name>Pascal Garber</name>
   </developer>
   <description>
-    <p>reminder shows the events and tasks from the calendars you already use in one window, so you can plan your days without moving your data anywhere.</p>
-    <p xml:lang="de">reminder zeigt die Termine und Aufgaben aus den Kalendern, die du schon nutzt, in einem Fenster, damit du deine Tage planen kannst, ohne Daten zu verschieben.</p>
-    <p>Add and tick off tasks, see what is due, and keep working with the same calendars in other apps. It talks to CalDAV servers and to the calendars of your GNOME session.</p>
-    <p xml:lang="de">Lege Aufgaben an und hake sie ab, sieh, was fällig ist, und arbeite mit denselben Kalendern weiter in anderen Apps. Die App spricht mit CalDAV-Servern und mit den Kalendern deiner GNOME-Sitzung.</p>
-    <p>A command line tool and an MCP server for AI assistants come with it. Assistants can only read, unless you grant a specific write for a specific calendar.</p>
-    <p xml:lang="de">Ein Kommandozeilenwerkzeug und ein MCP-Server für KI-Assistenten gehören dazu. Assistenten dürfen nur lesen, solange du nicht ein bestimmtes Schreiben für einen bestimmten Kalender freigibst.</p>
+    <p>Reminder shows the events and tasks from the calendars and boards you already use in one window, so you can plan your days without moving your data anywhere.</p>
+    <p xml:lang="de">Reminder zeigt die Termine und Aufgaben aus den Kalendern und Boards, die du schon nutzt, in einem Fenster, damit du deine Tage planen kannst, ohne Daten zu verschieben.</p>
+    <p>Add and tick off tasks, see what is due today, and move cards between the columns of a board. It works with CalDAV servers such as Nextcloud, the calendars of your GNOME session, Nextcloud Deck, OpenProject and Zenkit, and keeps a local copy for when you are offline.</p>
+    <p xml:lang="de">Lege Aufgaben an und hake sie ab, sieh, was heute fällig ist, und schiebe Karten zwischen den Spalten eines Boards. Die App arbeitet mit CalDAV-Servern wie Nextcloud, den Kalendern deiner GNOME-Sitzung, Nextcloud Deck, OpenProject und Zenkit und hält eine lokale Kopie für die Zeit ohne Netz.</p>
+    <p>A command line tool and an MCP server for AI assistants come with it. Assistants can only read, unless you grant a specific write for a specific calendar or board.</p>
+    <p xml:lang="de">Ein Kommandozeilenwerkzeug und ein MCP-Server für KI-Assistenten gehören dazu. Assistenten dürfen nur lesen, solange du nicht ein bestimmtes Schreiben für einen bestimmten Kalender oder ein bestimmtes Board freigibst.</p>
   </description>
   <url type="homepage">https://github.com/JumpLink/reminder</url>
   <url type="vcs-browser">https://github.com/JumpLink/reminder</url>
@@ -48,6 +48,7 @@
     <keyword>reminders</keyword>
     <keyword>todo</keyword>
     <keyword>CalDAV</keyword>
+    <keyword>Kanban</keyword>
   </keywords>
   <screenshots>
     <screenshot type="default">
@@ -61,6 +62,12 @@
       <image xml:lang="de">https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/calendar.de.png</image>
       <caption>A month, a week or a day of events from every calendar</caption>
       <caption xml:lang="de">Ein Monat, eine Woche oder ein Tag mit Terminen aus allen Kalendern</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/board.en.png</image>
+      <image xml:lang="de">https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/board.de.png</image>
+      <caption>Cards from Deck, OpenProject or your task lists in columns</caption>
+      <caption xml:lang="de">Karten aus Deck, OpenProject oder deinen Aufgabenlisten in Spalten</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/JumpLink/reminder/main/docs/screenshots/tasks-narrow.en.png</image>

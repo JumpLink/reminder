@@ -9,7 +9,7 @@
 
 export const IDENTITY = {
   /** Shown to people (window title, about dialog, `--version` chrome). */
-  displayName: 'reminder',
+  displayName: 'Reminder',
   appId: 'eu.jumplink.Reminder',
   binaryName: 'reminder',
   gettextDomain: 'reminder',
