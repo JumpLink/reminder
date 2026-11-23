@@ -182,6 +182,31 @@ export default async () => {
       expect(dated.includes('TZID=Europe/Berlin')).toBe(false);
     });
 
+    await it('refuses a due that does not fit the start', () => {
+      const started = (start: string) =>
+        RICH.replace('DUE;TZID=Europe/Berlin:20261115T090000', `${start}\r\nDUE;VALUE=DATE:20261120`);
+      const refused = (ical: string, due: string): boolean => {
+        try {
+          buildReminderUpdate(ical, { due }, now());
+        } catch (err) {
+          return err instanceof InputError;
+        }
+        return false;
+      };
+      const timed = started('DTSTART:20261110T080000Z');
+      expect(refused(timed, '2026-12-01')).toBe(true);
+      expect(refused(timed, '2026-11-09T09:00:00Z')).toBe(true);
+      expect(refused(timed, '2026-11-12T09:00:00+01:00')).toBe(false);
+      const dated = started('DTSTART;VALUE=DATE:20261110');
+      expect(refused(dated, '2026-11-12T09:00:00Z')).toBe(true);
+      expect(refused(dated, '2026-11-09')).toBe(true);
+      expect(refused(dated, '2026-11-10')).toBe(false);
+      // A floating start is no instant: only the value type can be checked.
+      expect(refused(started('DTSTART:20261110T080000'), '2026-01-01T00:00:00Z')).toBe(false);
+      // Clearing the due date needs no start check.
+      expect(refused(timed, '')).toBe(false);
+    });
+
     await it('escapes text and refuses bad input', () => {
       const out = buildReminderUpdate(RICH, { description: 'one; two, three' }, now());
       expect(out.includes('DESCRIPTION:one\\; two\\, three')).toBe(true);

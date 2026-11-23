@@ -8,7 +8,7 @@ import {
   type SyncFetch,
 } from '@reminder/core';
 
-import { createTasksModel, tomorrow } from '../../../src/frontends/gui/model.ts';
+import { createTasksModel, postponedDue, tomorrow } from '../../../src/frontends/gui/model.ts';
 import { buildSyncSources } from '../../../src/frontends/gui/sync-sources.ts';
 import { calendar, createFakeBackend, vtodo } from '../fake-backend.ts';
 
@@ -110,6 +110,16 @@ export default async () => {
       expect((await model.postpone(item as never)).kind).toBe('ok');
       expect(model.reminders().find((r) => r.uid === 'w1')?.due).toBe('2026-11-19');
       expect(tomorrow(new Date(2026, 11, 31))).toBe('2027-01-01');
+    });
+
+    await it('postpones a timed task to the same time tomorrow', () => {
+      const at = new Date(2026, 10, 15, 14, 30);
+      const item = { due: at.toISOString(), dueAllDay: false };
+      const expected = new Date(2026, 10, 19, 14, 30).toISOString().replace('.000Z', 'Z');
+      expect(postponedDue(item as never, NOW)).toBe(expected);
+      expect(postponedDue({ due: '2026-11-15', dueAllDay: true } as never, NOW)).toBe('2026-11-19');
+      expect(postponedDue({ due: null, dueAllDay: false } as never, NOW)).toBe('2026-11-19');
+      expect(postponedDue({ due: '2026-11-15T14:30:00', dueAllDay: false } as never, NOW)).toBe('2026-11-19');
     });
 
     await it('reports a change made elsewhere as a conflict, not a failure', async () => {

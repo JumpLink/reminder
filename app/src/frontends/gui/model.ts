@@ -70,6 +70,18 @@ export function tomorrow(now: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/**
+ * Where postponing moves a task: tomorrow, at the same time of day when the task has one. A due
+ * time in floating time names no instant to keep, so it becomes a bare date.
+ */
+export function postponedDue(item: ReminderItem, now: Date): string {
+  const day = tomorrow(now);
+  if (!item.due || item.dueAllDay || !/(Z|[+-]\d{2}:?\d{2})$/.test(item.due)) return day;
+  const at = new Date(item.due);
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, at.getHours(), at.getMinutes());
+  return next.toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
 export function createTasksModel(deps: TasksModelDeps): TasksModel {
   const { config, backend, service } = deps;
   const now = deps.now ?? (() => new Date());
@@ -164,7 +176,7 @@ export function createTasksModel(deps: TasksModelDeps): TasksModel {
     calendar: (uid) => calendars.find((c) => c.uid === uid) ?? null,
     writable: (uid) => isGranted(config.grants, 'reminder.update', uid),
     setDone: (item, done) => write(item, { status: done ? 'completed' : 'needs-action' }),
-    postpone: (item) => write(item, { due: tomorrow(now()) }),
+    postpone: (item) => write(item, { due: postponedDue(item, now()) }),
     syncStatus: () =>
       calendars
         .filter((c) => c.kind === 'reminder')
