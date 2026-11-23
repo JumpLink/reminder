@@ -130,8 +130,11 @@ function inWindow(ical: string, calendarUid: string, from?: string, to?: string)
   const event = readEvent(ical, calendarUid);
   if (!event) return false;
   if (event.recurring) return true;
-  const start = event.start;
-  return !(start < from.slice(0, start.length) || start >= to.slice(0, start.length));
+  // Overlap, as a CalDAV time-range query and EDS match: an event that began before the window
+  // but is still running counts. Values compare as text, cut to the precision of the event's own.
+  const { start, end } = event;
+  if (start >= to.slice(0, start.length)) return false;
+  return end !== null && end > start ? end > from.slice(0, end.length) : start >= from.slice(0, start.length);
 }
 
 export function createVdirBackend(options: VdirOptions): VdirBackend {
@@ -149,7 +152,9 @@ export function createVdirBackend(options: VdirOptions): VdirBackend {
 
   async function files(calendarUid: string): Promise<string[]> {
     try {
-      return (await readdir(dirOf(calendarUid))).filter((n) => n.endsWith('.ics') && !n.startsWith('.')).sort();
+      return (await readdir(dirOf(calendarUid)))
+        .filter((n) => n.endsWith('.ics') && !n.startsWith('.'))
+        .sort();
     } catch {
       return [];
     }
@@ -265,8 +270,7 @@ export function createVdirBackend(options: VdirOptions): VdirBackend {
       const found = await locate(calendarUid, uid);
       if (!found) throw new BackendError(`no ${uid} in ${calendarUid}`);
       if (uidOf(ical) !== uid) throw new BackendError(`the update does not carry UID ${uid}`);
-      if (etag && etagOf(found.text) !== etag)
-        throw new ConflictError(`${uid} changed on disk`, 'vdir', 412);
+      if (etag && etagOf(found.text) !== etag) throw new ConflictError(`${uid} changed on disk`, 'vdir', 412);
       await writeAtomic(found.file, wrap(ical, prodId));
     },
     async createCollection({ name, color, kind }) {
