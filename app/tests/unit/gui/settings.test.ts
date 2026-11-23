@@ -9,6 +9,7 @@ import {
   createMemorySettings,
   parseColorScheme,
   parseHidden,
+  parseWeekNumbers,
   parseWeekStart,
   settingsPath,
 } from '../../../src/frontends/gui/settings.ts';
@@ -63,9 +64,13 @@ export default async () => {
         expect(first.colorScheme()).toBe('system');
         first.setColorScheme('dark');
         first.setWeekStart('monday');
+        expect(first.weekNumbers()).toBe(false);
+        first.setWeekNumbers(true);
         const again = createGuiSettings(path);
         expect(again.colorScheme()).toBe('dark');
         expect(again.weekStart()).toBe('monday');
+        expect(again.weekNumbers()).toBe(true);
+        expect(parseWeekNumbers('{"weekNumbers":"yes"}')).toBe(false);
         expect([...again.hidden()].join(',')).toBe('x');
         expect(readFileSync(path, 'utf8')).toContain('"future"');
         expect(parseColorScheme('{"colorScheme":"neon"}')).toBe('system');

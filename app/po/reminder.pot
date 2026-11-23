@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-22 13:16+0100\n"
+"POT-Creation-Date: 2026-11-23 18:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1012,8 +1012,9 @@ msgstr ""
 #: src/frontends/gui/board-view-model.ts:208
 #: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:171
 #: src/frontends/gui/view-model.ts:121
-#: src/frontends/gui/views/preferences/controller.ts:112
-#: src/frontends/gui/views/preferences/controller.ts:158
+#: src/frontends/gui/views/preferences/controller.ts:113
+#: src/frontends/gui/views/preferences/controller.ts:162
+#: src/frontends/gui/views/preferences/controller.ts:172
 #: src/frontends/gui/views/tasks.ts:59 src/frontends/gui/views/tasks.ts:133
 msgid "Untitled"
 msgstr ""
@@ -1094,7 +1095,7 @@ msgstr ""
 msgid "No calendar backend could be set up."
 msgstr ""
 
-#: src/frontends/gui/main.ts:146
+#: src/frontends/gui/main.ts:151
 msgid "Calendar events and reminders from your existing calendars."
 msgstr ""
 
@@ -1116,7 +1117,7 @@ msgid "Overdue"
 msgstr ""
 
 #: src/frontends/gui/view-model.ts:101 src/frontends/gui/views/calendar.ts:175
-#: src/frontends/gui/window.ts:314
+#: src/frontends/gui/window.ts:319
 msgid "Today"
 msgstr ""
 
@@ -1220,7 +1221,7 @@ msgstr ""
 msgid "Loading boards…"
 msgstr ""
 
-#: src/frontends/gui/views/board.ts:294 src/frontends/gui/window.ts:305
+#: src/frontends/gui/views/board.ts:294 src/frontends/gui/window.ts:310
 msgid "Refresh"
 msgstr ""
 
@@ -1236,15 +1237,15 @@ msgstr ""
 msgid "No card matches the filters."
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:315
+#: src/frontends/gui/views/calendar.ts:71 src/frontends/gui/window.ts:320
 msgid "Month"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:316
+#: src/frontends/gui/views/calendar.ts:72 src/frontends/gui/window.ts:321
 msgid "Week"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:317
+#: src/frontends/gui/views/calendar.ts:73 src/frontends/gui/window.ts:322
 msgid "Day"
 msgstr ""
 
@@ -1263,7 +1264,7 @@ msgstr ""
 #: src/frontends/gui/views/calendar.ts:114
 #: src/frontends/gui/views/calendar.ts:190
 #: src/frontends/gui/views/preferences/account-detail.ts:19
-#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:311
+#: src/frontends/gui/window.ts:82 src/frontends/gui/window.ts:316
 msgid "Calendar"
 msgstr ""
 
@@ -1275,11 +1276,11 @@ msgstr ""
 msgid "Open the original"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:312
+#: src/frontends/gui/views/calendar.ts:173 src/frontends/gui/window.ts:317
 msgid "Previous"
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:313
+#: src/frontends/gui/views/calendar.ts:174 src/frontends/gui/window.ts:318
 msgid "Next"
 msgstr ""
 
@@ -1287,11 +1288,11 @@ msgstr ""
 msgid "Events from your calendars will appear here."
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:362
+#: src/frontends/gui/views/calendar.ts:363
 msgid "Nothing on this day."
 msgstr ""
 
-#: src/frontends/gui/views/calendar.ts:389
+#: src/frontends/gui/views/calendar.ts:390
 msgid "Cannot load the calendar"
 msgstr ""
 
@@ -1435,51 +1436,51 @@ msgid "System calendars added"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/accounts.ts:90
-#: src/frontends/gui/views/preferences/agent-access.ts:116
+#: src/frontends/gui/views/preferences/agent-access.ts:119
 #: src/frontends/gui/views/preferences/board.ts:192
 msgid "The configuration cannot be read"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:28
+#: src/frontends/gui/views/preferences/agent-access.ts:26
 msgid "Agent access"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:32
+#: src/frontends/gui/views/preferences/agent-access.ts:30
 msgid "Granted"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:33
+#: src/frontends/gui/views/preferences/agent-access.ts:31
 msgid ""
 "Agents can always read. They change something only where it is listed here."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:35
-#: src/frontends/gui/views/preferences/agent-access.ts:44
+#: src/frontends/gui/views/preferences/agent-access.ts:33
+#: src/frontends/gui/views/preferences/agent-access.ts:42
 msgid "Grant access"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:40
+#: src/frontends/gui/views/preferences/agent-access.ts:38
 msgid "May"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:43
+#: src/frontends/gui/views/preferences/agent-access.ts:41
 msgid "In"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:65
+#: src/frontends/gui/views/preferences/agent-access.ts:68
 msgid "Nothing to choose from"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:86
+#: src/frontends/gui/views/preferences/agent-access.ts:89
 msgid "Nothing is granted"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:87
+#: src/frontends/gui/views/preferences/agent-access.ts:90
 msgid "Agents cannot change anything."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/agent-access.ts:101
-#: src/frontends/gui/views/preferences/agent-access.ts:102
+#: src/frontends/gui/views/preferences/agent-access.ts:104
+#: src/frontends/gui/views/preferences/agent-access.ts:105
 msgid "Revoke"
 msgstr ""
 
@@ -1523,7 +1524,7 @@ msgid "Enter the server address, e.g. https://cloud.example.org/"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/board-controller.ts:212
-#: src/frontends/gui/views/preferences/controller.ts:239
+#: src/frontends/gui/views/preferences/controller.ts:263
 msgid "Enter the user name."
 msgstr ""
 
@@ -1631,59 +1632,59 @@ msgstr ""
 msgid "No board sources yet"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:83
+#: src/frontends/gui/views/preferences/controller.ts:84
 msgid "Local lists"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:83
+#: src/frontends/gui/views/preferences/controller.ts:84
 msgid "System calendars"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:123
+#: src/frontends/gui/views/preferences/controller.ts:124
 msgid "Create events"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:125
+#: src/frontends/gui/views/preferences/controller.ts:126
 msgid "Create reminders"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:127
+#: src/frontends/gui/views/preferences/controller.ts:128
 msgid "Change reminders"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:129
+#: src/frontends/gui/views/preferences/controller.ts:130
 msgid "Move board cards"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:131
+#: src/frontends/gui/views/preferences/controller.ts:132
 msgid "Edit board cards"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:133
+#: src/frontends/gui/views/preferences/controller.ts:134
 msgid "Add board cards"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:235
+#: src/frontends/gui/views/preferences/controller.ts:259
 msgid "The address must start with https://"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:237
+#: src/frontends/gui/views/preferences/controller.ts:261
 msgid "Enter the server address, e.g. https://dav.example.org/"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:240
+#: src/frontends/gui/views/preferences/controller.ts:264
 msgid "Enter the password."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:308
+#: src/frontends/gui/views/preferences/controller.ts:332
 msgid "The account is removed, but cleaning up failed: {message}"
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:326
+#: src/frontends/gui/views/preferences/controller.ts:350
 msgid "Enter a name for the list."
 msgstr ""
 
-#: src/frontends/gui/views/preferences/controller.ts:328
+#: src/frontends/gui/views/preferences/controller.ts:352
 msgid "The colour must look like #3584e4."
 msgstr ""
 
@@ -1713,7 +1714,7 @@ msgid "Saturday"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/general.ts:51
-#: src/frontends/gui/window.ts:301
+#: src/frontends/gui/window.ts:306
 msgid "General"
 msgstr ""
 
@@ -1731,6 +1732,14 @@ msgstr ""
 
 #: src/frontends/gui/views/preferences/general.ts:64
 msgid "First day of the week"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/general.ts:67
+msgid "Show week numbers"
+msgstr ""
+
+#: src/frontends/gui/views/preferences/general.ts:67
+msgid "In the month view"
 msgstr ""
 
 #: src/frontends/gui/views/preferences/local-list-add.ts:24
@@ -1817,11 +1826,11 @@ msgstr ""
 msgid "Your reminders as cards will appear here."
 msgstr ""
 
-#: src/frontends/gui/window.ts:145 src/frontends/gui/window.ts:306
+#: src/frontends/gui/window.ts:145 src/frontends/gui/window.ts:311
 msgid "Preferences"
 msgstr ""
 
-#: src/frontends/gui/window.ts:146 src/frontends/gui/window.ts:307
+#: src/frontends/gui/window.ts:146 src/frontends/gui/window.ts:312
 msgid "Keyboard Shortcuts"
 msgstr ""
 
@@ -1833,7 +1842,7 @@ msgstr ""
 msgid "Main Menu"
 msgstr ""
 
-#: src/frontends/gui/window.ts:308
+#: src/frontends/gui/window.ts:313
 msgid "Quit"
 msgstr ""
 

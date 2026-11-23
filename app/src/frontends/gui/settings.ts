@@ -1,6 +1,6 @@
 /**
  * What the window remembers between runs: which sources the person switched off in the overview,
- * the colour scheme and the first day of the week. None of it is the core's configuration.
+ * the colour scheme, the first day of the week and whether the month shows week numbers. None of it is the core's configuration.
  *
  * "Hidden" is a view filter and nothing else. It lives here, in the app's own file, and never
  * reaches the core: `disabled` (docs/adr/0006) is configuration the core enforces, while a hidden
@@ -52,6 +52,10 @@ export function parseWeekStart(text: string): WeekStart {
   return oneOf(WEEK_STARTS, readObject(text).weekStart, 'system');
 }
 
+export function parseWeekNumbers(text: string): boolean {
+  return readObject(text).weekNumbers === true;
+}
+
 function readObject(text: string): Record<string, unknown> {
   try {
     const raw: unknown = JSON.parse(text);
@@ -69,6 +73,9 @@ export interface GuiSettings {
   setColorScheme(value: ColorScheme): void;
   weekStart(): WeekStart;
   setWeekStart(value: WeekStart): void;
+  /** ISO week numbers beside the month grid; off by default, as most locales do not use them. */
+  weekNumbers(): boolean;
+  setWeekNumbers(value: boolean): void;
 }
 
 /**
@@ -87,6 +94,7 @@ function createSettings(path: string | null): GuiSettings {
   const hidden = parseHidden(text);
   let colorScheme = parseColorScheme(text);
   let weekStart = parseWeekStart(text);
+  let weekNumbers = parseWeekNumbers(text);
   const unknown = readObject(text);
 
   const save = (): void => {
@@ -94,7 +102,7 @@ function createSettings(path: string | null): GuiSettings {
     try {
       mkdirSync(dirname(path), { recursive: true });
       const temp = `${path}.tmp`;
-      const body = { ...unknown, hidden: [...hidden].sort(), colorScheme, weekStart };
+      const body = { ...unknown, hidden: [...hidden].sort(), colorScheme, weekStart, weekNumbers };
       writeFileSync(temp, `${JSON.stringify(body, null, 2)}\n`, 'utf8');
       renameSync(temp, path);
     } catch {
@@ -118,6 +126,11 @@ function createSettings(path: string | null): GuiSettings {
     weekStart: () => weekStart,
     setWeekStart(value) {
       weekStart = value;
+      save();
+    },
+    weekNumbers: () => weekNumbers,
+    setWeekNumbers(value) {
+      weekNumbers = value;
       save();
     },
   };
