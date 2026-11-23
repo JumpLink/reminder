@@ -6,7 +6,7 @@
 import Adw from '@girs/adw-1';
 import Gtk from '@girs/gtk-4.0';
 
-import { _, CAPABILITIES, errorMessage, isBoardCapability } from '@reminder/core';
+import { _, CAPABILITIES, errorMessage } from '@reminder/core';
 
 import {
   addGrant,
@@ -18,9 +18,7 @@ import {
 } from './controller.ts';
 import type { PageContext, PrefsPage } from './page-context.ts';
 
-// Board grants need a `<source>:<board>` target, which this page cannot offer yet; listing them
-// here would only lead to "Nothing to choose from". Existing board grants still show below.
-const GRANTABLE = CAPABILITIES.filter((c) => !isBoardCapability(c));
+const GRANTABLE = CAPABILITIES;
 
 export function createAgentAccessPage(ctx: PageContext): PrefsPage {
   const page = new Adw.PreferencesPage({
@@ -56,7 +54,12 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
 
   const updateTargets = (): void => {
     try {
-      choices = targetChoices(ctx.env.store.read(), ctx.env.lists(), GRANTABLE[capability.selected]);
+      choices = targetChoices(
+        ctx.env.store.read(),
+        ctx.env.lists(),
+        GRANTABLE[capability.selected],
+        ctx.env.boards(),
+      );
     } catch {
       choices = [];
     }
@@ -80,7 +83,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
     rows = [];
     try {
       const config = ctx.env.store.read();
-      const list = grantRows(config, ctx.env.lists());
+      const list = grantRows(config, ctx.env.lists(), ctx.env.boards());
       if (list.length === 0) {
         const none = new Adw.ActionRow({
           title: _('Nothing is granted'),
@@ -125,7 +128,9 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
       preselected = true;
       try {
         const config = ctx.env.store.read();
-        const first = GRANTABLE.findIndex((c) => targetChoices(config, ctx.env.lists(), c).length > 0);
+        const first = GRANTABLE.findIndex(
+          (c) => targetChoices(config, ctx.env.lists(), c, ctx.env.boards()).length > 0,
+        );
         if (first > 0) capability.set_selected(first);
       } catch {
         // The error row above already says the configuration cannot be read.

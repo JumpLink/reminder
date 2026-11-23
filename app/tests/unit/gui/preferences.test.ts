@@ -22,6 +22,18 @@ import {
   validateCaldav,
   type PreferencesEnv,
 } from '../../../src/frontends/gui/views/preferences/controller.ts';
+import type { BoardBinding } from '../../../src/frontends/gui/board-sync.ts';
+
+const binding = (source: string, id: string, title: string, canWrite = true): BoardBinding => ({
+  entry: {
+    source: {} as BoardBinding['entry']['source'],
+    info: { id: source, type: 'deck', canWrite, hasWatchers: false, changeToken: false },
+    kind: 'deck',
+    host: 'boards.invalid',
+  },
+  board: { source, id, title, url: null },
+  key: { account: source, source: id },
+});
 
 const list = (uid: string, name: string, kind: CalendarInfo['kind'] = 'reminder'): CalendarInfo => ({
   uid,
@@ -119,6 +131,35 @@ export default async () => {
       expect(grantRows(store.read(), env.lists())[0].name).toContain('Chores');
       await removeGrant(env, 'reminder.update', 'home:l1');
       expect(store.read().grants.length).toBe(0);
+    });
+
+    await it('offers the boards of writable sources for board grants, under their titles', async () => {
+      const { env, store } = setup();
+      const boards = [
+        binding('deck-home', '7', 'Workshop'),
+        binding('deck-home', '8', 'Garden'),
+        binding('readonly', '1', 'Archive', false),
+      ];
+      const choices = targetChoices(store.read(), env.lists(), 'board.move', boards);
+      expect(choices.map((c) => c.label).join(',')).toBe('Garden,Workshop');
+      expect(choices[1].target).toBe('deck-home:7');
+      expect(targetChoices(store.read(), env.lists(), 'board.move').length).toBe(0);
+      expect(targetChoices(store.read(), env.lists(), 'reminder.update', boards).length).toBe(2);
+    });
+
+    await it('names the source when boards of several sources are on offer', async () => {
+      const { env, store } = setup();
+      const boards = [binding('a', '1', 'Plan'), binding('b', '1', 'Plan')];
+      const labels = targetChoices(store.read(), env.lists(), 'board.create', boards).map((c) => c.label);
+      expect(labels.join(',')).toBe('Plan (a),Plan (b)');
+    });
+
+    await it('shows a board grant by title, even when the source no longer writes', async () => {
+      const { env, store } = setup();
+      await addGrant(env, 'board.update', 'readonly:1');
+      await addGrant(env, 'board.move', 'gone:9');
+      const rows = grantRows(store.read(), env.lists(), [binding('readonly', '1', 'Archive', false)]);
+      expect(rows.map((r) => r.name).join(',')).toBe('Archive,gone:9');
     });
 
     await it('stores a new CalDAV password in the secret store and not in the config', async () => {

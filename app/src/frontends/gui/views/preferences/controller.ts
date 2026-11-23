@@ -15,6 +15,7 @@ import {
   fmt,
   isGranted,
   parseSecretRef,
+  boardTarget,
   isBoardCapability,
   setSourceEnabled,
   targetOfCacheKey,
@@ -139,14 +140,17 @@ export interface TargetChoice {
   label: string;
 }
 
-/** The collections a capability can apply to: events for event creation, task lists otherwise. */
+/**
+ * Where a capability can apply: events for event creation, task lists for reminders, and for the
+ * board capabilities every board of a source that can write at all (ADR 0013 §1–2).
+ */
 export function targetChoices(
   config: ReminderConfig,
   lists: readonly AccountLists[],
   capability: Capability,
+  boards: readonly BoardBinding[] = [],
 ): TargetChoice[] {
-  // Board targets are `<source>:<board>`, not collections; picking one is the board setup's job.
-  if (isBoardCapability(capability)) return [];
+  if (isBoardCapability(capability)) return boardChoices(boards.filter((b) => b.entry.info.canWrite));
   const kind: ItemKind = capability === 'calendar.create' ? 'event' : 'reminder';
   const named = config.accounts.length > 1;
   return lists
@@ -161,17 +165,37 @@ export function targetChoices(
     .sort((a, b) => byText(a.label, b.label) || byText(a.target, b.target));
 }
 
+function boardChoices(boards: readonly BoardBinding[]): TargetChoice[] {
+  const named = new Set(boards.map((b) => b.board.source)).size > 1;
+  return boards
+    .map(({ board }) => {
+      const title = board.title || _('Untitled');
+      return {
+        target: boardTarget(board.source, board.id),
+        label: named ? `${title} (${board.source})` : title,
+      };
+    })
+    .sort((a, b) => byText(a.label, b.label) || byText(a.target, b.target));
+}
+
 export interface GrantRow {
   capability: Capability;
   target: string;
-  /** The collection's name when it is known, else the target as written. */
+  /** The collection's or board's name when it is known, else the target as written. */
   name: string;
 }
 
-export function grantRows(config: ReminderConfig, lists: readonly AccountLists[]): GrantRow[] {
+export function grantRows(
+  config: ReminderConfig,
+  lists: readonly AccountLists[],
+  boards: readonly BoardBinding[] = [],
+): GrantRow[] {
   const names = new Map<string, string>();
   for (const capability of CAPABILITIES)
     for (const choice of targetChoices(config, lists, capability)) names.set(choice.target, choice.label);
+  // Every board, writable or not: a grant left over from a source that lost write access is
+  // still easier to revoke under its title than under its id.
+  for (const choice of boardChoices(boards)) names.set(choice.target, choice.label);
   return config.grants
     .map((g) => ({ capability: g.capability, target: g.target, name: names.get(g.target) ?? g.target }))
     .sort((a, b) => byText(a.name, b.name) || byText(a.capability, b.capability));
