@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reminder\n"
 "Report-Msgid-Bugs-To: https://github.com/JumpLink/reminder/issues\n"
-"POT-Creation-Date: 2026-11-23 18:01+0100\n"
+"POT-Creation-Date: 2026-11-23 18:46+0100\n"
 "PO-Revision-Date: 2026-10-29 21:01+0100\n"
 "Last-Translator: reminder contributors\n"
 "Language-Team: German\n"
@@ -163,24 +163,24 @@ msgstr "boardSources[{index}]: id „{id}“ wird zweimal verwendet"
 msgid "no board {id} in this source"
 msgstr "Diese Quelle kennt kein Board {id}"
 
-#: ../packages/core/src/board/vtodo-source.ts:316
+#: ../packages/core/src/board/vtodo-source.ts:347
 msgid "task list \"{uid}\" is read-only"
 msgstr "Die Aufgabenliste „{uid}“ ist schreibgeschützt"
 
-#: ../packages/core/src/board/vtodo-source.ts:322
+#: ../packages/core/src/board/vtodo-source.ts:353
 msgid "a task list has no column \"{column}\" to write to"
 msgstr ""
 "Eine Aufgabenliste hat keine Spalte „{column}“, in die geschrieben werden "
 "kann"
 
-#: ../packages/core/src/board/vtodo-source.ts:355
+#: ../packages/core/src/board/vtodo-source.ts:386
 #: ../packages/deck/src/deck-source.ts:309
 #: ../packages/openproject/src/openproject-source.ts:344
 #: ../packages/zenkit/src/source.ts:440 src/core/demo/board-source.ts:262
 msgid "no card {id} on this board"
 msgstr "Dieses Board kennt keine Karte {id}"
 
-#: ../packages/core/src/board/vtodo-source.ts:357
+#: ../packages/core/src/board/vtodo-source.ts:388
 #: ../packages/deck/src/deck-source.ts:311
 #: ../packages/openproject/src/openproject-source.ts:273
 #: ../packages/zenkit/src/source.ts:442 src/core/demo/board-source.ts:264
@@ -217,7 +217,7 @@ msgstr "Der Kartentitel darf nicht leer sein"
 msgid "a position must be a non-negative integer"
 msgstr "Die Position muss eine nicht negative ganze Zahl sein"
 
-#: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:213
+#: ../packages/core/src/board/write.ts:120 ../packages/core/src/rewrite.ts:264
 #: src/core/board-read.ts:391
 msgid "nothing to change"
 msgstr "Nichts zu ändern"
@@ -310,7 +310,7 @@ msgid "a file with accounts must not also have a top-level {key}"
 msgstr ""
 "Eine Datei mit accounts darf zusätzlich kein {key} auf oberster Ebene haben"
 
-#: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:178
+#: ../packages/core/src/create.ts:62 ../packages/core/src/rewrite.ts:223
 msgid "summary must not be empty"
 msgstr "Der Titel darf nicht leer sein"
 
@@ -410,19 +410,32 @@ msgstr ""
 "priorities.list „{list}“ ist keine aktivierte Aufgabenliste (siehe `reminder "
 "calendars`)"
 
-#: ../packages/core/src/rewrite.ts:94
+#: ../packages/core/src/rewrite.ts:111
 msgid "no {component} in the stored item"
 msgstr "Kein {component} im gespeicherten Eintrag"
 
-#: ../packages/core/src/rewrite.ts:97
+#: ../packages/core/src/rewrite.ts:115
 msgid "unterminated {component} in the stored item"
 msgstr "Nicht abgeschlossenes {component} im gespeicherten Eintrag"
 
-#: ../packages/core/src/rewrite.ts:192
+#: ../packages/core/src/rewrite.ts:201
+msgid ""
+"this task starts on a date without a time, so its due date cannot have one"
+msgstr "Diese Aufgabe beginnt an einem Tag ohne Uhrzeit, deshalb darf auch ihr Fälligkeitsdatum keine haben"
+
+#: ../packages/core/src/rewrite.ts:202
+msgid "this task starts at a time of day, so its due date needs one too"
+msgstr "Diese Aufgabe beginnt zu einer Uhrzeit, deshalb braucht auch ihr Fälligkeitsdatum eine"
+
+#: ../packages/core/src/rewrite.ts:207
+msgid "a task cannot be due before it starts ({start})"
+msgstr "Eine Aufgabe kann nicht fällig sein, bevor sie beginnt ({start})"
+
+#: ../packages/core/src/rewrite.ts:242
 msgid "priority must be 0 (none) to 9, not {value}"
 msgstr "Die Priorität muss 0 (keine) bis 9 sein, nicht {value}"
 
-#: ../packages/core/src/rewrite.ts:198
+#: ../packages/core/src/rewrite.ts:249
 msgid "cannot set status \"{value}\""
 msgstr "Der Status „{value}“ kann nicht gesetzt werden"
 
@@ -1065,7 +1078,7 @@ msgstr "Unsortiert"
 
 #: src/frontends/gui/board-view-model.ts:161
 #: src/frontends/gui/board-view-model.ts:208
-#: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:171
+#: src/frontends/gui/calendar-model.ts:65 src/frontends/gui/model.ts:183
 #: src/frontends/gui/view-model.ts:121
 #: src/frontends/gui/views/preferences/controller.ts:113
 #: src/frontends/gui/views/preferences/controller.ts:162

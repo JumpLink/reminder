@@ -19,8 +19,11 @@ import {
   fold,
   formatUtc,
   parseComponents,
+  formatInputTime,
   parseContentLine,
+  parseTime,
   timeLine,
+  type ContentLine,
 } from './ical.ts';
 import type { ReminderStatus } from './types.ts';
 import { _, fmt } from './i18n.ts';
@@ -68,11 +71,25 @@ function logicalLines(text: string, separator: string): LogicalLine[] {
       continue;
     }
     if (parsed.name === 'BEGIN') {
-      out.push({ raw, name: 'BEGIN', depth, kind: 'begin', component: parsed.value.toUpperCase(), removed: false });
+      out.push({
+        raw,
+        name: 'BEGIN',
+        depth,
+        kind: 'begin',
+        component: parsed.value.toUpperCase(),
+        removed: false,
+      });
       depth++;
     } else if (parsed.name === 'END') {
       depth = Math.max(0, depth - 1);
-      out.push({ raw, name: 'END', depth, kind: 'end', component: parsed.value.toUpperCase(), removed: false });
+      out.push({
+        raw,
+        name: 'END',
+        depth,
+        kind: 'end',
+        component: parsed.value.toUpperCase(),
+        removed: false,
+      });
     } else {
       out.push({ raw, name: parsed.name, depth, kind: 'prop', component: '', removed: false });
     }
@@ -94,7 +111,8 @@ export function rewriteComponent(text: string, component: string, edits: readonl
   if (beginIndex < 0) throw new InputError(fmt(_('no {component} in the stored item'), { component }));
   const bodyDepth = lines[beginIndex].depth + 1;
   const endIndex = lines.findIndex((l, i) => i > beginIndex && l.kind === 'end' && l.component === component);
-  if (endIndex < 0) throw new InputError(fmt(_('unterminated {component} in the stored item'), { component }));
+  if (endIndex < 0)
+    throw new InputError(fmt(_('unterminated {component} in the stored item'), { component }));
 
   const appended: string[] = [];
   for (const edit of edits) {
@@ -164,6 +182,33 @@ function sequenceOf(ical: string): number {
 }
 
 /**
+ * RFC 5545 asks a VTODO's DUE for the value type of its DTSTART and an instant no earlier. A DUE
+ * that breaks either is refused here rather than stored as a task other clients may reject or
+ * misread. A start in floating or unknown time cannot be placed on the time line, so only its
+ * value type is checked.
+ */
+function assertDueFitsStart(start: ContentLine, due: string): void {
+  let from: ReturnType<typeof parseTime>;
+  try {
+    from = parseTime(start);
+  } catch {
+    return;
+  }
+  const allDay = formatInputTime(due).allDay;
+  if (allDay !== from.allDay) {
+    throw new InputError(
+      from.allDay
+        ? _('this task starts on a date without a time, so its due date cannot have one')
+        : _('this task starts at a time of day, so its due date needs one too'),
+    );
+  }
+  const before = allDay ? due < from.iso : from.iso.endsWith('Z') && Date.parse(due) < Date.parse(from.iso);
+  if (before) {
+    throw new InputError(fmt(_('a task cannot be due before it starts ({start})'), { start: from.iso }));
+  }
+}
+
+/**
  * The stored VTODO with `changes` applied: the new text, ready to hand back to the backend.
  *
  * Every write bumps SEQUENCE and restamps DTSTAMP and LAST-MODIFIED, so another client can tell
@@ -185,11 +230,17 @@ export function buildReminderUpdate(ical: string, changes: ReminderChanges, now:
     });
   }
   if (changes.due !== undefined) {
+    if (changes.due !== '') {
+      const start = findComponent(parseComponents(ical), 'VTODO')?.props.find((p) => p.name === 'DTSTART');
+      if (start) assertDueFitsStart(start, changes.due);
+    }
     edits.push({ name: 'DUE', line: changes.due === '' ? null : timeLine('DUE', changes.due) });
   }
   if (changes.priority !== undefined) {
     if (!Number.isInteger(changes.priority) || changes.priority < 0 || changes.priority > 9) {
-      throw new InputError(fmt(_('priority must be 0 (none) to 9, not {value}'), { value: changes.priority }));
+      throw new InputError(
+        fmt(_('priority must be 0 (none) to 9, not {value}'), { value: changes.priority }),
+      );
     }
     edits.push({ name: 'PRIORITY', line: changes.priority === 0 ? null : `PRIORITY:${changes.priority}` });
   }
