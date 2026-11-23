@@ -26,6 +26,24 @@ const BERLIN_VTIMEZONE = [
   'END:VTIMEZONE',
 ];
 
+const EASTERN_VTIMEZONE = [
+  'BEGIN:VTIMEZONE',
+  'TZID:Eastern Standard Time',
+  'BEGIN:STANDARD',
+  'DTSTART:16010101T020000',
+  'TZOFFSETFROM:-0400',
+  'TZOFFSETTO:-0500',
+  'RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=11',
+  'END:STANDARD',
+  'BEGIN:DAYLIGHT',
+  'DTSTART:16010101T020000',
+  'TZOFFSETFROM:-0500',
+  'TZOFFSETTO:-0400',
+  'RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=2SU;BYMONTH=3',
+  'END:DAYLIGHT',
+  'END:VTIMEZONE',
+];
+
 /** Wrap component lines into a VCALENDAR, so a fixture only states what it is about. */
 function calendar(...lines: string[]): string {
   return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//reminder tests//EN', ...lines, 'END:VCALENDAR'].join(
@@ -293,6 +311,93 @@ export default async () => {
       const result = expand(ical, { from: '2026-03-01', to: '2026-04-15' });
       expect(starts(result.occurrences)).toBe(
         '2026-03-27T01:30:00Z 2026-03-28T01:30:00Z 2026-03-29T00:30:00Z 2026-03-30T00:30:00Z',
+      );
+      expect(result.unresolvedZones.length).toBe(0);
+    });
+
+    await it('holds the wall clock across the US switch, three weeks before Europe’s', async () => {
+      // 2026-03-08: New York goes from -05:00 to -04:00; Berlin still has three weeks to go.
+      const ical = calendar(
+        ...vevent(
+          'UID:ny-spring',
+          'DTSTART;TZID=America/New_York:20260306T090000',
+          'DTEND;TZID=America/New_York:20260306T100000',
+          'RRULE:FREQ=DAILY;COUNT=4',
+        ),
+      );
+      const result = expand(ical, { from: '2026-03-01', to: '2026-03-31' });
+      expect(starts(result.occurrences)).toBe(
+        '2026-03-06T14:00:00Z 2026-03-07T14:00:00Z 2026-03-08T13:00:00Z 2026-03-09T13:00:00Z',
+      );
+      expect(result.unresolvedZones.length).toBe(0);
+    });
+
+    await it('holds the wall clock across the southern-hemisphere autumn switch', async () => {
+      // 2026-04-05: Sydney leaves daylight time (+11:00 to +10:00) while Europe has just entered it.
+      const ical = calendar(
+        ...vevent(
+          'UID:syd-autumn',
+          'DTSTART;TZID=Australia/Sydney:20260403T090000',
+          'DTEND;TZID=Australia/Sydney:20260403T100000',
+          'RRULE:FREQ=DAILY;COUNT=4',
+        ),
+      );
+      const result = expand(ical, { from: '2026-04-01', to: '2026-04-30' });
+      expect(starts(result.occurrences)).toBe(
+        '2026-04-02T22:00:00Z 2026-04-03T22:00:00Z 2026-04-04T23:00:00Z 2026-04-05T23:00:00Z',
+      );
+      expect(result.unresolvedZones.length).toBe(0);
+    });
+
+    await it('follows a half-hour daylight shift', async () => {
+      // Lord Howe Island shifts by thirty minutes, +11:00 to +10:30, on 2026-04-05.
+      const ical = calendar(
+        ...vevent(
+          'UID:lhi-autumn',
+          'DTSTART;TZID=Australia/Lord_Howe:20260403T090000',
+          'DTEND;TZID=Australia/Lord_Howe:20260403T100000',
+          'RRULE:FREQ=DAILY;COUNT=4',
+        ),
+      );
+      const result = expand(ical, { from: '2026-04-01', to: '2026-04-30' });
+      expect(starts(result.occurrences)).toBe(
+        '2026-04-02T22:00:00Z 2026-04-03T22:00:00Z 2026-04-04T22:30:00Z 2026-04-05T22:30:00Z',
+      );
+      expect(result.unresolvedZones.length).toBe(0);
+    });
+
+    await it('keeps a fractional offset without daylight time', async () => {
+      // +05:30 all year: every instance lands on the half hour in UTC.
+      const ical = calendar(
+        ...vevent(
+          'UID:kolkata',
+          'DTSTART;TZID=Asia/Kolkata:20260701T090000',
+          'DTEND;TZID=Asia/Kolkata:20260701T100000',
+          'RRULE:FREQ=WEEKLY;COUNT=3',
+        ),
+      );
+      const result = expand(ical, { from: '2026-07-01', to: '2026-07-31' });
+      expect(starts(result.occurrences)).toBe(
+        '2026-07-01T03:30:00Z 2026-07-08T03:30:00Z 2026-07-15T03:30:00Z',
+      );
+      expect(result.unresolvedZones.length).toBe(0);
+    });
+
+    await it('resolves a zone that only its own VTIMEZONE names, as Exchange writes them', async () => {
+      // A Windows zone name is no IANA name, so the host cannot help: the table must.
+      // 2026-11-01: the US leaves daylight time, a week after Europe.
+      const ical = calendar(
+        ...EASTERN_VTIMEZONE,
+        ...vevent(
+          'UID:exchange',
+          'DTSTART;TZID=Eastern Standard Time:20261030T090000',
+          'DTEND;TZID=Eastern Standard Time:20261030T100000',
+          'RRULE:FREQ=DAILY;COUNT=4',
+        ),
+      );
+      const result = expand(ical, { from: '2026-10-01', to: '2026-11-30' });
+      expect(starts(result.occurrences)).toBe(
+        '2026-10-30T13:00:00Z 2026-10-31T13:00:00Z 2026-11-01T14:00:00Z 2026-11-02T14:00:00Z',
       );
       expect(result.unresolvedZones.length).toBe(0);
     });
