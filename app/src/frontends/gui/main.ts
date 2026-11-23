@@ -111,9 +111,14 @@ function createServices(window: MainWindow) {
     boardProblems: () => current?.boardProblems ?? [],
     rebuild: start,
   };
-  window.onPreferences = () => presentPreferences(window, env, demo);
+  // The week start and week numbers are read when the calendar lays out, so it does that once
+  // the dialog is gone rather than on the next step through the months.
+  const open = (page?: string): void => {
+    presentPreferences(window, env, demo, page).connect('closed', () => window.relayoutCalendar());
+  };
+  window.onPreferences = () => open();
   applyColorScheme(schemeHook() ?? settings.colorScheme());
-  return { start, open: (page?: string) => presentPreferences(window, env, demo, page) };
+  return { start, open };
 }
 
 async function startServices(window: MainWindow): Promise<void> {

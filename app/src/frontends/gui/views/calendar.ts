@@ -236,6 +236,7 @@ export function createCalendarView(toast: (message: string) => void): CalendarVi
     title.set_label(calendarTitle(mode, anchor, window));
     if (mode === 'month') {
       month.setFirstWeekday(first);
+      month.setShowWeekNumbers(settings?.weekNumbers() ?? false);
       month.setMonth(anchor.year, anchor.month);
       month.setToday(now);
       month.setSelected(sizeClass === 'compact' ? selected : null);

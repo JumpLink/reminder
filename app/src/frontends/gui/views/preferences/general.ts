@@ -1,5 +1,5 @@
 /**
- * The general page: appearance and the first day of the week. Both live in `gui.json`, not in the
+ * The general page: appearance, the first day of the week and week numbers. All of it lives in `gui.json`, not in the
  * core's configuration. The sync interval is not offered: the sync service fixes it per source kind.
  */
 
@@ -64,12 +64,15 @@ export function createGeneralPage(ctx: PageContext): PrefsPage {
     title: _('First day of the week'),
     model: Gtk.StringList.new(WEEK_STARTS.map(weekStartLabel)),
   });
+  const numbers = new Adw.SwitchRow({ title: _('Show week numbers'), subtitle: _('In the month view') });
   look.add(scheme);
   calendar.add(week);
+  calendar.add(numbers);
 
   const refresh = (): void => {
     scheme.set_selected(COLOR_SCHEMES.indexOf(settings.colorScheme()));
     week.set_selected(WEEK_STARTS.indexOf(settings.weekStart()));
+    numbers.set_active(settings.weekNumbers());
   };
   refresh();
   scheme.connect('notify::selected', () => {
@@ -81,6 +84,9 @@ export function createGeneralPage(ctx: PageContext): PrefsPage {
   week.connect('notify::selected', () => {
     const value = WEEK_STARTS[week.selected];
     if (value !== undefined && value !== settings.weekStart()) settings.setWeekStart(value);
+  });
+  numbers.connect('notify::active', () => {
+    if (numbers.active !== settings.weekNumbers()) settings.setWeekNumbers(numbers.active);
   });
   return { page, refresh };
 }

@@ -19,7 +19,7 @@ export function presentPreferences(
   env: PreferencesEnv,
   demo: boolean,
   page?: string,
-): void {
+): Adw.PreferencesDialog {
   const dialog = new Adw.PreferencesDialog();
   const listeners = new Set<() => void>();
   const ctx: PageContext = {
@@ -52,4 +52,5 @@ export function presentPreferences(
   dialog.present(parent);
   // Dev hook for screenshots: `REMINDER_APP_PREFS=local-list` opens the form itself.
   if (page === 'local-list') dialog.push_subpage(createLocalListAdd(ctx));
+  return dialog;
 }

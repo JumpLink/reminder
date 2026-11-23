@@ -213,6 +213,11 @@ export class MainWindow extends Adw.ApplicationWindow {
       this.toasts.add_toast(new Adw.Toast({ useMarkup: false, title: problems.join(' · ') }));
   }
 
+  /** After a settings change the calendar depends on (week start, week numbers). */
+  relayoutCalendar(): void {
+    this.calendar.reload();
+  }
+
   /** A start-up failure (unreadable config …): say so where the tasks and the cards would be. */
   showError(message: string): void {
     this.tasks.setError(message);
