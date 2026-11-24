@@ -77,7 +77,12 @@ export function createAccountDetail(ctx: PageContext, id: string): Adw.Navigatio
       remove.set_sensitive(canRemoveAccount(config));
       danger.set_description(canRemoveAccount(config) ? '' : _('The last account cannot be removed.'));
       for (const item of collectionRows(config, ctx.env.lists(), id)) {
-        const row = new Adw.SwitchRow({ title: item.name, subtitle: subtitleOf(item), active: item.enabled });
+        const row = new Adw.SwitchRow({
+          title: item.name,
+          useMarkup: false,
+          subtitle: subtitleOf(item),
+          active: item.enabled,
+        });
         row.connect('notify::active', () => {
           row.set_sensitive(false);
           void setCollectionEnabled(ctx.env, item.target, row.active).then((outcome) => {

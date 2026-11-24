@@ -74,7 +74,10 @@ export function createBoardPage(ctx: PageContext): PrefsPage {
   let rows: Gtk.Widget[] = [];
 
   const boardRow = (row: BoardSourceRow, binding: BoardBinding): Adw.ExpanderRow => {
-    const expander = new Adw.ExpanderRow({ title: binding.board.title || binding.board.id });
+    const expander = new Adw.ExpanderRow({
+      title: binding.board.title || binding.board.id,
+      useMarkup: false,
+    });
     const children: Gtk.Widget[] = [];
     let loaded = false;
     expander.connect('notify::expanded', () => {
@@ -98,6 +101,7 @@ export function createBoardPage(ctx: PageContext): PrefsPage {
         const lanes = laneChoices(column.lane);
         const combo = new Adw.ComboRow({
           title: column.name,
+          useMarkup: false,
           subtitle: column.custom ? undefined : _('Default'),
           model: Gtk.StringList.new(lanes.map(laneLabel)),
         });
@@ -117,6 +121,7 @@ export function createBoardPage(ctx: PageContext): PrefsPage {
   const sourceRow = (row: BoardSourceRow, bindings: readonly BoardBinding[]): Adw.ExpanderRow => {
     const expander = new Adw.ExpanderRow({
       title: row.id,
+      useMarkup: false,
       subtitle: row.problem ?? row.detail,
       subtitleLines: 2,
     });

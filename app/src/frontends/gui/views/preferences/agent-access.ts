@@ -95,6 +95,7 @@ export function createAgentAccessPage(ctx: PageContext): PrefsPage {
       for (const grant of list) {
         const row = new Adw.ActionRow({
           title: grant.name,
+          useMarkup: false,
           subtitle: capabilityLabel(grant.capability),
           titleLines: 1,
         });
