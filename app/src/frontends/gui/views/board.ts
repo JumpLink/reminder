@@ -358,7 +358,11 @@ export function createBoardView(toast: BoardToast): BoardView {
     }
     const options = snapshot ? boardSourceOptions(snapshot) : [];
     for (const option of options) {
-      const toggle = new Adw.SwitchRow({ title: option.name, active: showsSource(filters, option.id) });
+      const toggle = new Adw.SwitchRow({
+        title: option.name,
+        useMarkup: false,
+        active: showsSource(filters, option.id),
+      });
       toggle.connect('notify::active', () => {
         if (building) return;
         // All on is "no selection at all", so a source the config gains later is shown too.

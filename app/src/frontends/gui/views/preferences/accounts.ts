@@ -70,6 +70,7 @@ export function createAccountsPage(ctx: PageContext): PrefsPage {
       for (const account of accountRows(config, ctx.env.failures())) {
         const row = new Adw.ActionRow({
           title: account.id,
+          useMarkup: false,
           subtitle: account.problem ?? account.detail,
           subtitleLines: 2,
           activatable: true,
