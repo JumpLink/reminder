@@ -1527,7 +1527,7 @@ msgstr "Die Konfiguration kann nicht gelesen werden"
 
 #: src/frontends/gui/views/preferences/agent-access.ts:26
 msgid "Agent access"
-msgstr "Agentenzugriff"
+msgstr "Agenten"
 
 #: src/frontends/gui/views/preferences/agent-access.ts:30
 msgid "Granted"
